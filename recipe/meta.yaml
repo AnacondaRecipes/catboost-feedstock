@@ -4,7 +4,7 @@ package:
 
 build:
   number: 0
-  skip: True  # [not ((win or linux or osx) and x86_64)]
+  skip: True  # [not x86_64]
   missing_dso_whitelist:            # [linux]
     - '**/libdl.so.2'            # [linux]
     - '**/librt.so.1'            # [linux]
