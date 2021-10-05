@@ -1,0 +1,1334 @@
+commit 611afcbc064a64a6cf529d3a4323ebc7e4d46d81
+Author: Kai Tietz <ktietz@anaconda.com>
+Date:   Tue Oct 5 09:11:40 2021 +0200
+
+    adjust skip and dependencies for wheels/setuptools
+
+commit 025befcbdf8a1ab0a489bebb5e31446c7c1949f4
+Merge: c4066b4 8970db9
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Aug 5 19:17:17 2021 +0300
+
+    Merge pull request #72 from kizill/master
+    
+    0.26.1
+
+commit 8970db9a31ed38b61197319b4227eae8de257231
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Thu Aug 5 18:42:41 2021 +0300
+
+    0.26.1
+
+commit c4066b465d419aa24286ea15ef10511f3460fd5c
+Merge: 8aacaeb 98d64dc
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Fri Jun 4 03:04:25 2021 +0300
+
+    Merge pull request #71 from andrey-khropov/master
+    
+    release 0.26
+
+commit 98d64dca668ad8dc5af3857afd4d330e353c2b35
+Merge: c2fb34a 8aacaeb
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Fri Jun 4 02:46:15 2021 +0300
+
+    Merge branch 'master' into master
+
+commit c2fb34a9dc81e386f6300c5f4b61f60ba3ca0a48
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Fri Jun 4 02:43:54 2021 +0300
+
+    release 0.26
+
+commit 8aacaeb5b2b614439382c17c00435ee7759e5ccc
+Merge: b97a84e 4261bbe
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Mon Apr 12 13:22:13 2021 +0300
+
+    Merge pull request #70 from kizill/0.25.1
+    
+    0.25.1
+
+commit 4261bbe7d0df78e165b98d952fb686ccc3fa4ef8
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Thu Apr 8 15:21:56 2021 +0300
+
+    0.25.1
+
+commit b97a84efb495c3a4263ec47f36e54e464d1f29cf
+Merge: c7244e8 0e245e2
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Thu Mar 25 16:21:26 2021 +0300
+
+    Merge pull request #69 from andrey-khropov/master
+    
+    Release 0.25
+
+commit 0e245e2cb0ff637abe0d9fe328078bb124ee8cbe
+Merge: 65d9304 c7244e8
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Thu Mar 25 14:24:25 2021 +0300
+
+    Merge pull request #2 from conda-forge/master
+    
+    rebase to conda master
+
+commit c7244e858f104a23256209c4f69357be8df941e2
+Merge: 5798aa1 0a72928
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Mar 25 14:00:45 2021 +0300
+
+    Merge pull request #68 from PrimozGodec/rebuild-python39-0-2_ha402e1
+    
+    Rebuild python39
+
+commit 65d93041f79c9495855e8d21418206829e291020
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Thu Mar 25 02:16:08 2021 +0300
+
+    Update meta.yaml
+    
+    Add license_file
+
+commit 7c049425754b6d56afde719463f64fa6991d0268
+Merge: c193455 5798aa1
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Thu Mar 25 02:10:28 2021 +0300
+
+    Merge branch 'master' into master
+
+commit c19345552e2b144951bb6f061a32b4dc2f0909c7
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Thu Mar 25 02:08:18 2021 +0300
+
+    Update meta.yaml
+
+commit 0a729289401f1dbaf7750373277dd22a9f122af4
+Author: Primož Godec <p.godec9@gmail.com>
+Date:   Wed Mar 17 09:06:02 2021 +0100
+
+    license file added since it is not a part of whl
+
+commit 53395972f3198c46d9bdfb643b03d8ef88216b6e
+Author: Primož Godec <p.godec9@gmail.com>
+Date:   Wed Mar 17 08:56:14 2021 +0100
+
+    Update meta.yaml
+
+commit 4391fc81fed3793f74f4938806560ef2f49f77f1
+Author: Primož Godec <p.godec9@gmail.com>
+Date:   Tue Mar 16 15:49:56 2021 +0100
+
+    Add python 3.9
+
+commit c735962e60688564ec5d48c645eafc9fa709cbb9
+Author: regro-cf-autotick-bot <36490558+regro-cf-autotick-bot@users.noreply.github.com>
+Date:   Tue Mar 16 12:11:48 2021 +0000
+
+    MNT: Re-rendered with conda-build 3.21.4, conda-smithy 3.9.0, and conda-forge-pinning 2021.03.15.13.17.50
+
+commit 0e930c2aabf5ebf47275527e7850da51781c9cdd
+Author: regro-cf-autotick-bot <36490558+regro-cf-autotick-bot@users.noreply.github.com>
+Date:   Tue Mar 16 12:11:39 2021 +0000
+
+    Rebuild for python39
+
+commit 5798aa10f9476a09a3c283c3d9e12a4b1f652a88
+Merge: b1aa61b d2cf0da
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Tue Dec 29 14:20:10 2020 +0300
+
+    Merge pull request #65 from LyzhinIvan/0.24.4
+    
+    0.24.4
+
+commit d2cf0da354bb2a7b954cbd767778562e709084ca
+Author: Ivan Lyzhin <ilyzhin@yandex-team.ru>
+Date:   Tue Dec 29 13:38:32 2020 +0300
+
+    0.24.4
+
+commit b1aa61b106eca1ac541a61694f0ce38063ea8170
+Merge: ce2a1d0 5bd5a2e
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Nov 18 18:28:18 2020 +0300
+
+    Merge pull request #64 from kizill/0.24.3
+    
+    0.24.3
+
+commit 5bd5a2e0701a8ef23391604e99faef4dc0427505
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Wed Nov 18 18:04:03 2020 +0300
+
+    0.24.3
+
+commit ce2a1d0faea1d2dfce7575e0ba61bcfde1dffa07
+Merge: 94ff526 7e280bf
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Fri Nov 6 09:14:29 2020 +0300
+
+    Merge pull request #61 from kizill/master
+    
+    0.24.2
+
+commit 7e280bffb2964bffa7fe34a35de4e32986ce56ac
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Nov 5 23:55:02 2020 +0300
+
+    0.24.2
+
+commit 94ff526ee7ebbbf48e79a5454334ccbb88e6f395
+Merge: b9f86ba ba97500
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Nov 5 23:11:47 2020 +0300
+
+    Merge pull request #60 from kizill/0.24.1
+    
+    0.24.1
+
+commit ba9750009302c6d81e924de0cc03910f9edbc98b
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Nov 5 22:43:52 2020 +0300
+
+    0.24.1 update
+
+commit 1a2f508ee99ee13dc251dc35ac78a58c2f01dfff
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Nov 5 22:42:50 2020 +0300
+
+    MNT: Re-rendered with conda-build 3.18.11, conda-smithy 3.8.5, and conda-forge-pinning 2020.11.04.10.36.34
+
+commit b9f86ba2da39d7617e416107eea3e985b5f991dd
+Author: conda-forge-admin <conda-forge-admin@email.com>
+Date:   Fri Aug 7 20:17:23 2020 +0000
+
+    [ci skip] [skip ci] [cf admin skip] ***NO_CI*** admin migration CFEP13TokenCleanup
+
+commit c6ad318dfd13bec8ada90bdcb211ad91e2f4eaeb
+Merge: 2c19053 f8a85b5
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Aug 5 11:53:08 2020 +0300
+
+    Merge pull request #57 from kizill/master
+    
+    Release 0.24
+
+commit f8a85b55b58baf3e0118f098f95dd58493bf153f
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Wed Aug 5 11:25:59 2020 +0300
+
+    Release 0.24
+
+commit 2c190535b9916db493d0879fd35ef0d117eb8a9c
+Merge: 60cb82c c0b7ddc
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Jun 17 17:50:27 2020 +0300
+
+    Merge pull request #56 from kizill/0.23.2
+    
+    0.23.2
+
+commit c0b7ddca033cadf04acd61b67066c1c823e9e442
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Wed Jun 17 14:50:45 2020 +0300
+
+    0.23.2
+
+commit 60cb82c96fb6f4629d1c04f735665c4e31ce07d2
+Merge: 532e6d1 0d4439a
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Jun 17 14:48:33 2020 +0300
+
+    Merge pull request #54 from kizill/0.23.1
+    
+    0.23.1
+
+commit 0d4439a5883c487f035eb3edb8db8543d18e4468
+Author: Stas Kirillov <staskirillof@yandex.ru>
+Date:   Wed Jun 17 14:32:23 2020 +0300
+
+    revert license_file deletion
+
+commit 5af9be0ff7d6a8be0588b7d7059950e79cb5beff
+Author: kizill <staskirillof@yandex.ru>
+Date:   Mon May 25 14:32:45 2020 +0300
+
+    license update
+
+commit d6aacfea1275107c19aac6f2f2616d226da501d2
+Author: kizill <staskirillof@yandex.ru>
+Date:   Mon May 25 14:22:21 2020 +0300
+
+    0.23.1
+
+commit 532e6d12e3af68e2ab722c78991b4431def3390e
+Author: Matthew R Becker <becker.mr@gmail.com>
+Date:   Mon May 18 06:50:17 2020 -0500
+
+    [ci skip] [skip ci] [cf admin skip] ***NO_CI*** admin migration CondaForgeAutomerge
+
+commit 21266e7f711c2370073e6f6eb973eeb70a8df417
+Author: conda-forge-admin <conda-forge-admin@email.com>
+Date:   Fri May 15 21:21:14 2020 +0000
+
+    [ci skip] [skip ci] [cf admin skip] ***NO_CI*** admin migration CFEP13TokensAndConfig
+
+commit d52e6e0ee31c5171bc63dc708120d254391707ac
+Merge: 495d45d 0093978
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 18:28:50 2020 +0300
+
+    Merge pull request #53 from andrey-khropov/master
+    
+    0.23 rebuild
+
+commit 009397865bf77563909d6ce05fd36105099fe244
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 18:06:35 2020 +0300
+
+    0.23 rebuild
+
+commit 495d45db6b483bae4bc491750215edb71e5fa736
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 18:04:40 2020 +0300
+
+    0.23
+
+commit afcb36f132219501ef833f172cac6f65b5bd30a1
+Merge: 4f5b7ae bab13cf
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 18:00:49 2020 +0300
+
+    Merge pull request #52 from andrey-khropov/rebuild-pypy
+    
+    Re-renderded + pypy build disabled + python 2.7 disabled + python 3.8 enabled
+
+commit bab13cf96544c0dcc7131d5d82e00b93a83b20a7
+Author: Andrei Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 17:48:11 2020 +0300
+
+    MNT: Re-rendered with conda-build 3.19.2, conda-smithy 3.6.17, and conda-forge-pinning 2020.04.24.22.56.04
+
+commit 4fa3fde960297d920c466eab0ac8a4ad177ddb52
+Author: Andrei Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 15:17:25 2020 +0300
+
+    disable pypy
+
+commit 74368feb6dd716dc9509c045b3a6445664af1950
+Author: regro-cf-autotick-bot <circleci@cf-graph.regro.github.com>
+Date:   Fri Apr 17 02:57:10 2020 +0000
+
+    MNT: Re-rendered with conda-build 3.19.2, conda-smithy 3.6.16, and conda-forge-pinning 2020.04.17.01.00.32
+
+commit a69a208379b3fa32450614722f0122217fdca179
+Author: regro-cf-autotick-bot <circleci@cf-graph.regro.github.com>
+Date:   Fri Apr 17 02:56:47 2020 +0000
+
+    Rebuild for pypy
+
+commit f76a808ecc03d58416035224270bd77e15e0697e
+Author: Andrei Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 14:51:58 2020 +0300
+
+    Revert "max_py_ver: '38'"
+    
+    This reverts commit c08d5095a0bfc433cfee48ecf916d456619e0427.
+
+commit 5a23e042f14a53522df1742ad25c0457a1333a64
+Author: Andrei Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 14:51:35 2020 +0300
+
+    Revert "0.23"
+    
+    This reverts commit da00ea92b4330f0a9439c055fcc5cab46f009bbf.
+
+commit da00ea92b4330f0a9439c055fcc5cab46f009bbf
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Sat Apr 25 00:48:09 2020 +0300
+
+    0.23
+
+commit c08d5095a0bfc433cfee48ecf916d456619e0427
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Tue Mar 3 14:03:49 2020 +0300
+
+    max_py_ver: '38'
+
+commit 4f5b7ae96712b2e2753bdae9f9e61b683e2875a8
+Author: conda-forge-admin <conda-forge-admin@email.com>
+Date:   Mon Mar 2 17:30:15 2020 +0000
+
+    [ci skip] [skip ci] [cf admin skip] ***NO_CI*** admin migration AutomergeAndRerender
+
+commit 9d9ea6ed6970b556f2170403b60f264624e55994
+Merge: 7fbf1f5 26a8b9b
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Mon Mar 2 18:40:41 2020 +0300
+
+    Merge pull request #49 from andrey-khropov/master
+    
+    0.22
+
+commit 26a8b9b29b8a1f2cc124cacaf60dea26546fb6bf
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Mon Mar 2 18:13:59 2020 +0300
+
+    0.22
+
+commit 7fbf1f5d0f13d92d1ee03219fae12c61a9ac0306
+Merge: 451978f 57ecdd7
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Fri Jan 31 19:41:06 2020 +0300
+
+    Merge pull request #48 from andrey-khropov/master
+    
+    v0.21
+
+commit 57ecdd703819130a85cb4226ae38670770ffb716
+Author: Andrei (Andrey) Khropov <andrey-khropov@users.noreply.github.com>
+Date:   Fri Jan 31 19:17:10 2020 +0300
+
+    v0.21
+
+commit 451978f7cded7a4f6cd6d497d32f036c97eba879
+Merge: a0c2c19 2f5fa17
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Fri Dec 27 16:01:31 2019 +0300
+
+    Merge pull request #47 from kizill/master
+    
+    add andrey-khropov as package maintainer
+
+commit 2f5fa174d414395934cc75168fc008cee25984b6
+Author: kizill <staskirillof@yandex.ru>
+Date:   Fri Dec 27 15:42:18 2019 +0300
+
+    add andrey-khropov as package maintainer
+
+commit a0c2c19c0dbc977c7003bace8cbd776c49c05f8a
+Merge: e80810f 719bb33
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Thu Dec 26 07:06:55 2019 +0300
+
+    Merge pull request #46 from andrey-khropov/master
+    
+    0.20.2-0
+
+commit 719bb337c41734a59d96c505266fbe45b9f9ee86
+Author: Andrei Khropov <andrey.khropov@gmail.com>
+Date:   Thu Dec 26 02:55:34 2019 +0300
+
+    0.20.2-0
+
+commit e80810fa5ca53917e00c24e5731f8cbaef617cf7
+Merge: 31b0982 84ef820
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Dec 11 12:51:29 2019 +0700
+
+    Merge pull request #45 from dbakshee/master
+    
+    0.20.1-0
+
+commit 84ef820c689acfc05cdbc4596c3b01e1476b4775
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Dec 11 09:48:21 2019 +0700
+
+    0.20.1-0
+
+commit 31b098202c979b38cd2eea46693b75ec7f842770
+Merge: 83dc716 caa4128
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Nov 28 17:08:47 2019 +0700
+
+    Merge pull request #44 from dbakshee/master
+    
+    0.20-0
+
+commit caa4128fe910eb889ca619486d6eda5e8482232c
+Author: Dmitry Baksheev <dbakshee@yandex-team.ru>
+Date:   Thu Nov 28 07:22:54 2019 +0300
+
+    Add python 3.8, CatBoost 0.20
+
+commit 566b45a308798d345c82e464ac887e288e5f4b9e
+Author: Dmitry Baksheev <dbakshee@yandex-team.ru>
+Date:   Thu Nov 28 12:20:22 2019 +0300
+
+    MNT: Re-rendered with conda-build 3.18.11, conda-smithy 3.6.3, and conda-forge-pinning 2019.11.26
+
+commit 83dc716e615f151240f8b91855e46495e8f06a96
+Merge: f760eee 191a3f2
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 23:14:02 2019 +0700
+
+    Merge pull request #43 from dbakshee/master
+    
+    0.19.1
+
+commit 191a3f2e3b50dd77baef5961a5ab5e12ee6e8ea0
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 23:00:53 2019 +0700
+
+    0.19.1-0
+
+commit f13041454c7036ddce97d0380d08034d9374f5c2
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 14:10:36 2019 +0700
+
+    0.19.0-2
+
+commit 224802e2076fab75576185c9fe957c4b08c44e74
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 13:45:03 2019 +0700
+
+    0.19.0-1
+
+commit 8259c3b4e345923846dc1674344b1647c7396c69
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 13:28:37 2019 +0700
+
+    0.19.0-0
+
+commit 677ba2ebec1b40b481bfb1cdaf3a6c8446ea6f98
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Nov 19 05:19:54 2019 +0700
+
+    0.19-0
+
+commit f760eee9597f8b22352326728b32917737a1a8ff
+Merge: 6863b4a 6640855
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Oct 31 10:47:07 2019 +0700
+
+    Merge pull request #40 from dbakshee/master
+    
+    0.18.1-0
+
+commit 6640855e9f2f393fdae565e841262c58109ae62b
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Oct 31 10:34:23 2019 +0700
+
+    0.18.1-0
+
+commit 6863b4a7e7117a48a1ea141f2428d3bbf48dc1c4
+Merge: e286eb6 a7d1d79
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Mon Oct 21 23:54:14 2019 +0700
+
+    Merge pull request #39 from dbakshee/master
+    
+    0.18-0
+
+commit a7d1d79fe62887db9508c85c89b0baa447f72491
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Mon Oct 21 23:39:22 2019 +0700
+
+    0.18-0
+
+commit e286eb6fb22b0e3d0c72b1e101f829285fcc4b24
+Merge: cf41c0d c7303cb
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Oct 10 23:24:19 2019 +0700
+
+    Merge pull request #38 from dbakshee/master
+    
+    0.17.5-0
+
+commit c7303cb0cf6a46bccb069adf5368174a2674de0f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Oct 10 22:31:07 2019 +0700
+
+    0.17.5-0
+
+commit cf41c0dfae40ac9aad8e61fe0bd94d31f683eab4
+Merge: 7cfe472 212dc1b
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Oct 1 23:49:28 2019 +0700
+
+    Merge pull request #37 from dbakshee/master
+    
+    0.17.4-0
+
+commit 212dc1b9cecd441a9d856cdba1631de1b0f95e24
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Oct 1 23:32:24 2019 +0700
+
+    0.17.4-0
+
+commit 7cfe47275f76c108e4473e437f6b9ce5f0d345a8
+Merge: 45b8359 5412a52
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 24 16:08:05 2019 +0700
+
+    Merge pull request #36 from dbakshee/master
+    
+    0.17.3-0
+
+commit 5412a52d4214106a712d9eb7c21594ff05fb7a49
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 24 15:54:25 2019 +0700
+
+    0.17.3-0
+
+commit 45b835956780f86d43908ed02547de18306f7c31
+Merge: d21320b 3eca308
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Sep 19 10:46:00 2019 +0700
+
+    Merge pull request #35 from dbakshee/master
+    
+    0.17.2-0
+
+commit 3eca3089df6c66ff3b1b596bfa7f27a6dae4fb9f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Sep 19 10:33:14 2019 +0700
+
+    0.17.2-0
+
+commit d21320b4a6babb92e0f108f65c21c2ebee63f105
+Merge: 453fea1 4c7edf1
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Sep 13 23:02:15 2019 +0700
+
+    Merge pull request #34 from dbakshee/master
+    
+    0.17.1-0
+
+commit 4c7edf155819a2e3e20167b9b669fd2752bac245
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Fri Sep 13 15:47:11 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.18.9, conda-smithy 3.4.6, and conda-forge-pinning 2019.09.08
+
+commit ffd4c46994aca1b8fbbba55de756b887f0b4293c
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Sep 13 22:36:29 2019 +0700
+
+    0.17.1-0
+
+commit 453fea18c4530f74cba6471b2def57b06404bb38
+Merge: 579f088 7c6fc86
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 10 14:06:38 2019 +0700
+
+    Merge pull request #33 from dbakshee/master
+    
+    CatBoost 0.17
+
+commit 7c6fc860bd8eff4f1a9cb34e39dd8dd429ab746d
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 10 13:35:49 2019 +0700
+
+    0.17-1
+
+commit 7b7a13fa8734751bb3c19a4db5f76cafddea3c08
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 10 10:33:33 2019 +0700
+
+    0.17-0
+
+commit 73bdf398b7517ef89da5629697f446c456c2b877
+Merge: 04c1247 579f088
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Sep 10 10:32:39 2019 +0700
+
+    Merge pull request #8 from conda-forge/master
+    
+    sync
+
+commit 579f088d1d814b778e146a1178ad3cf520d41614
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Fri Sep 6 19:47:33 2019 -0500
+
+    [ci skip] ***NO_CI*** Move from appveyor to azure.
+    
+    See https://github.com/conda-forge/conda-forge.github.io/issues/857
+
+commit 2dbc4f5d0b78b7aef1d1d54d8634565d91316bbb
+Merge: a5e44bb 89e5ffb
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Tue Aug 20 11:06:44 2019 +0300
+
+    Merge pull request #32 from kizill/master
+    
+    0.16.5-0
+
+commit 89e5ffbf1c52b2c85b9da24c50f178826c924a92
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Tue Aug 20 10:50:41 2019 +0300
+
+    0.16.5-0
+
+commit a5e44bba3743dc730cf063b68ef3171ef22a7746
+Merge: ccd6a0f 04c1247
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Aug 14 15:55:17 2019 +0700
+
+    Merge pull request #31 from dbakshee/master
+    
+    0.16.4-0
+
+commit 04c12476c5c6f2cf4efc9727a6d012f1ec7fd66c
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Aug 14 15:32:38 2019 +0700
+
+    0.16.4-0
+
+commit ccd6a0f1e2ac83d9f06a8d8dd42cda90bf7df659
+Merge: ab5978b 5e8998e
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sun Aug 11 19:48:44 2019 +0700
+
+    Merge pull request #30 from dbakshee/master
+    
+    0.16.3-0
+
+commit 5e8998ee0f49108dedc910b48a1e30a57326ab41
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sun Aug 11 19:32:24 2019 +0700
+
+    0.16.3-0
+
+commit ab5978bc12ca74e8351ff3984973d92f3cc16dc6
+Merge: f2fa16a 86aaaf7
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Aug 2 23:52:32 2019 +0700
+
+    Merge pull request #29 from dbakshee/master
+    
+    0.16.2-0
+
+commit 86aaaf76a974bcff923f31a0ece3896bd16c8f76
+Author: Dmitry Baksheev <dbakshee@yandex-team.ru>
+Date:   Fri Aug 2 19:09:07 2019 +0300
+
+    0.16.2-0
+
+commit f2fa16a5866e93a8840c9a7e1b3eaa232cfcc857
+Merge: 15067ee 4e4b40f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Jul 31 10:37:29 2019 +0700
+
+    Merge pull request #28 from dbakshee/master
+    
+    0.16.1-1
+
+commit 4e4b40fd6154a986313c768046333908fd8a08a0
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Wed Jul 31 03:21:36 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.18.9, conda-smithy 3.4.1, and conda-forge-pinning 2019.07.26
+
+commit 7bc12007aa3d0e967c21d39aa8ba254f9cb7f4c1
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Jul 31 10:19:49 2019 +0700
+
+    0.16.1-2
+
+commit e2ab854f4d7ac229ea3d00a0011dffcfcd97b50a
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Jul 31 08:14:55 2019 +0700
+
+    0.16.1-1
+
+commit 15067eef2b0d5bf8c399adb8056abc1cd792bb39
+Merge: 79a78b3 e0c4a4e
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Jul 30 23:15:57 2019 +0700
+
+    Merge pull request #27 from dbakshee/master
+    
+    0.16.1-0
+
+commit e0c4a4e329874f15685cae2ba71f1cf844bdfd73
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Jul 30 22:55:12 2019 +0700
+
+    0.16.1-0
+
+commit 79a78b3204e44851ea3c9b31db3010c4fbbff365
+Merge: 6598cf9 15e4e09
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Jul 24 08:16:12 2019 +0700
+
+    Merge pull request #26 from dbakshee/master
+    
+    0.16-0
+
+commit 15e4e09b92b0b555e2e68565e9c7c2841ea79392
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Jul 24 07:58:36 2019 +0700
+
+    0.16-0
+
+commit 6598cf9e0ee9318ba43962d6f72e6e906701e464
+Merge: 95cbc41 4499b07
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Jun 28 23:30:41 2019 +0700
+
+    Merge pull request #25 from dbakshee/master
+    
+    0.15.2-0
+
+commit 4499b0764572a5e633f78b5a762b69061e6323f5
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Jun 28 21:00:53 2019 +0700
+
+    0.15.2-0
+
+commit 95cbc413266ad03f368e50282d15b59534ea0a8f
+Merge: 7476a23 a7527af
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jun 1 07:42:45 2019 +0700
+
+    Merge pull request #24 from dbakshee/master
+    
+    v0.15.1
+
+commit a7527affd450d29f8a5ee9ffb1cfd2837c3ec15b
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jun 1 02:07:28 2019 +0700
+
+    Update meta.yaml
+
+commit 7476a23218235ce94c11f1cd07904937d8736889
+Merge: c4ab121 24f2c83
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed May 29 14:14:28 2019 +0700
+
+    Merge pull request #23 from dbakshee/master
+    
+    catboost.ai
+
+commit 24f2c8364855e491b32c5ac57b1e81cc654a0293
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Tue May 28 17:09:09 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.17.8, conda-smithy 3.3.4, and conda-forge-pinning 2019.05.26
+
+commit 674c2404c9a4ca95619e9c63efd885f9abbd451b
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue May 28 23:55:23 2019 +0700
+
+    catboost.ai
+
+commit 8247b8813ca6faaaa60e092c8a022d2ea30bfde7
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue May 28 23:53:31 2019 +0700
+
+    catboost.ai
+
+commit c4ab121710a0739f5a172e25ac19009bb76f1d97
+Merge: d1d7beb c7a8834
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue May 28 09:43:55 2019 +0700
+
+    Merge pull request #22 from dbakshee/master
+    
+    0.15
+
+commit c7a883475ad1a62e6f9824d1849105e7da60afbb
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue May 28 00:24:44 2019 +0700
+
+    0.15
+
+commit 82d18b4bf000acc66cab06271fd55079d1c8815c
+Merge: 3151c5e d1d7beb
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue May 28 00:23:32 2019 +0700
+
+    Merge pull request #6 from conda-forge/master
+    
+    Pull from conda-forge
+
+commit d1d7bebdff9475a7c014f7c55dbdfb55775c3762
+Merge: 4b87104 3151c5e
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Apr 18 23:30:21 2019 +0700
+
+    Merge pull request #21 from dbakshee/master
+    
+    CatBoost 0.14.2
+
+commit 3151c5eda85237fad50650100e950a74c49ee206
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Apr 18 22:34:36 2019 +0700
+
+    Update meta.yaml
+
+commit 9e2a97287ae7140a48362c75049f003d921f6969
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Apr 18 14:58:58 2019 +0700
+
+    Update meta.yaml
+
+commit c53ee92330a3ac054a6fbceb446007027394957e
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Thu Apr 18 03:40:48 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.17.8, conda-smithy 3.3.3, and conda-forge-pinning 2019.04.12
+
+commit 92a0c4a3b5fa469b71ff40d576232ed3f79a7dc3
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Apr 18 05:31:31 2019 +0700
+
+    Update meta.yaml
+
+commit 4b87104053d44927e8e2d8199c6cf33f0da46fdb
+Merge: beb148f 7ac3263
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Apr 13 21:56:47 2019 +0700
+
+    CatBoost v0.14.1
+    
+    CatBoost v0.14.1
+
+commit 7ac3263140ad910f81b84abdb6d7e4ff3c320457
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Apr 13 19:49:52 2019 +0700
+
+    Update meta.yaml
+
+commit 3b08da662d03a1ed3c98becec2d9916329564e5f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Apr 9 20:11:44 2019 +0700
+
+    CatBoost 0.14.0
+
+commit 6edab100a28a948a0937983351d37b68789d8544
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Apr 9 11:28:52 2019 +0700
+
+    CatBoost v0.14
+
+commit 16dc9cc681bf13616c397fa3b98eb554a230f9c0
+Merge: fda509e beb148f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Tue Apr 9 11:27:38 2019 +0700
+
+    Sync with conda-forge
+    
+    Sync with conda-forge
+
+commit beb148f6022f3f7a58d484d5bb09c1ec16538ee2
+Merge: 721b818 fda509e
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Mar 21 10:33:51 2019 +0700
+
+    Merge pull request #19 from dbakshee/master
+    
+    CatBoost 0.13.1
+
+commit fda509e355336506d0e8fee0ccacd74334518026
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Mar 21 09:55:49 2019 +0700
+
+    Update meta.yaml
+
+commit d53bc95721fea46abd22ec8ee89f438020ae280c
+Merge: d3cbcaa 721b818
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Mar 21 09:54:37 2019 +0700
+
+    Merge pull request #4 from conda-forge/master
+    
+    Sync-pull from conda-forge
+
+commit 721b81854a3b17aef1a6ef5a3818ab11e2ebf499
+Merge: 41e0e45 d3cbcaa
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Mar 15 01:15:58 2019 +0700
+
+    Merge pull request #18 from dbakshee/master
+    
+    CatBoost v0.13
+
+commit d3cbcaa0118b1c3b08349497a57a31cecea0c196
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Thu Mar 14 12:43:44 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.17.8, conda-smithy 3.2.14, and conda-forge-pinning 2019.03.12
+
+commit 80aac282a18a83c9f429098f4675c8b414d070ea
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Mar 14 19:29:59 2019 +0700
+
+    Update meta.yaml
+
+commit 41e0e4522ae7f637f2b912872c00b260258fb79d
+Merge: 90b57ea 6862a64
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jan 19 19:54:32 2019 +0700
+
+    Merge pull request #17 from dbakshee/master
+    
+    CatBoost 0.12.2 (please travis-ci)
+
+commit 6862a640896c9f8d54330157c8c151b216cbbf4b
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jan 19 18:07:58 2019 +0700
+
+    Update meta.yaml
+
+commit af94c93425385f15e464c811893c5bb408ffe324
+Merge: e69e143 90b57ea
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jan 19 17:11:53 2019 +0700
+
+    Merge pull request #3 from conda-forge/master
+    
+    Merge conda/catboost-feedstock
+
+commit 90b57ea89ff56efdac5400fe68190fcc92ba5799
+Merge: 2d773c1 e69e143
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jan 19 17:01:35 2019 +0700
+
+    Merge pull request #16 from dbakshee/master
+    
+    CatBoost release 0.12.2
+
+commit e69e14356ba79afa8b46b088ea759abae38496c1
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sat Jan 19 09:51:53 2019 +0700
+
+    Update meta.yaml
+
+commit 7b2a9caa95c1d2d5c60a3ff96282fd2e6689590e
+Author: conda-forge-admin <pelson.pub+conda-forge@gmail.com>
+Date:   Fri Jan 18 23:12:49 2019 +0000
+
+    MNT: Re-rendered with conda-build 3.17.5, conda-smithy 3.2.9, and conda-forge-pinning 2019.01.18
+
+commit fc69679a33bdaf53aab0791fd8c4507d11f3e940
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Fri Jan 18 23:53:04 2019 +0700
+
+    CatBoost release 0.12.2
+
+commit 2d773c17e8f61fa85786b1ce93e2aedadf56d653
+Merge: 787b91e c013cd3
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Jan 10 08:59:59 2019 +0700
+
+    Merge pull request #15 from dbakshee/master
+    
+    CatBoost 0.12.1.1
+
+commit c013cd31988660a7f6d5f595717ba0104464340f
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Jan 10 08:46:04 2019 +0700
+
+    CatBoost 0.12.1.1
+
+commit 9cb06b6ea1c2d9a5f80dd18a70e16f09c0084698
+Merge: 59d20d0 787b91e
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Thu Jan 10 08:44:06 2019 +0700
+
+    Merge pull request #2 from conda-forge/master
+    
+    Sync with conda-forge
+
+commit 787b91e418a274c81ca9c427b6b01b682d759eb8
+Merge: d416726 59d20d0
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sun Dec 30 23:54:32 2018 +0700
+
+    Merge pull request #14 from dbakshee/master
+    
+    CatBoost 0.12.1
+
+commit 59d20d003d925beeb01838af659ee215e30200c0
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sun Dec 30 23:02:49 2018 +0700
+
+    Update meta.yaml
+
+commit d416726424896f076d58278db26ec8509efba65f
+Author: Dmitry Baksheev <dbakshee@yandex-team.ru>
+Date:   Sun Dec 30 23:00:44 2018 +0700
+
+    Update meta.yaml
+
+commit aeff5526ba94519c7a0e8e27b11cd768f2734c74
+Merge: fe6e79c eed981c
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Sun Dec 30 22:56:44 2018 +0700
+
+    Merge pull request #1 from conda-forge/master
+    
+    Sync with conda-forge
+
+commit eed981ce0cc1cbc9b5df059408bc231b439704b3
+Merge: d388ca9 9af0f8f
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Dec 26 17:15:26 2018 +0300
+
+    Merge pull request #13 from kizill/master
+    
+    fix tests
+
+commit 9af0f8f0059dbcd971cfb981e644e5c589e90e30
+Author: kizill <staskirillof@yandex.ru>
+Date:   Wed Dec 26 16:58:59 2018 +0300
+
+    fix tests
+
+commit d388ca9b8e3841450cb26b69ac95cc74c2f902f2
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Dec 26 17:47:28 2018 +0700
+
+    v0.12.0
+
+commit bb6427b4ba8761fbfbc86c90961577d86032ee2b
+Merge: f68d4bf 869ccfc
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Dec 26 17:29:29 2018 +0700
+
+    Merge pull request #11 from regro-cf-autotick-bot/rebuild
+    
+    Rebuild for Python 3.7, GCC 7, R 3.5.1, openBLAS 0.3.2
+
+commit fe6e79cb9b86a276a2544168b8399aed612d2a02
+Author: Dmitry Baksheev <dbakshee@yandex-team.ru>
+Date:   Wed Dec 26 17:15:21 2018 +0700
+
+    Releasing CatBoost 0.12.0 (fixup)
+    
+    Add dbakshee as maintainer
+
+commit 70c60da8222547745f73de50e1820022fd6da4be
+Author: Dmitry Baksheev <dbakshee@yandex.ru>
+Date:   Wed Dec 26 16:44:48 2018 +0700
+
+    Releasing CatBoost 0.12.0
+
+commit 869ccfc9fd69b95c4ddef1069c221f13c29c22b8
+Author: regro-cf-autotick-bot <circleci@cf-graph.regro.github.com>
+Date:   Thu Dec 20 02:15:03 2018 +0000
+
+    MNT: Re-rendered with conda-smithy 3.2.2 and pinning 2018.12.18
+
+commit 4db3083adb2cc7ab682a1d4bd8694b457fffec69
+Author: regro-cf-autotick-bot <circleci@cf-graph.regro.github.com>
+Date:   Thu Dec 20 02:14:57 2018 +0000
+
+    bump build number
+
+commit f68d4bf2ff8f1563df254774dd0d1c3952be0778
+Merge: 4e34b76 0966faa
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Mon Dec 17 11:57:12 2018 +0700
+
+    Merge pull request #10 from kizill/master
+    
+    add python 3.7 to conda-forge
+
+commit 0966faaea1aa4b1e7871a63622e271acc9d2c66a
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Fri Dec 14 23:32:47 2018 +0300
+
+    add python 3.7 to conda-forge
+
+commit 4e34b763489b88b468d1bc43ac6c3b95b546b612
+Merge: 07ac83f e3cfaaa
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Tue Dec 11 22:46:24 2018 +0300
+
+    Merge pull request #9 from kizill/master
+    
+    v0.11.2
+
+commit e3cfaaa13433a30d959c65019b9b97e3975cd2fb
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Tue Dec 11 22:09:47 2018 +0300
+
+    v0.11.2
+
+commit 07ac83f811fda788d547e83eac06ac5b93dcd328
+Merge: 2e64bf9 0626e86
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Wed Nov 14 09:59:48 2018 +0300
+
+    Merge pull request #8 from kizill/master
+    
+    v0.11.1
+
+commit 0626e8693733a873166386c4b18a3d945ebcc020
+Author: Stanislav Kirillov <staskirillof@yandex.ru>
+Date:   Wed Nov 14 00:26:03 2018 +0300
+
+    v0.11.1
+
+commit 2e64bf9f4a9fa1011524e19ae14b0681c0fec711
+Merge: bbe4948 046eaad
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Sat Nov 10 14:44:01 2018 +0300
+
+    Merge pull request #7 from kizill/master
+    
+    v0.11.0
+
+commit 046eaadbece68ab3c5b8b6467531e9a4bde76fb6
+Author: kizill <staskirillof@yandex.ru>
+Date:   Sat Nov 10 14:33:32 2018 +0300
+
+    v0.11.0
+
+commit bbe49486fe41e5a7687e2ba087e9692262656f31
+Merge: 1acaf9d 6b38826
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Mon Oct 29 17:24:37 2018 +0300
+
+    Merge pull request #6 from kizill/master
+    
+    v0.10.4.1
+
+commit 6b38826ec4732d4b6f79599017e864e127a09835
+Author: kizill <staskirillof@yandex.ru>
+Date:   Mon Oct 29 17:18:42 2018 +0300
+
+    v0.10.4.1
+
+commit 1acaf9dba4db953dc58412cf7a9b3f0bf219a1d5
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Fri Oct 26 13:44:06 2018 +0300
+
+    Python 3.4 removed
+
+commit b4c28ed001f14a425865d266368cc4d8876ad4a0
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Fri Oct 26 13:43:40 2018 +0300
+
+    Python 3.4 removed
+
+commit b879d98d805f1a87fd00f1961c726df447d8bc67
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Fri Oct 26 13:42:58 2018 +0300
+
+    v0.10.4
+
+commit c7c6d64aec8af8b043f29093e9caf3fcbddf52d2
+Merge: 35f3f18 df9f434
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Sat Oct 13 11:11:36 2018 +0700
+
+    Merge pull request #5 from kizill/master
+    
+    update 0.10.3
+
+commit df9f434a7d54751ae25a2cba9bb163b010c3ae24
+Author: kizill <staskirillof@yandex.ru>
+Date:   Fri Oct 12 19:21:02 2018 +0300
+
+    update 0.10.3
+
+commit 35f3f186304a2fad0999c89d2d55a451c61da3f7
+Merge: 8c3337a 75f7abf
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Sat Sep 22 10:31:10 2018 +0300
+
+    Merge pull request #4 from kizill/master
+    
+    update to 0.10.2
+
+commit 75f7abfb3926e48d8cc4acb9a17a0edb25980661
+Author: kizill <staskirillof@yandex.ru>
+Date:   Sat Sep 22 00:02:39 2018 +0300
+
+    update to 0.10.2
+
+commit 8c3337ad2ac7e0ad4d3a2c8178eaebfd245b8e54
+Merge: d9f5dc3 330a608
+Author: Nikita Dmitriev <dmitnikita@yandex.ru>
+Date:   Thu Sep 13 22:10:03 2018 +0300
+
+    Merge pull request #3 from kizill/master
+    
+    Upgrade catboost to v0.10.0
+
+commit 330a608607724c47c72edc695d79e918d14a98aa
+Author: Stanislav Kirillov <staskirillov@gmail.com>
+Date:   Thu Sep 13 14:15:12 2018 +0300
+
+    Upgrade catboost to v0.10.0
+
+commit d9f5dc34891dc6dd3b8d917f128f1ada9568a0ca
+Author: Travis CI User <travis@example.org>
+Date:   Sat Aug 4 18:58:37 2018 +0000
+
+    [ci skip] [skip ci] Update anaconda token
+
+commit fe8b413eca56f453453562b18644466b3fe39484
+Merge: cf6d513 70dcfb9
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 20:13:07 2018 +0700
+
+    Merge pull request #1 from sab/master
+    
+    Version updated
+
+commit 70dcfb9d5a116eca29b2a9c39db705590b71b2d1
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 19:13:55 2018 +0700
+
+    Cleaned up
+
+commit 9cffd6d5134adcc59800fd7b385dde249c23acec
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 19:10:43 2018 +0700
+
+    py37 support removed
+
+commit bd61b5acc9fb41aebca1ee45ee96c123ac051194
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 19:10:18 2018 +0700
+
+    py37 support removed
+
+commit 32c9da085332d3b6f2dc78f11a70683e54ae8342
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 18:21:04 2018 +0700
+
+    pandas dependancy removed
+
+commit 4d1f648282cfce9dc9b3243de39ce8f41503d71c
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 17:52:16 2018 +0700
+
+    Dependences fixed
+
+commit ebe5e3a05ec0b4e36533b13c86d8a5fde89b9698
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 16:04:43 2018 +0700
+
+    Python 3.7 support added
+
+commit 62b5dfd075f59acd4dc8ce9761774762fa9ca45d
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 16:03:33 2018 +0700
+
+    Python 3.7 support added
+
+commit 09948342e882ba1ec7de0c8f8c0eca639df0707d
+Author: Sergey Brazhnik <sbrazhnik@yandex-team.ru>
+Date:   Wed Jul 18 16:02:10 2018 +0700
+
+    Version updated and python 3.7 support added
+
+commit cf6d513c8b4b1060ef58afabdb18880e8f9434b6
+Author: Travis-CI on github.com/conda-forge/staged-recipes <conda-forge@googlegroups.com>
+Date:   Sun May 6 10:42:56 2018 +0000
+
+    Re-render the feedstock after CI registration.
+
+commit ebbd0251f2e26d4b5e528595a3606aa2531ccdea
+Author: Travis-CI on github.com/conda-forge/staged-recipes <conda-forge@googlegroups.com>
+Date:   Sun May 6 10:40:29 2018 +0000
+
+    Initial feedstock commit with conda-smithy 3.1.2.
