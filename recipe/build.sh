@@ -33,7 +33,7 @@ if [ `uname` == Linux ]; then
     elif [ "$PY_VER" == "3.7" ]; then
         WHL_FILE=https://pypi.org/packages/cp37/c/catboost/catboost-${PKG_VERSION}-cp37-none-manylinux1_x86_64.whl
     elif [ "$PY_VER" == "3.8" ]; then
-        WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-none-manylinux1_x6_64.whl
+        WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-none-manylinux1_x86_64.whl
     elif [ "$PY_VER" == "3.9" ]; then
         WHL_FILE=https://pypi.org/packages/cp39/c/catboost/catboost-${PKG_VERSION}-cp39-none-manylinux1_x86_64.whl
     elif [ "$PY_VER" == "3.10" ]; then
