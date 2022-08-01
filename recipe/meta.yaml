@@ -1,24 +1,21 @@
 package:
   name: catboost
-  version: "0.26.1"
+  version: "1.0.6"
 
 build:
-  number: 0
-  skip: True  # [not x86_64]
-  missing_dso_whitelist:            # [linux]
-    - '**/libdl.so.2'            # [linux]
-    - '**/librt.so.1'            # [linux]
-    - '**/lib64/libpthread.so.0'       # [linux]
-    - '**/libc.so.6'             # [linux]
-    - '**/ld-linux-x86-64.so.2'  # [linux]
-    - '**/libm.so.6'             # [linux]
+  number: 1
+  #  Yandex supplies whl files on PyPI for:
+  # - Linux: Python 3.6, 3.7, 3.8, 3.9, 3.10
+  # - OS X: Python 3.6, 3.7, 3.8, 3.9, 3.10
+  # - Win-64: Python 3.6, 3.7, 3.8, 3.9, 3.10
+  skip: True  # [win32 or python_impl == 'pypy']
 
 requirements:
   host:
     - python
     - pip
-    - wheel
     - setuptools
+    - wheel
   run:
     - python
     - enum34  # [py27]
@@ -26,10 +23,19 @@ requirements:
     - pandas >=0.24.0
     - scipy
     - six
+    - plotly
+    - matplotlib-base
+    - python-graphviz
+    #python-graphviz avoids the pip check error
+    
 
 test:
   imports:
     - catboost
+  commands:
+    - pip check
+  requires:
+    - pip
 
 about:
   home: http://catboost.ai
