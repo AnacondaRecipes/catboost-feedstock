@@ -23,7 +23,9 @@ build:
     - '**/libm.so.6'             # [linux]
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
-  script: {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
+  script: 
+    - ya make -DUSE_ARCADIA_PYTHON=no   # [linux and aarch64]
+    - {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
 
 requirements:
   build:   # [linux and aarch64]
@@ -46,6 +48,8 @@ requirements:
     - python-graphviz
     - scipy
     - six
+  run_constrainted:
+    - ipywidgets >=7.0
     
 
 test:
@@ -61,7 +65,6 @@ about:
   license: Apache-2.0
   license_family: MIT
   license_file: LICENSE
-  license_url: https://github.com/catboost/catboost/blob/master/LICENSE
   summary: 'Gradient boosting on decision trees library'
 
   description: |
