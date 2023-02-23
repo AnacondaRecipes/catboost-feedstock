@@ -20,10 +20,11 @@ if [ `uname` == Darwin ]; then
     elif [ "$PY_VER" == "3.10" ]; then
         WHL_FILE=https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-none-macosx_10_6_universal2.whl
     fi
+    $PYTHON -m pip install --no-deps $WHL_FILE
 fi
 
 echo "ARCH: $ARCH ..."
-if [ `uname` == Linux ]; then
+if [ $ARCH == 64 ]; then
     if [ "$PY_VER" == "2.7" ]; then
         WHL_FILE=https://pypi.org/packages/cp27/c/catboost/catboost-${PKG_VERSION}-cp27-none-manylinux1_x86_64.whl
     elif [ "$PY_VER" == "3.5" ]; then
@@ -39,6 +40,10 @@ if [ `uname` == Linux ]; then
     elif [ "$PY_VER" == "3.10" ]; then
         WHL_FILE=https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-none-manylinux1_x86_64.whl
     fi
+    $PYTHON -m pip install --no-deps $WHL_FILE
 fi
 
-pip install --no-deps $WHL_FILE
+if [ $ARCH == aarch64 ]; then
+    cd catboost/python-package  # [linux and aarch64]
+    $PYTHON -m pip install . --no-deps -vv 
+fi
