@@ -7,7 +7,7 @@ package:
 
 source:  # [linux and aarch64]
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.zip  # [linux and aarch64]
-  sha256: 0
+  sha256: 4cef1f45a79b263013aff335e6d1d529eaa0ad8e079bfbdc004318f190367db4
 
 build:
   number: 0
