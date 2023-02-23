@@ -24,7 +24,7 @@ if [ `uname` == Darwin ]; then
 fi
 
 echo "ARCH: $ARCH ..."
-if [ `uname` == x86_64 ]; then
+if [ $ARCH == 64 ]; then
     if [ "$PY_VER" == "2.7" ]; then
         WHL_FILE=https://pypi.org/packages/cp27/c/catboost/catboost-${PKG_VERSION}-cp27-none-manylinux1_x86_64.whl
     elif [ "$PY_VER" == "3.5" ]; then
@@ -43,7 +43,7 @@ if [ `uname` == x86_64 ]; then
     $PYTHON -m pip install --no-deps $WHL_FILE
 fi
 
-if [ `uname` == aarch64 ]; then
+if [ $ARCH == aarch64 ]; then
     cd catboost/python-package  # [linux and aarch64]
     $PYTHON -m pip install . --no-deps -vv 
 fi
