@@ -7,7 +7,7 @@ package:
 
 source:  # [linux and aarch64]
   url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.zip  # [linux and aarch64]
-  sha256: 4cef1f45a79b263013aff335e6d1d529eaa0ad8e079bfbdc004318f190367db4
+  sha256: 4cef1f45a79b263013aff335e6d1d529eaa0ad8e079bfbdc004318f190367db4  # [linux and aarch64]
 
 build:
   number: 0
@@ -23,9 +23,11 @@ build:
     - '**/libm.so.6'             # [linux]
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
-  script: 
-    - cd catboost/catboost/python-package   # [linux and aarch64]
+  script:
+    - cd catboost/python-package  # [linux and aarch64]
     - {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
+    - build.sh  # [(linux and not aarch64) or osx]
+    - bld.bat  # [win]
 
 requirements:
   build:   # [linux and aarch64]
