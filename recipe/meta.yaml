@@ -23,11 +23,6 @@ build:
     - '**/libm.so.6'             # [linux]
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
-  script:
-    - cd catboost/python-package  # [linux and aarch64]
-    - {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
-    - build.sh  # [(linux and not aarch64) or osx]
-    - bld.bat  # [win]
 
 requirements:
   build:   # [linux and aarch64]
