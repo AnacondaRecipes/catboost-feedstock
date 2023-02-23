@@ -15,13 +15,13 @@ build:
   # - Linux: Python 3.6, 3.7, 3.8, 3.9, 3.10
   # - OS X: Python 3.6, 3.7, 3.8, 3.9, 3.10
   # - Win-64: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # missing_dso_whitelist:         # [linux]
-  #   - '**/libdl.so.2'            # [linux]
-  #   - '**/ld-linux-x86-64.so.2'  # [linux]
-  #   - '**/libc.so.6'             # [linux]
-  #   - '**/libm.so.6'             # [linux]
-  #   - '**/librt.so.1'            # [linux]
-  #   - '**/libpthread.so.0'       # [linux]
+  missing_dso_whitelist:         # [linux]
+    - '**/libdl.so.2'            # [linux]
+    - '**/ld-linux-x86-64.so.2'  # [linux]
+    - '**/libc.so.6'             # [linux]
+    - '**/libm.so.6'             # [linux]
+    - '**/librt.so.1'            # [linux]
+    - '**/libpthread.so.0'       # [linux]
   script: {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
 
 requirements:
