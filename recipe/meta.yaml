@@ -24,7 +24,7 @@ build:
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
   script: 
-    - ya make -DUSE_ARCADIA_PYTHON=no   # [linux and aarch64]
+    - cd catboost/catboost/python-package   # [linux and aarch64]
     - {{ PYTHON }} -m pip install . --no-deps -vv  # [linux and aarch64]
 
 requirements:
