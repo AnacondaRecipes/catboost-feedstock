@@ -6,6 +6,8 @@ set -xe
 
 if [ `uname` == Darwin ]; then
     # debugging
+    export CONDA_BUILD_SYSROOT=/opt/MacOSX11.1.sdk
+    export MACOSX_DEPLOYMENT_TARGET=11.1
     uname -m
     $PYTHON -c "import sysconfig;print(sysconfig.get_platform())"
 
