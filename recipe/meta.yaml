@@ -5,11 +5,15 @@ package:
 build:
   number: 0
   #  Yandex supplies whl files on PyPI for:
-  # - Linux: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # - OS X: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # - Win-64: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # TODO: support Linux on ppc64le: https://github.com/catboost/catboost/issues/2145
-  skip: True  # [ppc64le]
+  # - Linux: Python 3.8, 3.9, 3.10, 3.11
+  # - OS X: Python 3.8, 3.9, 3.10, 3.11
+  # - Win-64: Python 3.8, 3.9, 3.10, 3.11
+  # There are issues with python 3.8 on macOS 11.x: https://github.com/conda-forge/python-feedstock/issues/445
+  #  so Conda has issues with tags compatibility with platform tags 'macosx_11_0_...'
+  #  so disable this configuration for now
+  skip: True  # [(osx and x86_64) and py==38]
+  # TODO: support Linux on ppc64le: https://github.com/catboost/catboost/issues/2145 and s390x
+  skip: True  # [ppc64le or s390x]
   missing_dso_whitelist:         # [linux]
     - '**/libdl.so.2'            # [linux]
     - '**/ld-linux-x86-64.so.2'  # [linux]
@@ -31,7 +35,8 @@ requirements:
     - six
     - plotly
     - matplotlib-base
-    # python-graphviz avoids the pip check error
+    # python-graphviz avoids the pip check error,
+    # and if you want to use 'plot_tree' function.
     - python-graphviz
 
 test:
