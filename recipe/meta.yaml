@@ -1,6 +1,13 @@
+{% set name = "catboost" %}
+{% set version = "1.2" %}
+
 package:
-  name: catboost
-  version: "1.2"
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:  # [osx and x86_64]
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/catboost-{{ version }}.tar.gz  # [osx and x86_64]
+  sha256: 39e53403727ecfbb48156773ef3006b4e71cc35ab49cc9a0cf044b474c34be0c  # [osx and x86_64]
 
 build:
   number: 0
@@ -22,6 +29,8 @@ build:
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
 requirements:
+  build:  # [osx and x86_64]
+    - {{ compiler('c') }}  # [osx and x86_64]
   host:
     - python
     - pip
