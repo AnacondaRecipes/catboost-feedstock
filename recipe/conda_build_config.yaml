@@ -1,0 +1,6 @@
+macos_min_version:
+  - 11.3  # [osx]
+MACOSX_DEPLOYMENT_TARGET:
+  - 11.3  # [osx]
+MACOSX_SDK_VERSION:        # [osx]
+  - "11.3"                 # [osx]
