@@ -5,14 +5,6 @@ set -xe
 # install using pip from the whl files on PyPI
 
 if [ `uname` == Darwin ]; then
-    # debugging
-    export CONDA_BUILD_SYSROOT=/opt/MacOSX11.1.sdk
-    export MACOSX_DEPLOYMENT_TARGET=11.1
-    uname -m
-    $PYTHON -c "import sysconfig;print(sysconfig.get_platform())"
-
-    $PYTHON -c 'from pip._vendor.distlib.util import get_host_platform; print(f"pip gethost: {get_host_platform()}")'
-
     if [ "$PY_VER" == "3.8" ]; then
         WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-macosx_11_0_universal2.whl
     elif [ "$PY_VER" == "3.9" ]; then
