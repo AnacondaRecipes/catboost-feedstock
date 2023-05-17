@@ -5,8 +5,6 @@ set -xe
 # install using pip from the whl files on PyPI
 
 if [ `uname` == Darwin ]; then
-    $PYTHON -m pip debug --verbose
-    $PYTHON setup.py bdist_wheel --universal
     if [ "$PY_VER" == "3.8" ]; then
         WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-macosx_11_0_universal2.whl
     elif [ "$PY_VER" == "3.9" ]; then
