@@ -27,6 +27,7 @@ build:
 requirements:
   host:
     - python
+    - curl
     - pip
     - setuptools
     - wheel
