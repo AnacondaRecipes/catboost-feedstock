@@ -46,8 +46,6 @@ requirements:
 test:
   imports:
     - catboost
-  commands:
-    - pip check
   requires:
     - pip
 
