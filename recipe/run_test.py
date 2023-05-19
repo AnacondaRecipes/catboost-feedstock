@@ -5,8 +5,8 @@ import platform
 import catboost
 import numpy as np
 
-from catboost import Pool, CatBoost, CatBoostRegressor
-from catboost.datasets import adult, amazon
+from catboost import Pool, CatBoostRegressor
+from catboost.datasets import adult
 from catboost.text_processing import Tokenizer
 
 

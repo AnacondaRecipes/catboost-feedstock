@@ -27,7 +27,8 @@ build:
 requirements:
   host:
     - python
-    - curl
+    # curl is needed only for downloading whl files in build.sh
+    - curl 7.88.1
     - pip
     - setuptools
     - wheel
@@ -44,8 +45,7 @@ requirements:
     - python-graphviz
 
 test:
-  imports:
-    - catboost
+  # imports and pip check are in run_test.py
   requires:
     - pip
 

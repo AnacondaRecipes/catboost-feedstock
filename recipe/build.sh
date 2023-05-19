@@ -4,7 +4,15 @@ set -xe
 
 # install using pip from the whl files on PyPI
 
-if [ `uname` == Darwin ]; then   
+if [ `uname` == Darwin ]; then  
+    # A workaround for renaming wheel files for osx-64 because the maintainers provides wheels only for MacOS SDK 11.0
+    # but if we replace it with 10.9, it will work on older versions of MacOS without issues.
+    # In our case, it looks like catboost 1.2 only links against libSystem.B using LC_LOAD_DYLIB, which is standard. 
+    # A list of imported symbols tells us that it's not importing anything that wouldn't be found on a standard system 
+    # that's older than OS 11.0. So it certainly looks like this'd work on our systems too.
+    # If you look at the commit history of the file https://github.com/catboost/catboost/blob/master/catboost/app/CMakeLists.darwin-x86_64.txt#LL48C32-L48C35, 
+    # it looks like they were originally targeting 10.15 SDK and OS versions. At some point they chose to target a different SDK (11), 
+    # but they also chose a newer deployment_target (OS version 11).
     if [ "$target_platform" == "osx-arm64" ]; then
         SDK_VER="11_0"
     elif [ "$target_platform" == "osx-64" ]; then
@@ -47,4 +55,4 @@ if [ `uname` == Linux ]; then
     fi
 fi
 
-$PYTHON -m pip install --no-deps -vvv $WHL_FILE
+$PYTHON -m pip install --no-deps --no-build-isolation -vvv $WHL_FILE
