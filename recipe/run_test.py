@@ -19,15 +19,6 @@ print("              Machine:", machine)
 subprocess.run(["pip", "check"])
 
 
-# datasets:
-# adult:
-print("Loading datasets...")
-adult_train, adult_test = adult()
-
-print("Adult dataset:\n")
-print(adult_train.head(3))
-
-
 # Tokenizer
 text="Still, I would love to see you at 12, if you don't mind"
 
