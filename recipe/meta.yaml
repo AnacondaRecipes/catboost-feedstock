@@ -1,15 +1,22 @@
+{% set name = "catboost" %}
+{% set version = "1.2" %}
+
 package:
-  name: catboost
-  version: "1.0.6"
+  name: {{ name|lower }}
+  version: {{ version }}
 
 build:
-  number: 1
+  number: 0
   #  Yandex supplies whl files on PyPI for:
-  # - Linux: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # - OS X: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  # - Win-64: Python 3.6, 3.7, 3.8, 3.9, 3.10
-  skip: True  # [win32 or python_impl == 'pypy']
-  skip: True  # [linux and not x86_64]
+  # - Linux: Python 3.8, 3.9, 3.10, 3.11
+  # - OS X: Python 3.8, 3.9, 3.10, 3.11
+  # - Win-64: Python 3.8, 3.9, 3.10, 3.11
+  # There are issues with python 3.8 on macOS 11.x: https://github.com/conda-forge/python-feedstock/issues/445
+  #  so Conda has issues with tags compatibility with platform tags 'macosx_11_0_...'
+  #  so disable this configuration for now
+  skip: True  # [(osx and x86_64) and py==38]
+  # TODO: support Linux on ppc64le: https://github.com/catboost/catboost/issues/2145 and s390x
+  skip: True  # [ppc64le or s390x]
   missing_dso_whitelist:         # [linux]
     - '**/libdl.so.2'            # [linux]
     - '**/ld-linux-x86-64.so.2'  # [linux]
@@ -20,42 +27,38 @@ build:
 requirements:
   host:
     - python
+    # curl is needed only for downloading whl files in build.sh
+    - curl 7.88.1
     - pip
     - setuptools
     - wheel
   run:
     - python
-    - enum34  # [py27]
     - numpy >=1.16.0
     - pandas >=0.24.0
     - scipy
     - six
     - plotly
     - matplotlib-base
+    # python-graphviz avoids the pip check error,
+    # and if you want to use 'plot_tree' function.
     - python-graphviz
-    #python-graphviz avoids the pip check error
-    
 
 test:
-  imports:
-    - catboost
-  commands:
-    - pip check
+  # imports and pip check are in run_test.py
   requires:
     - pip
 
 about:
-  home: http://catboost.ai
+  home: https://catboost.ai
   license: Apache-2.0
-  license_family: MIT
+  license_family: Apache
   license_file: LICENSE
-  license_url: https://github.com/catboost/catboost/blob/master/LICENSE
-  summary: 'Gradient boosting on decision trees library'
-
+  summary: Gradient boosting on decision trees library
   description: |
     General purpose gradient boosting on decision trees library with categorical features support out of the box.
     It is easy to install, contains fast inference implementation and supports CPU and GPU (even multi-GPU) computation.
-  doc_url: https://catboost.ai/docs/concepts/about.html
+  doc_url: https://catboost.ai/en/docs/
   dev_url: https://github.com/catboost/catboost
 
 extra:
