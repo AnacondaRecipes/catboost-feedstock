@@ -1,5 +1,5 @@
 {% set name = "catboost" %}
-{% set version = "1.2" %}
+{% set version = "1.2.3" %}
 
 package:
   name: {{ name|lower }}
@@ -8,9 +8,9 @@ package:
 build:
   number: 0
   #  Yandex supplies whl files on PyPI for:
-  # - Linux: Python 3.8, 3.9, 3.10, 3.11
-  # - OS X: Python 3.8, 3.9, 3.10, 3.11
-  # - Win-64: Python 3.8, 3.9, 3.10, 3.11
+  # - Linux: Python 3.8, 3.9, 3.10, 3.11, 3.12
+  # - OS X: Python 3.8, 3.9, 3.10, 3.11, 3.12
+  # - Win-64: Python 3.8, 3.9, 3.10, 3.11, 3.12
   # There are issues with python 3.8 on macOS 11.x: https://github.com/conda-forge/python-feedstock/issues/445
   #  so Conda has issues with tags compatibility with platform tags 'macosx_11_0_...'
   #  so disable this configuration for now
@@ -25,10 +25,11 @@ build:
     - '**/librt.so.1'            # [linux]
     - '**/libpthread.so.0'       # [linux]
 requirements:
-  host:
-    - python
+  build:
     # curl is needed only for downloading whl files in build.sh
     - curl 7.88.1
+  host:
+    - python
     - pip
     - setuptools
     - wheel
@@ -43,6 +44,8 @@ requirements:
     # python-graphviz avoids the pip check error,
     # and if you want to use 'plot_tree' function.
     - python-graphviz
+  run_constrained:
+    - ipywidgets >=7.0,<9.0
 
 test:
   # imports and pip check are in run_test.py
