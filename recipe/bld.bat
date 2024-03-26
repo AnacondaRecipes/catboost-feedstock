@@ -14,4 +14,8 @@ IF "%PY_VER%"=="3.11" (
 	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp311/c/catboost/catboost-%PKG_VERSION%-cp311-cp311-win_amd64.whl
 )
 
+IF "%PY_VER%"=="3.12" (
+	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp312/c/catboost/catboost-%PKG_VERSION%-cp312-cp312-win_amd64.whl
+)
+
 if errorlevel 1 exit 1
