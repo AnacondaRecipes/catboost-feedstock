@@ -10,6 +10,10 @@ build:
 
 requirements:
   build:
+    # needs to suppress Cython needs C compiler error.
+    - {{ compiler('c') }}
+    - cmake
+    - make  # [unix]
     # curl is needed only for downloading whl files in build.sh
     - curl 8.12.1
   host:
@@ -17,10 +21,7 @@ requirements:
     - pip
     - setuptools >=64.0
     - wheel
-    - cmake
-    - make  # [not win]
     - cython >=3.0.10,<3.1
-    - jupyterlab >=3.0.6,<3.6.0
   run:
     - python
     - {{ pin_compatible('numpy') }}
