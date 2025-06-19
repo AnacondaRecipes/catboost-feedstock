@@ -1,5 +1,5 @@
 {% set name = "catboost" %}
-{% set version = "1.2.3" %}
+{% set version = "1.2.8" %}
 
 package:
   name: {{ name|lower }}
@@ -7,35 +7,23 @@ package:
 
 build:
   number: 0
-  #  Yandex supplies whl files on PyPI for:
-  # - Linux: Python 3.8, 3.9, 3.10, 3.11, 3.12
-  # - OS X: Python 3.8, 3.9, 3.10, 3.11, 3.12
-  # - Win-64: Python 3.8, 3.9, 3.10, 3.11, 3.12
-  # There are issues with python 3.8 on macOS 11.x: https://github.com/conda-forge/python-feedstock/issues/445
-  #  so Conda has issues with tags compatibility with platform tags 'macosx_11_0_...'
-  #  so disable this configuration for now
-  skip: True  # [(osx and x86_64) and py==38]
-  # TODO: support Linux on ppc64le: https://github.com/catboost/catboost/issues/2145 and s390x
-  skip: True  # [ppc64le or s390x]
-  missing_dso_whitelist:         # [linux]
-    - '**/libdl.so.2'            # [linux]
-    - '**/ld-linux-x86-64.so.2'  # [linux]
-    - '**/libc.so.6'             # [linux]
-    - '**/libm.so.6'             # [linux]
-    - '**/librt.so.1'            # [linux]
-    - '**/libpthread.so.0'       # [linux]
+
 requirements:
   build:
+    # needs to suppress Cython needs C compiler error.
+    - {{ compiler('c') }}
+    - cmake
+    - make  # [unix]
     # curl is needed only for downloading whl files in build.sh
-    - curl 7.88.1
+    - curl 8.12.1
   host:
     - python
     - pip
-    - setuptools
+    - setuptools >=64.0
     - wheel
   run:
     - python
-    - numpy >=1.16.0
+    - numpy >=1.16.0,<3.0
     - pandas >=0.24.0
     - scipy
     - six
@@ -48,7 +36,11 @@ requirements:
     - ipywidgets >=7.0,<9.0
 
 test:
-  # imports and pip check are in run_test.py
+  imports:
+    - catboost
+  commands:
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
     - pip
 
@@ -56,7 +48,8 @@ about:
   home: https://catboost.ai
   license: Apache-2.0
   license_family: Apache
-  license_file: LICENSE
+  license_file:
+    - LICENSE
   summary: Gradient boosting on decision trees library
   description: |
     General purpose gradient boosting on decision trees library with categorical features support out of the box.

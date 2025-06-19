@@ -34,6 +34,9 @@ if [ `uname` == Darwin ]; then
     elif [ "$PY_VER" == "3.12" ]; then
         WHL_FILE=catboost-${PKG_VERSION}-cp312-cp312-macosx_${SDK_VER}_universal2.whl
         curl -Lso "$WHL_FILE" https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-macosx_11_0_universal2.whl
+    elif [ "$PY_VER" == "3.13" ]; then
+        WHL_FILE=catboost-${PKG_VERSION}-cp313-cp313-macosx_${SDK_VER}_universal2.whl
+        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-macosx_11_0_universal2.whl
     fi
 fi
 
@@ -56,6 +59,8 @@ if [ `uname` == Linux ]; then
         WHL_FILE=https://pypi.org/packages/cp311/c/catboost/catboost-${PKG_VERSION}-cp311-cp311-manylinux2014_${TARGET_ARCH}.whl
     elif [ "$PY_VER" == "3.12" ]; then
         WHL_FILE=https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-manylinux2014_${TARGET_ARCH}.whl
+    elif [ "$PY_VER" == "3.13" ]; then
+        WHL_FILE=https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-manylinux2014_${TARGET_ARCH}.whl
     fi
 fi
 
