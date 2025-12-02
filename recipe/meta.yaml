@@ -6,20 +6,12 @@ package:
   version: {{ version }}
 
 build:
-  number: 100  # [gpu_variant != "none"]
-  number: 0    # [gpu_variant == "none"]
-  string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ python | replace('.', '') }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [(gpu_variant or "").startswith('cuda')]
-  string: cpu_py{{ python | replace('.', '') }}_h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                 # [gpu_variant == "none"]
-
-  missing_dso_whitelist:                # [(gpu_variant or "").startswith('cuda')]
-    - "**/libcuda.so*"                  # [(gpu_variant or "").startswith('cuda') and linux]
-    - "**/nvcuda.dll"                   # [(gpu_variant or "").startswith('cuda') and win]
+  number: 0
 
 requirements:
   build:
     # needs to suppress Cython needs C compiler error.
     - {{ compiler('c') }}
-    - {{ compiler('cuda') }}            # [(gpu_variant or "").startswith('cuda')]
     - cmake
     - make  # [unix]
     # curl is needed only for downloading whl files in build.sh
@@ -29,9 +21,6 @@ requirements:
     - pip
     - setuptools >=64.0
     - wheel
-    - cuda-version {{ cuda_compiler_version }}        # [(gpu_variant or "").startswith('cuda')]
-    - cuda-cudart-dev {{ cuda_compiler_version }}     # [(gpu_variant or "").startswith('cuda')]
-    - cuda-compat {{ cuda_compiler_version }}         # [(gpu_variant or "").startswith('cuda') and linux]
   run:
     - python
     - numpy >=1.16.0,<3.0
@@ -43,14 +32,11 @@ requirements:
     # python-graphviz avoids the pip check error,
     # and if you want to use 'plot_tree' function.
     - python-graphviz
-
-    # CUDA runtime dependencies
-    - {{ pin_compatible('cuda-version', max_pin='x.x') }} # [(gpu_variant or "").startswith('cuda')]
-    - cuda-version {{ cuda_compiler_version }}            # [(gpu_variant or "").startswith('cuda')]
-    - __cuda                                              # [(gpu_variant or "").startswith('cuda')]
-
   run_constrained:
     - ipywidgets >=7.0,<9.0
+    # GPU support is built into the PyPI wheels (runtime detection).
+    # No separate CUDA variants needed for wheel-based recipes.
+    - cuda-version >=11.0
 
 test:
   imports:
