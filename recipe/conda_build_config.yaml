@@ -1,0 +1,12 @@
+gpu_variant:
+  - none
+  - cuda-12  # [win or (linux and x86_64)]
+
+cuda_compiler_version:
+  - none
+  - 12.4     # [win or (linux and x86_64)]
+
+zip_keys:
+  -
+    - gpu_variant
+    - cuda_compiler_version
