@@ -2,66 +2,137 @@
 
 set -xe
 
-# install using pip from the whl files on PyPI
+# Check if this is a CUDA build or CPU build
+if [[ "${gpu_variant}" == cuda* ]]; then
+    echo "Building CUDA variant from source..."
 
-if [ `uname` == Darwin ]; then  
-    # A workaround for renaming wheel files for osx-64 because the maintainers provides wheels only for MacOS SDK 11.0
-    # but if we replace it with 10.9, it will work on older versions of MacOS without issues.
-    # In our case, it looks like catboost 1.2 only links against libSystem.B using LC_LOAD_DYLIB, which is standard. 
-    # A list of imported symbols tells us that it's not importing anything that wouldn't be found on a standard system 
-    # that's older than OS 11.0. So it certainly looks like this'd work on our systems too.
-    # If you look at the commit history of the file https://github.com/catboost/catboost/blob/master/catboost/app/CMakeLists.darwin-x86_64.txt#LL48C32-L48C35, 
-    # it looks like they were originally targeting 10.15 SDK and OS versions. At some point they chose to target a different SDK (11), 
-    # but they also chose a newer deployment_target (OS version 11).
-    if [ "$target_platform" == "osx-arm64" ]; then
-        SDK_VER="11_0"
-    elif [ "$target_platform" == "osx-64" ]; then
-        SDK_VER="10_9"
-    fi 
-
-    if [ "$PY_VER" == "3.8" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp38-cp38-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-macosx_11_0_universal2.whl
-    elif [ "$PY_VER" == "3.9" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp39-cp39-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp39/c/catboost/catboost-${PKG_VERSION}-cp39-cp39-macosx_11_0_universal2.whl
-    elif [ "$PY_VER" == "3.10" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp310-cp310-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-cp310-macosx_11_0_universal2.whl
-    elif [ "$PY_VER" == "3.11" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp311-cp311-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp311/c/catboost/catboost-${PKG_VERSION}-cp311-cp311-macosx_11_0_universal2.whl
-    elif [ "$PY_VER" == "3.12" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp312-cp312-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-macosx_11_0_universal2.whl
-    elif [ "$PY_VER" == "3.13" ]; then
-        WHL_FILE=catboost-${PKG_VERSION}-cp313-cp313-macosx_${SDK_VER}_universal2.whl
-        curl -Lso "$WHL_FILE" https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-macosx_11_0_universal2.whl
+    # Set up clang as compiler (catboost requirement)
+    if [[ "$target_platform" == "linux-"* ]]; then
+        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${BUILD}-clang++
+        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${BUILD}-clang
+        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${HOST}-clang++
+        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${HOST}-clang
+        export CC=${HOST}-clang
+        export CXX=${HOST}-clang++
+        export CC_FOR_BUILD=${BUILD}-clang
+        export CXX_FOR_BUILD=${BUILD}-clang++
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
     fi
+
+    # Python configuration for CMake
+    Python3_INCLUDE_DIR="$(python -c 'import sysconfig; print(sysconfig.get_path("include"))')"
+    Python3_NumPy_INCLUDE_DIR="$(python -c 'import numpy;print(numpy.get_include())')"
+    CMAKE_ARGS="${CMAKE_ARGS} -DPython3_EXECUTABLE:PATH=${PYTHON}"
+    CMAKE_ARGS="${CMAKE_ARGS} -DPython3_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
+    CMAKE_ARGS="${CMAKE_ARGS} -DPython3_NumPy_INCLUDE_DIR=${Python3_NumPy_INCLUDE_DIR}"
+
+    # CUDA configuration
+    if [[ "$cuda_compiler_version" != "None" ]]; then
+        # Remove older CUDA architectures if not using CUDA 11.8
+        if [[ "$cuda_compiler_version" != "11.8" ]]; then
+            find . -name "CMakeLists*cuda.txt" -type f -print0 | xargs -0 sed -i -z -r "s/-gencode\s*=?arch=compute_35,code=sm_35//g"
+        fi
+
+        # Link with shared version of cudart library instead of static
+        # cudadevrt and culibos are dependencies of libcudart_static.a
+        # When using libcudart.so, it has all the symbols, so replace all three
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudart_static/-lcudart/g"
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
+
+        CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
+    fi
+
+    # Restrict CUDA compilation parallelism
+    cp ci/cmake/cuda.cmake cmake/cuda.cmake
+
+    # Build catboost
+    (
+        mkdir -p cmake_build
+        pushd cmake_build
+
+        mkdir -p bin
+        ln -sf ${BUILD_PREFIX}/bin/{swig,ragel,yasm} bin/
+
+        cmake ${CMAKE_ARGS} \
+            -DCMAKE_POSITION_INDEPENDENT_CODE=On \
+            -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
+            ..
+
+        make -j${CPU_COUNT} _catboost _hnsw
+        popd
+    )
+
+    # Build and install Python wheel
+    cd catboost/python-package/
+
+    export YARN_ENABLE_IMMUTABLE_INSTALLS=false
+    pushd catboost/widget/js/
+        yarn install
+    popd
+
+    $PYTHON setup.py bdist_wheel --with-hnsw --prebuilt-extensions-build-root-dir=${SRC_DIR}/cmake_build -vv
+    $PYTHON -m pip install dist/catboost*.whl
+
+else
+    echo "Building CPU variant from PyPI wheels..."
+
+    # install using pip from the whl files on PyPI
+    if [ `uname` == Darwin ]; then
+        # A workaround for renaming wheel files for osx-64 because the maintainers provides wheels only for MacOS SDK 11.0
+        # but if we replace it with 10.9, it will work on older versions of MacOS without issues.
+        if [ "$target_platform" == "osx-arm64" ]; then
+            SDK_VER="11_0"
+        elif [ "$target_platform" == "osx-64" ]; then
+            SDK_VER="10_9"
+        fi
+
+        if [ "$PY_VER" == "3.8" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp38-cp38-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-macosx_11_0_universal2.whl
+        elif [ "$PY_VER" == "3.9" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp39-cp39-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp39/c/catboost/catboost-${PKG_VERSION}-cp39-cp39-macosx_11_0_universal2.whl
+        elif [ "$PY_VER" == "3.10" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp310-cp310-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-cp310-macosx_11_0_universal2.whl
+        elif [ "$PY_VER" == "3.11" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp311-cp311-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp311/c/catboost/catboost-${PKG_VERSION}-cp311-cp311-macosx_11_0_universal2.whl
+        elif [ "$PY_VER" == "3.12" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp312-cp312-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-macosx_11_0_universal2.whl
+        elif [ "$PY_VER" == "3.13" ]; then
+            WHL_FILE=catboost-${PKG_VERSION}-cp313-cp313-macosx_${SDK_VER}_universal2.whl
+            curl -Lso "$WHL_FILE" https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-macosx_11_0_universal2.whl
+        fi
+    fi
+
+    echo "ARCH: $ARCH ..."
+
+    if [ `uname` == Linux ]; then
+        if [ "$target_platform" == "linux-aarch64" ]; then
+            TARGET_ARCH=aarch64
+        elif [ "$target_platform" == "linux-64" ]; then
+            TARGET_ARCH=x86_64
+        fi
+
+        if [ "$PY_VER" == "3.8" ]; then
+            WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-manylinux2014_${TARGET_ARCH}.whl
+        elif [ "$PY_VER" == "3.9" ]; then
+            WHL_FILE=https://pypi.org/packages/cp39/c/catboost/catboost-${PKG_VERSION}-cp39-cp39-manylinux2014_${TARGET_ARCH}.whl
+        elif [ "$PY_VER" == "3.10" ]; then
+            WHL_FILE=https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-cp310-manylinux2014_${TARGET_ARCH}.whl
+        elif [ "$PY_VER" == "3.11" ]; then
+            WHL_FILE=https://pypi.org/packages/cp311/c/catboost/catboost-${PKG_VERSION}-cp311-cp311-manylinux2014_${TARGET_ARCH}.whl
+        elif [ "$PY_VER" == "3.12" ]; then
+            WHL_FILE=https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-manylinux2014_${TARGET_ARCH}.whl
+        elif [ "$PY_VER" == "3.13" ]; then
+            WHL_FILE=https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-manylinux2014_${TARGET_ARCH}.whl
+        fi
+    fi
+
+    $PYTHON -m pip install --no-deps --no-build-isolation -vvv $WHL_FILE
 fi
-
-echo "ARCH: $ARCH ..."
-
-if [ `uname` == Linux ]; then
-    if [ "$target_platform" == "linux-aarch64" ]; then
-        TARGET_ARCH=aarch64
-    elif [ "$target_platform" == "linux-64" ]; then
-        TARGET_ARCH=x86_64
-    fi
-
-    if [ "$PY_VER" == "3.8" ]; then
-        WHL_FILE=https://pypi.org/packages/cp38/c/catboost/catboost-${PKG_VERSION}-cp38-cp38-manylinux2014_${TARGET_ARCH}.whl
-    elif [ "$PY_VER" == "3.9" ]; then
-        WHL_FILE=https://pypi.org/packages/cp39/c/catboost/catboost-${PKG_VERSION}-cp39-cp39-manylinux2014_${TARGET_ARCH}.whl
-    elif [ "$PY_VER" == "3.10" ]; then
-        WHL_FILE=https://pypi.org/packages/cp310/c/catboost/catboost-${PKG_VERSION}-cp310-cp310-manylinux2014_${TARGET_ARCH}.whl
-    elif [ "$PY_VER" == "3.11" ]; then
-        WHL_FILE=https://pypi.org/packages/cp311/c/catboost/catboost-${PKG_VERSION}-cp311-cp311-manylinux2014_${TARGET_ARCH}.whl
-    elif [ "$PY_VER" == "3.12" ]; then
-        WHL_FILE=https://pypi.org/packages/cp312/c/catboost/catboost-${PKG_VERSION}-cp312-cp312-manylinux2014_${TARGET_ARCH}.whl
-    elif [ "$PY_VER" == "3.13" ]; then
-        WHL_FILE=https://pypi.org/packages/cp313/c/catboost/catboost-${PKG_VERSION}-cp313-cp313-manylinux2014_${TARGET_ARCH}.whl
-    fi
-fi
-
-$PYTHON -m pip install --no-deps --no-build-isolation -vvv $WHL_FILE

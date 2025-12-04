@@ -1,3 +1,7 @@
+@REM Windows builds use PyPI wheels which already contain bundled CUDA support
+@REM CUDA variant builds are skipped on Windows (see meta.yaml skip conditions)
+@REM The gpu_variant will always be "none" on Windows
+
 IF "%PY_VER%"=="3.8" (
 	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp38/c/catboost/catboost-%PKG_VERSION%-cp38-cp38-win_amd64.whl
 )
