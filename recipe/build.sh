@@ -20,9 +20,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         # Use GCC for CUDA host compilation (conda-forge clang defaults to libc++ which CUDA rejects)
         # The main build uses clang but nvcc needs GCC as host compiler
         export NVCC_PREPEND_FLAGS="-ccbin=${GCC}"
-        export CUDAFLAGS=""
-        export CXXFLAGS="${CXXFLAGS:-} -stdlib=libstdc++"
-        export LDFLAGS="${LDFLAGS:-} -stdlib=libstdc++"
+        # Don't add -stdlib=libstdc++ to CXXFLAGS - it's clang-specific and gets passed to GCC for CUDA
+        # Clang will use libstdc++ anyway since we're linking against GCC-compiled CUDA objects
     fi
 
     # Python configuration for CMake
@@ -60,11 +59,15 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         mkdir -p bin
         ln -sf ${BUILD_PREFIX}/bin/{swig,ragel,yasm} bin/
 
+        # Filter out clang-specific flags from CXXFLAGS for cmake (they break GCC CUDA compilation)
+        FILTERED_CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-stdlib=libstdc++//g; s/-fcolor-diagnostics//g; s/-fdebug-default-version=[0-9]*//g; s/-fuse-init-array//g; s/-Wimport-preprocessor-directive-pedantic//g')
+
         cmake ${CMAKE_ARGS} \
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
             -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CUDA_HOST_COMPILER=${GCC} \
+            -DCMAKE_CUDA_FLAGS="-O2 -fPIC" \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
 
