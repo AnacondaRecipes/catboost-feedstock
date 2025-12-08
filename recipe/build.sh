@@ -43,9 +43,15 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     # -fdebug-default-version: Clang specific
     # -fcolor-diagnostics: Clang specific
     # -Wimport-preprocessor-directive-pedantic: Clang specific
-    export CFLAGS=$(echo "$CFLAGS" | sed 's/-fuse-init-array//g; s/-fdebug-default-version=[0-9]*//g; s/-fcolor-diagnostics//g; s/-Wimport-preprocessor-directive-pedantic//g')
-    export CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-fuse-init-array//g; s/-fdebug-default-version=[0-9]*//g; s/-fcolor-diagnostics//g; s/-Wimport-preprocessor-directive-pedantic//g; s/-stdlib=libstdc++//g')
-
+    # -faligned-allocation: C++17 feature that might conflict or be implicit
+    for flag in "-fuse-init-array" "-fdebug-default-version=[0-9]*" "-fcolor-diagnostics" "-Wimport-preprocessor-directive-pedantic" "-faligned-allocation"; do
+        export CFLAGS=$(echo "$CFLAGS" | sed "s/$flag//g")
+        export CXXFLAGS=$(echo "$CXXFLAGS" | sed "s/$flag//g")
+        export CPPFLAGS=$(echo "$CPPFLAGS" | sed "s/$flag//g")
+        export DEBUG_CFLAGS=$(echo "$DEBUG_CFLAGS" | sed "s/$flag//g")
+        export DEBUG_CXXFLAGS=$(echo "$DEBUG_CXXFLAGS" | sed "s/$flag//g")
+    done
+    
     # Build catboost
     (
         mkdir -p cmake_build
