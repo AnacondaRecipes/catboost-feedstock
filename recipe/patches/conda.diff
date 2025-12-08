@@ -187,37 +187,21 @@ diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt b/contrib/libs/cxx
 index a660fcaeda..871123ae20 100644
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
 +++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
-@@ -12,7 +12,12 @@
+@@ -12,7 +12,7 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
  
 -add_subdirectory(libcxx)
-+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
-+    add_subdirectory(libcxxcuda11)
-+else ()
-+    add_subdirectory(libcxx)
-+endif()
-+
++# add_subdirectory(libcxx)
  add_subdirectory(libcxxabi-parts)
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
-@@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+@@ -22,6 +22,5 @@ add_library(contrib-libs-cxxsupp INTERFACE)
  
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
  )
- 
-+if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
-+    target_link_libraries(contrib-libs-cxxsupp INTERFACE
-+      libs-cxxsupp-libcxxcuda11
-+    )
-+else ()
-+    target_link_libraries(contrib-libs-cxxsupp INTERFACE
-+      libs-cxxsupp-libcxx
-+    )
-+endif()
-+
 +
 diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
 index fd3c4bf84f..fd7ce4608d 100644
