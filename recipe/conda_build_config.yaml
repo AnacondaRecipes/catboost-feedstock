@@ -1,6 +1,12 @@
 # CatBoost CUDA variant configuration
 # Based on patterns from llama.cpp-feedstock and whisper.cpp-feedstock
 
+# Python versions (avoid 3.13 due to openssl conflicts in CUDA builds)
+python:
+  - 3.10
+  - 3.11
+  - 3.12
+
 # GPU acceleration variants
 # - none: CPU-only build (downloads PyPI wheels)
 # - cuda-12: CUDA-enabled build (builds from source)
