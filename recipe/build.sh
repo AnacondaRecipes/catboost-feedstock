@@ -51,6 +51,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CUDA_HOST_COMPILER=${GCC} \
             -DCMAKE_CUDA_FLAGS="-O2 -fPIC" \
+            -DCMAKE_C_FLAGS="${CFLAGS}" \
+            -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+            -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
+            -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS}" \
+            -DTHREADS_PREFER_PTHREAD_FLAG=ON \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
 
