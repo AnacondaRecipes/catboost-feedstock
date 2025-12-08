@@ -59,8 +59,10 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         mkdir -p bin
         ln -sf ${BUILD_PREFIX}/bin/{swig,ragel,yasm} bin/
 
-        # Filter out clang-specific flags from CXXFLAGS for cmake (they break GCC CUDA compilation)
-        FILTERED_CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-stdlib=libstdc++//g; s/-fcolor-diagnostics//g; s/-fdebug-default-version=[0-9]*//g; s/-fuse-init-array//g; s/-Wimport-preprocessor-directive-pedantic//g')
+        # Filter out clang-specific flags from CXXFLAGS/CFLAGS (they break GCC CUDA compilation)
+        # These flags get propagated to CMAKE_CXX_FLAGS -> CUDA host compiler
+        export CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-fcolor-diagnostics//g; s/-fdebug-default-version=[0-9]*//g; s/-fuse-init-array//g; s/-Wimport-preprocessor-directive-pedantic//g; s/-stdlib=libstdc++//g')
+        export CFLAGS=$(echo "$CFLAGS" | sed 's/-fcolor-diagnostics//g; s/-fdebug-default-version=[0-9]*//g; s/-fuse-init-array//g; s/-Wimport-preprocessor-directive-pedantic//g')
 
         cmake ${CMAKE_ARGS} \
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
