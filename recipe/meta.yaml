@@ -24,8 +24,6 @@ build:
   # Skip unsupported configurations
   # ppc64le: not supported by catboost
   skip: true  # [ppc64le]
-  # Windows: Use PyPI wheels only (already contain CUDA support)
-  skip: true  # [win and (gpu_variant or "").startswith('cuda')]
   # aarch64: CUDA not supported for this architecture
   skip: true  # [linux and aarch64 and (gpu_variant or "").startswith('cuda')]
 
@@ -40,6 +38,7 @@ build:
   # Allow missing CUDA runtime libraries (provided by NVIDIA driver)
   missing_dso_whitelist:                # [(gpu_variant or "").startswith('cuda')]
     - "**/libcuda.so*"                  # [(gpu_variant or "").startswith('cuda')]
+    - "**/nvcuda.dll"                   # [(gpu_variant or "").startswith('cuda')]
 
 requirements:
   build:
@@ -47,16 +46,17 @@ requirements:
     - {{ compiler('c') }}
     - {{ stdlib('c') }}                 # [unix]
     - cmake >=3.24                      # [(gpu_variant or "").startswith('cuda')]
-    - make                              # [(gpu_variant or "").startswith('cuda')]
+    - make                              # [unix and (gpu_variant or "").startswith('cuda')]
+    - ninja-base                        # [win and (gpu_variant or "").startswith('cuda')]
     # curl is needed for downloading whl files in build.sh (CPU builds)
     - curl 8.12.1                       # [gpu_variant == "none"]
 
     # CUDA build requirements (source build)
     - {{ compiler('cxx') }}             # [(gpu_variant or "").startswith('cuda')]
     - {{ compiler('cuda') }}            # [(gpu_variant or "").startswith('cuda')]
-    # Use clang for CUDA builds (catboost requirement)
+    # Use clang for CUDA builds on Linux (catboost requirement)
     - clangxx >=15,<16                  # [linux and (gpu_variant or "").startswith('cuda')]
-    - lld >=7                           # [(gpu_variant or "").startswith('cuda')]
+    - lld >=7                           # [unix and (gpu_variant or "").startswith('cuda')]
     - ragel >=6.10                      # [(gpu_variant or "").startswith('cuda')]
     - yasm >=1.3.0                      # [(gpu_variant or "").startswith('cuda')]
     - swig >=4.0.2                      # [(gpu_variant or "").startswith('cuda')]
@@ -74,7 +74,7 @@ requirements:
     - openssl                                                         # [(gpu_variant or "").startswith('cuda')]
     - jupyterlab 3.0.6.*                                              # [(gpu_variant or "").startswith('cuda')]
     - cuda-version {{ cuda_compiler_version }}                        # [(gpu_variant or "").startswith('cuda')]
-    - cuda-driver-dev                                                 # [(gpu_variant or "").startswith('cuda')]
+    - cuda-driver-dev                                                 # [linux and (gpu_variant or "").startswith('cuda')]
     - cuda-cudart-dev                                                 # [(gpu_variant or "").startswith('cuda')]
 
   run:
