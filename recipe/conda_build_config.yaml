@@ -7,6 +7,21 @@ python:
   - 3.11
   - 3.12
 
+# C stdlib configuration (required for compiler resolution)
+c_stdlib:
+  - sysroot                        # [linux]
+  - macosx_deployment_target       # [osx]
+
+c_stdlib_version:
+  - 2.28                           # [linux]
+  - 12.1                           # [osx]
+  - 2022.14                        # [win]
+
+c_compiler:                        # [win]
+  - vs2019                         # [win]
+cxx_compiler:                      # [win]
+  - vs2019                         # [win]
+
 # GPU acceleration variants
 # - none: CPU-only build (downloads PyPI wheels)
 # - cuda-12: CUDA-enabled build (builds from source)
