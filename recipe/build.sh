@@ -38,6 +38,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     # Restrict CUDA compilation parallelism
     cp ci/cmake/cuda.cmake cmake/cuda.cmake
 
+    # Filter out flags that might be present in conda's activation scripts but are harmful to GCC/NVCC
+    # -fuse-init-array: Clang specific (mostly)
+    # -fdebug-default-version: Clang specific
+    # -fcolor-diagnostics: Clang specific
+    # -Wimport-preprocessor-directive-pedantic: Clang specific
+    export CFLAGS=$(echo "$CFLAGS" | sed 's/-fuse-init-array//g; s/-fdebug-default-version=[0-9]*//g; s/-fcolor-diagnostics//g; s/-Wimport-preprocessor-directive-pedantic//g')
+    export CXXFLAGS=$(echo "$CXXFLAGS" | sed 's/-fuse-init-array//g; s/-fdebug-default-version=[0-9]*//g; s/-fcolor-diagnostics//g; s/-Wimport-preprocessor-directive-pedantic//g; s/-stdlib=libstdc++//g')
+
     # Build catboost
     (
         mkdir -p cmake_build
