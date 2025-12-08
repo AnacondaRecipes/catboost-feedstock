@@ -17,6 +17,10 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CC_FOR_BUILD=${BUILD}-clang
         export CXX_FOR_BUILD=${BUILD}-clang++
         export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+
+        # CUDA requires libstdc++ (not libc++) - tell clang to use GNU's stdlib
+        export CXXFLAGS="${CXXFLAGS:-} -stdlib=libstdc++"
+        export LDFLAGS="${LDFLAGS:-} -stdlib=libstdc++"
     fi
 
     # Python configuration for CMake
