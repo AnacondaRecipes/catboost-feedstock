@@ -18,6 +18,13 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_NumPy_INCLUDE_DIR=${Python3_NumPy_INCLUDE_DIR}"
 
+    echo "=== Initial Environment Flags ==="
+    echo "CFLAGS=$CFLAGS"
+    echo "CXXFLAGS=$CXXFLAGS"
+    echo "CPPFLAGS=$CPPFLAGS"
+    echo "LDFLAGS=$LDFLAGS"
+    echo "================================="
+
     # CUDA configuration
     if [[ "$cuda_compiler_version" != "None" ]]; then
         # Remove older CUDA architectures if not using CUDA 11.8
@@ -52,6 +59,12 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export DEBUG_CXXFLAGS=$(echo "$DEBUG_CXXFLAGS" | sed "s/$flag//g")
     done
     
+    echo "=== Processed Environment Flags ==="
+    echo "CFLAGS=$CFLAGS"
+    echo "CXXFLAGS=$CXXFLAGS"
+    echo "CPPFLAGS=$CPPFLAGS"
+    echo "==================================="
+
     # Build catboost
     (
         mkdir -p cmake_build
@@ -72,10 +85,15 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DTHREADS_PREFER_PTHREAD_FLAG=ON \
             -DCMAKE_THREAD_LIBS_INIT="-lpthread" \
             -DCMAKE_USE_PTHREADS_INIT=ON \
+            -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
 
-        make -j${CPU_COUNT} _catboost _hnsw
+        echo "=== CMake Cache Flags ==="
+        grep "_FLAGS" CMakeCache.txt || true
+        echo "========================="
+
+        make -j${CPU_COUNT} VERBOSE=1 _catboost _hnsw
         popd
     )
 
