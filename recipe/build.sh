@@ -56,6 +56,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
             -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS}" \
             -DTHREADS_PREFER_PTHREAD_FLAG=ON \
+            -DCMAKE_THREAD_LIBS_INIT="-lpthread" \
+            -DCMAKE_USE_PTHREADS_INIT=ON \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
 
