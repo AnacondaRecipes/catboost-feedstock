@@ -72,9 +72,8 @@ requirements:
     - cython ~=3.0.10                                                 # [(gpu_variant or "").startswith('cuda')]
     - numpy                                                           # [(gpu_variant or "").startswith('cuda')]
     - openssl                                                         # [(gpu_variant or "").startswith('cuda')]
-    - jupyterlab 3.0.6.*                                              # [(gpu_variant or "").startswith('cuda')]
+    - jupyterlab >=3.0                                                # [(gpu_variant or "").startswith('cuda')]
     - cuda-version {{ cuda_compiler_version }}                        # [(gpu_variant or "").startswith('cuda')]
-    - cuda-driver-dev                                                 # [linux and (gpu_variant or "").startswith('cuda')]
     - cuda-cudart-dev                                                 # [(gpu_variant or "").startswith('cuda')]
 
   run:
