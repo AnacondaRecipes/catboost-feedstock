@@ -65,11 +65,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     echo "CPPFLAGS=$CPPFLAGS"
     echo "==================================="
 
-    # recursively remove clang-specific flags from all CMakeLists.txt files
+    # recursively remove clang-specific flags from all CMakeLists.txt and .cmake files
     # This is necessary because CatBoost's internal build system (ya make -> cmake)
     # seems to hardcode these flags for Linux x86_64, assuming Clang.
-    echo "Removing Clang-specific flags from CMakeLists.txt files..."
-    find . -name "CMakeLists.txt" -type f -print0 | xargs -0 sed -i \
+    echo "Removing Clang-specific flags from CMake files..."
+    find . -type f \( -name "CMakeLists.txt" -o -name "*.cmake" -o -name "*.toolchain" \) -print0 | xargs -0 sed -i \
         -e 's/-fcolor-diagnostics//g' \
         -e 's/-faligned-allocation//g' \
         -e 's/-fdebug-default-version=4//g' \
