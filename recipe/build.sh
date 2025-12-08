@@ -17,9 +17,10 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CC_FOR_BUILD=${BUILD}-clang
         export CXX_FOR_BUILD=${BUILD}-clang++
 
-        # CUDA requires libstdc++ (not libc++) - pass to nvcc's host compiler via -Xcompiler
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler -stdlib=libstdc++"
-        export CUDAFLAGS="-Xcompiler -stdlib=libstdc++"
+        # Use GCC for CUDA host compilation (conda-forge clang defaults to libc++ which CUDA rejects)
+        # The main build uses clang but nvcc needs GCC as host compiler
+        export NVCC_PREPEND_FLAGS="-ccbin=${GCC}"
+        export CUDAFLAGS=""
         export CXXFLAGS="${CXXFLAGS:-} -stdlib=libstdc++"
         export LDFLAGS="${LDFLAGS:-} -stdlib=libstdc++"
     fi
@@ -63,7 +64,7 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
             -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CUDA_FLAGS="-Xcompiler -stdlib=libstdc++" \
+            -DCMAKE_CUDA_HOST_COMPILER=${GCC} \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
 
