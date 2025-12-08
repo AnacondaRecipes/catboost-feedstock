@@ -76,7 +76,6 @@ requirements:
     - cuda-version {{ cuda_compiler_version }}                        # [(gpu_variant or "").startswith('cuda')]
     - cuda-driver-dev                                                 # [(gpu_variant or "").startswith('cuda')]
     - cuda-cudart-dev                                                 # [(gpu_variant or "").startswith('cuda')]
-    - cuda-compat {{ cuda_compiler_version }}                         # [(gpu_variant or "").startswith('cuda') and linux]
 
   run:
     - python

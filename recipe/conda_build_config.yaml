@@ -18,11 +18,6 @@ cuda_compiler_version:         # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_
 cuda_compiler:                 # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
   - cuda-nvcc                  # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
 
-# cuDNN version paired with CUDA
-cudnn:                         # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  - none                       # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  - 9                          # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-
 # Zip gpu_variant with cuda_compiler_version to ensure they're built together
 # This ensures that cuda-12 variant gets cuda_compiler_version=12.0
 # and none variant gets cuda_compiler_version=none
@@ -30,4 +25,3 @@ zip_keys:                      # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_
   -                            # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
     - gpu_variant              # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
     - cuda_compiler_version    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-    - cudnn                    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
