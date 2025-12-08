@@ -54,8 +54,6 @@ requirements:
     # CUDA build requirements (source build)
     - {{ compiler('cxx') }}             # [(gpu_variant or "").startswith('cuda')]
     - {{ compiler('cuda') }}            # [(gpu_variant or "").startswith('cuda')]
-    # Use clang for CUDA builds on Linux (catboost requirement)
-    - clangxx >=15,<16                  # [linux and (gpu_variant or "").startswith('cuda')]
     - lld >=7                           # [unix and (gpu_variant or "").startswith('cuda')]
     - ragel >=6.10                      # [(gpu_variant or "").startswith('cuda')]
     - yasm >=1.3.0                      # [(gpu_variant or "").startswith('cuda')]
