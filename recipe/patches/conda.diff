@@ -201,8 +201,7 @@ index a660fcaeda..871123ae20 100644
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
- )
-+
+ )+
 diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
 index fd3c4bf84f..fd7ce4608d 100644
 --- a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
