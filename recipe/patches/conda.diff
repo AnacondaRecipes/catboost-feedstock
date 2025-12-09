@@ -193,10 +193,12 @@ index a660fcaeda..871123ae20 100644
  
 -add_subdirectory(libcxx)
 -add_subdirectory(libcxxabi-parts)
+-add_subdirectory(libcxxrt)
+-add_subdirectory(builtins)
 +# add_subdirectory(libcxx)
 +# add_subdirectory(libcxxabi-parts)
- add_subdirectory(libcxxrt)
- add_subdirectory(builtins)
++# add_subdirectory(libcxxrt)
++# add_subdirectory(builtins)
  
  add_library(contrib-libs-cxxsupp INTERFACE)
  
