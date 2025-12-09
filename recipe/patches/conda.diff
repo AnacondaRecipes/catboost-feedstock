@@ -187,17 +187,21 @@ diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt b/contrib/libs/cxx
 index a660fcaeda..871123ae20 100644
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
 +++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
-@@ -12,7 +12,7 @@
+@@ -12,10 +12,10 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
- 
+
 -add_subdirectory(libcxx)
+-add_subdirectory(libcxxabi-parts)
++# Disable bundled libc++ and libcxxabi for GCC builds (they are Clang-specific)
 +# add_subdirectory(libcxx)
- add_subdirectory(libcxxabi-parts)
++# add_subdirectory(libcxxabi-parts)
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
-@@ -22,6 +22,5 @@ add_library(contrib-libs-cxxsupp INTERFACE)
- 
+
+ add_library(contrib-libs-cxxsupp INTERFACE)
+@@ -23,5 +23,4 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
