@@ -18,6 +18,7 @@ source:
   patches:  # [(gpu_variant or "").startswith('cuda')]
     - patches/conda.diff  # [(gpu_variant or "").startswith('cuda')]
     - patches/disable-libcxxabi-parts-cuda.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/disable-bfloat16-builtins-x86_64-cuda.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}

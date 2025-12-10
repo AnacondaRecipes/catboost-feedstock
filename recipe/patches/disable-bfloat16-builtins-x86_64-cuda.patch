@@ -1,0 +1,15 @@
+diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-x86_64-cuda.txt
+--- a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-x86_64-cuda.txt
++++ b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-x86_64-cuda.txt
+@@ -24,11 +24,6 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
+ )
+
+ target_sources(libs-cxxsupp-builtins PRIVATE
+-  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/extendbfsf2.c
+-  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncdfbf2.c
+-  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncxfbf2.c
+-  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncsfbf2.c
+-  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/trunctfbf2.c
+   ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/absvdi2.c
+   ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/absvsi2.c
+   ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/absvti2.c
