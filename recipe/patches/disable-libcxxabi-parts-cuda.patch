@@ -1,7 +1,7 @@
 diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 +++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-@@ -12,17 +12,22 @@
+@@ -12,16 +12,22 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
  
