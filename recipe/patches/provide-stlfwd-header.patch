@@ -2,7 +2,7 @@ diff --git a/contrib/libs/cxxsupp/stlfwd_compat/stlfwd b/contrib/libs/cxxsupp/st
 new file mode 100644
 --- /dev/null
 +++ b/contrib/libs/cxxsupp/stlfwd_compat/stlfwd
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,45 @@
 +#pragma once
 +
 +// Minimal stlfwd header compatible with GCC/libstdc++
