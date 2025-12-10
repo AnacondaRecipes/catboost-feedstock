@@ -76,6 +76,16 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         -e 's/-fuse-init-array//g' \
         -e 's/-Wimport-preprocessor-directive-pedantic//g'
 
+    # Disable vendored libc++ for CUDA builds on Linux (since we removed the patch)
+    if [[ "$target_platform" == "linux-"* ]]; then
+        echo "Disabling vendored libc++ in CMakeLists.linux-x86_64-cuda.txt..."
+        sed -i 's/add_subdirectory(libcxxcuda11)/# add_subdirectory(libcxxcuda11)/g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+        sed -i 's/add_subdirectory(libcxxabi-parts)/# add_subdirectory(libcxxabi-parts)/g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+        sed -i 's/add_subdirectory(libcxxrt)/# add_subdirectory(libcxxrt)/g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+        sed -i 's/add_subdirectory(builtins)/# add_subdirectory(builtins)/g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+        sed -i 's/libs-cxxsupp-libcxxcuda11//g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+    fi
+
     # Build catboost
     (
         mkdir -p cmake_build
