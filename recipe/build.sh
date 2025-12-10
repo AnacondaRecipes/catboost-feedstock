@@ -6,6 +6,17 @@ set -xe
 if [[ "${gpu_variant}" == cuda* ]]; then
     echo "Building CUDA variant from source..."
 
+    # Debug: Show patched CMakeLists files to verify patches applied correctly
+    echo "=== DEBUG: Verifying patches applied correctly ==="
+    echo "--- contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt ---"
+    if [[ -f "contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt" ]]; then
+        cat contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+    else
+        echo "WARNING: File not found!"
+    fi
+    echo "--- End of CMakeLists.linux-x86_64-cuda.txt ---"
+    echo ""
+
     if [[ "$target_platform" == "linux-"* ]]; then
         # Use GCC for CUDA host compilation
         export NVCC_PREPEND_FLAGS="-ccbin=${GCC}"
