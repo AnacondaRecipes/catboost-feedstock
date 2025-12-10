@@ -1,0 +1,13 @@
+diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+--- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
++++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+@@ -12,7 +12,8 @@
+ # Please refer to the build instructions in the repository for more information about manual
+ # changes in this file.
+
+ add_subdirectory(libcxxcuda11)
+-add_subdirectory(libcxxabi-parts)
++# Disabled: libcxxabi-parts uses bundled libc++ headers incompatible with GCC
++# add_subdirectory(libcxxabi-parts)
+ add_subdirectory(libcxxrt)
+ add_subdirectory(builtins)
