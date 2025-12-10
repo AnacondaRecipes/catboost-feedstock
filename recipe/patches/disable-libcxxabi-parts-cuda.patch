@@ -1,7 +1,7 @@
 diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 +++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-@@ -12,16 +12,22 @@
+@@ -12,16 +12,21 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
  
@@ -16,10 +16,9 @@ diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/lib
  add_library(contrib-libs-cxxsupp INTERFACE)
  
  
-+# Add include directories from disabled libraries (needed for stlfwd, etc.)
++# Add include directory for stlfwd compatibility header (GCC-compatible replacement)
 +target_include_directories(contrib-libs-cxxsupp INTERFACE
-+  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/libcxxcuda11/include
-+  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/libcxxrt/include
++  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/stlfwd_compat
 +)
 +
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
