@@ -1,48 +1,24 @@
+diff --git a/contrib/libs/cxxsupp/stlfwd_compat/stlfwd b/contrib/libs/cxxsupp/stlfwd_compat/stlfwd
+new file mode 100644
 --- /dev/null
-+++ contrib/libs/cxxsupp/stlfwd_compat/stlfwd
-@@ -0,0 +1,45 @@
++++ b/contrib/libs/cxxsupp/stlfwd_compat/stlfwd
+@@ -0,0 +1,19 @@
 +#pragma once
 +
-+// Minimal stlfwd header compatible with GCC/libstdc++
-+// Forward declarations for standard library types
++// GCC/libstdc++ compatible stlfwd header
++// Unlike libc++, libstdc++ doesn't have a dedicated forward declarations header.
++// We include the necessary standard headers to get the required type definitions.
 +
++// Core type definitions needed by catboost's util/generic/fwd.h
 +#include <cstddef>
++#include <memory>      // std::allocator - required for default template args
++#include <functional>  // std::function, std::hash
++#include <utility>     // std::pair
++#include <tuple>       // std::tuple
++#include <string>      // std::basic_string, std::char_traits
++#include <string_view> // std::basic_string_view
 +
-+namespace std {
-+
-+// Pair
-+template <class T1, class T2> struct pair;
-+
-+// Array
-+template <class T, size_t N> class array;
-+
-+// Sequence containers
-+template <class T, class Allocator> class vector;
-+template <class T, class Allocator> class list;
-+template <class T, class Allocator> class deque;
-+
-+// Associative containers
-+template <class Key, class Compare, class Allocator> class set;
-+template <class Key, class Compare, class Allocator> class multiset;
-+template <class Key, class T, class Compare, class Allocator> class map;
-+template <class Key, class T, class Compare, class Allocator> class multimap;
-+
-+// Tuple
-+template <class... Types> class tuple;
-+
-+// Smart pointers
-+template <class T> struct default_delete;
-+template <class T, class Deleter> class unique_ptr;
-+template <class T> class shared_ptr;
-+
-+// Function
-+template <class> class function;
-+
-+// String view
-+template <class CharT, class Traits> class basic_string_view;
-+
-+}  // namespace std
-+
-+namespace std { namespace filesystem {
-+class path;
-+}}  // namespace std::filesystem
++// Filesystem (C++17)
++#if __cplusplus >= 201703L
++#include <filesystem>  // std::filesystem::path
++#endif
