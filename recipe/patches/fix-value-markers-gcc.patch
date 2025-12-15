@@ -1,0 +1,12 @@
+--- a/library/cpp/containers/flat_hash/lib/value_markers.h
++++ b/library/cpp/containers/flat_hash/lib/value_markers.h
+@@ -123,7 +123,9 @@ private:
+     T Value_;
+ };
+
++#ifndef __GNUC__
+ static_assert(NConcepts::ValueMarkerV<TEqValueMarker<int, int>>);
++#endif
+
+ }  // namespace NMap
+
