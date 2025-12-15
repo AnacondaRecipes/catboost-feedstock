@@ -23,6 +23,10 @@ source:
     - patches/fix-value-markers-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-size-fitter-include.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-expanders-include.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-probings-include.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-size-fitters-include.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-iterator-include.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-containers-include.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
