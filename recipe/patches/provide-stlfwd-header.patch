@@ -1,6 +1,6 @@
 --- /dev/null
 +++ contrib/libs/cxxsupp/stlfwd_compat/stlfwd
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,31 @@
 +#pragma once
 +
 +// GCC/libstdc++ compatible stlfwd header
