@@ -1,6 +1,6 @@
 --- /dev/null
 +++ contrib/libs/cxxsupp/stlfwd_compat/stlfwd
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,26 @@
 +#pragma once
 +
 +// GCC/libstdc++ compatible stlfwd header
@@ -15,6 +15,13 @@
 +#include <tuple>       // std::tuple
 +#include <string>      // std::basic_string, std::char_traits
 +#include <string_view> // std::basic_string_view
++
++// Container types needed by catboost's util/ysaveload.h
++#include <list>        // std::list
++#include <deque>       // std::deque
++#include <map>         // std::map, std::multimap
++#include <set>         // std::set
++#include <vector>      // std::vector
 +
 +// Filesystem (C++17)
 +#if __cplusplus >= 201703L
