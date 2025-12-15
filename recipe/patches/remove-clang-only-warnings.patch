@@ -1,7 +1,6 @@
 --- a/library/cpp/yt/assert/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/assert/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-assert)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-assert PRIVATE
 -  -Wdeprecated-this-capture
@@ -10,8 +9,7 @@
  
 --- a/library/cpp/yt/coding/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/coding/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-coding)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-coding PRIVATE
 -  -Wdeprecated-this-capture
@@ -20,8 +18,7 @@
  
 --- a/library/cpp/yt/compact_containers/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/compact_containers/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-compact_containers)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-compact_containers PRIVATE
 -  -Wdeprecated-this-capture
@@ -30,8 +27,7 @@
  
 --- a/library/cpp/yt/exception/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/exception/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-exception)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-exception PRIVATE
 -  -Wdeprecated-this-capture
@@ -40,8 +36,7 @@
  
 --- a/library/cpp/yt/malloc/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/malloc/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-malloc)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-malloc PRIVATE
 -  -Wdeprecated-this-capture
@@ -50,8 +45,7 @@
  
 --- a/library/cpp/yt/memory/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/memory/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-memory)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-memory PRIVATE
 -  -Wdeprecated-this-capture
@@ -60,8 +54,7 @@
  
 --- a/library/cpp/yt/misc/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/misc/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-misc)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-misc PRIVATE
 -  -Wdeprecated-this-capture
@@ -70,8 +63,7 @@
  
 --- a/library/cpp/yt/string/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/string/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-string)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-string PRIVATE
 -  -Wdeprecated-this-capture
@@ -80,8 +72,7 @@
  
 --- a/library/cpp/yt/system/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/system/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-system)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-system PRIVATE
 -  -Wdeprecated-this-capture
@@ -90,8 +81,7 @@
  
 --- a/library/cpp/yt/yson/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/yson/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-yson)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-yson PRIVATE
 -  -Wdeprecated-this-capture
@@ -100,8 +90,7 @@
  
 --- a/library/cpp/yt/yson_string/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/yt/yson_string/CMakeLists.linux-x86_64-cuda.txt
-@@ -16,7 +16,6 @@ add_library(cpp-yt-yson_string)
- 
+@@ -16,7 +16,6 @@
  
  target_compile_options(cpp-yt-yson_string PRIVATE
 -  -Wdeprecated-this-capture
