@@ -1,7 +1,7 @@
 diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 +++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-@@ -12,15 +12,24 @@
+@@ -12,16 +12,21 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
  
@@ -20,10 +20,6 @@ diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/lib
 +target_include_directories(contrib-libs-cxxsupp INTERFACE
 +  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/stlfwd_compat
 +)
-+
-+# GCC/libstdc++ compatibility: force include cstddef globally to ensure size_t is available
-+# (libc++ headers provide this implicitly, but libstdc++ does not)
-+add_compile_options(-include cstddef)
 +
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
