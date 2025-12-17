@@ -1,15 +1,10 @@
-diff --git a/library/cpp/tokenizer/CMakeLists.linux-x86_64-cuda.txt b/library/cpp/tokenizer/CMakeLists.linux-x86_64-cuda.txt
 --- a/library/cpp/tokenizer/CMakeLists.linux-x86_64-cuda.txt
 +++ b/library/cpp/tokenizer/CMakeLists.linux-x86_64-cuda.txt
-@@ -105,10 +105,9 @@ target_sources(library-cpp-tokenizer PRIVATE
- )
-
+@@ -109,7 +109,6 @@
+ 
  if(NOT CMAKE_CROSSCOMPILING)
-+  # triecompiler removed: uses vector<bool> in ways incompatible with libstdc++
    add_dependencies(library-cpp-tokenizer
 -    triecompiler
      archiver
    )
  endif()
--
- vcs_info(library-cpp-tokenizer)
