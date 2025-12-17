@@ -34,6 +34,7 @@ source:
     - patches/fix-error-attributes-static-assert.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-shared-range-new-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-nodefaultlibs-add-libc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-token-structure-iterator.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
