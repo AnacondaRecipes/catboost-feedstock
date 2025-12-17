@@ -1,0 +1,12 @@
+diff --git a/tools/CMakeLists.linux-x86_64-cuda.txt b/tools/CMakeLists.linux-x86_64-cuda.txt
+--- a/tools/CMakeLists.linux-x86_64-cuda.txt
++++ b/tools/CMakeLists.linux-x86_64-cuda.txt
+@@ -13,6 +13,7 @@
+ # changes in this file.
+ 
+ add_subdirectory(enum_parser)
+-add_subdirectory(triecompiler)
++# Disabled: triecompiler uses vector<bool> in ways incompatible with libstdc++
++# add_subdirectory(triecompiler)
+ add_subdirectory(archiver)
+ add_subdirectory(rescompiler)
