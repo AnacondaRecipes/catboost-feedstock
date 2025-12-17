@@ -1,0 +1,11 @@
+--- a/cmake/global_flags.linker.gnu.cmake
++++ b/cmake/global_flags.linker.gnu.cmake
+@@ -18,6 +18,8 @@ if (ANDROID)
+   endif()
+ elseif (CMAKE_SYSTEM_NAME MATCHES "^(Darwin|Linux)$")
+   add_link_options("-nodefaultlibs")
++  # When using -nodefaultlibs, we need to explicitly link libc
++  link_libraries(c)
+ endif()
+
+ if (APPLE)
