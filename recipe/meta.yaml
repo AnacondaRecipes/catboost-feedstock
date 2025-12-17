@@ -32,6 +32,7 @@ source:
     - patches/fix-tokenizer-triecompiler-dep.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-type-erasure-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-error-attributes-static-assert.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-shared-range-new-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}

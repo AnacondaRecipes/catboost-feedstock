@@ -1,0 +1,32 @@
+--- a/library/cpp/yt/memory/shared_range.h
++++ b/library/cpp/yt/memory/shared_range.h
+@@ -172,7 +172,8 @@ TSharedRangeHolderPtr MakeCompositeSharedRangeHolder(THolders&&... holders)
+         std::tuple<typename std::decay<THolders>::type...> Holders;
+     };
+
+-    auto holder = New<THolder>();
++    // Use qualified name for GCC two-phase lookup
++    auto holder = ::NYT::New<THolder>();
+     holder->Holders = std::tuple<THolders...>(std::forward<THolders>(holders)...);
+     return holder;
+ }
+@@ -187,7 +188,8 @@ TSharedRange<T> DoMakeSharedRange(TContainer&& elements, THolders&&... holders)
+         std::tuple<typename std::decay<THolders>::type...> Holders;
+     };
+
+-    auto holder = New<THolder>();
++    // Use qualified name for GCC two-phase lookup
++    auto holder = ::NYT::New<THolder>();
+     holder->Holders = std::tuple<THolders...>(std::forward<THolders>(holders)...);
+     holder->Elements = std::forward<TContainer>(elements);
+
+@@ -353,7 +355,8 @@ TSharedMutableRange<T> DoMakeMutableSharedRange(TContainer&& elements, THolders&
+         std::tuple<typename std::decay<THolders>::type...> Holders;
+     };
+
+-    auto holder = New<THolder>();
++    // Use qualified name for GCC two-phase lookup
++    auto holder = ::NYT::New<THolder>();
+     holder->Holders = std::tuple<THolders...>(std::forward<THolders>(holders)...);
+     holder->Elements = std::forward<TContainer>(elements);
+
