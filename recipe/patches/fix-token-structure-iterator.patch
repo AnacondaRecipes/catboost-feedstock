@@ -1,6 +1,6 @@
 --- a/library/cpp/token/token_structure.h
 +++ b/library/cpp/token/token_structure.h
-@@ -134,18 +134,18 @@ public:
+@@ -134,20 +134,20 @@ public:
          Tokens.pop_back();
      }
      const TCharSpan* begin() const {
