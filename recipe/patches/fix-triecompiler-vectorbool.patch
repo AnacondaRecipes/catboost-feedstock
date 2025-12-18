@@ -1,15 +1,15 @@
 --- a/tools/triecompiler/lib/main.cpp
 +++ b/tools/triecompiler/lib/main.cpp
-@@ -260,7 +260,12 @@ public:
-     }
-     void PackLeaf(char* buffer, const TVectorType& data, size_t computedSize) const {
-         Y_ASSERT(computedSize == SizeOfValue && data.size() == ArraySize);
--        memcpy(buffer, data.data(), computedSize);
-+        // Use element-by-element copy for libstdc++ compatibility (vector<bool> has no data())
-+        typename TVectorType::value_type* dest = reinterpret_cast<typename TVectorType::value_type*>(buffer);
-+        for (size_t i = 0; i < ArraySize; ++i) {
-+            dest[i] = data[i];
-+        }
-     }
-     size_t MeasureLeaf(const TVectorType& data) const {
-         Y_UNUSED(data);
+@@ -260,7 +260,11 @@
+         }
+         void PackLeaf(char* buffer, const TVectorType& data, size_t computedSize) const {
+             Y_ASSERT(computedSize == SizeOfValue && data.size() == ArraySize);
+-            memcpy(buffer, data.data(), computedSize);
++            // Use element-by-element copy for libstdc++ compatibility (vector<bool> has no data())
++            typename TVectorType::value_type* dest = reinterpret_cast<typename TVectorType::value_type*>(buffer);
++            for (size_t i = 0; i < ArraySize; ++i) {
++                dest[i] = data[i];
++            }
+         }
+         size_t MeasureLeaf(const TVectorType& data) const {
+             Y_UNUSED(data);
