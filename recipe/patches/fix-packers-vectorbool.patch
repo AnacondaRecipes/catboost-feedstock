@@ -1,0 +1,14 @@
+--- a/library/cpp/packers/packers.h
++++ b/library/cpp/packers/packers.h
+@@ -398,7 +398,10 @@ inline void TContainerPacker<C, EP>::UnpackLeafVector(const char* buffer, C& res
+     result.resize(len);
+
+     for (size_t i = 0; i < len; i++) {
+-        TElementPacker().UnpackLeaf(buffer + offset, result[i]);
++        // Use temporary variable for libstdc++ compatibility (vector<bool>::operator[] returns proxy)
++        typename C::value_type temp;
++        TElementPacker().UnpackLeaf(buffer + offset, temp);
++        result[i] = temp;
+         offset += TElementPacker().SkipLeaf(buffer + offset);
+     }
+ }
