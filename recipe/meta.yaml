@@ -28,8 +28,6 @@ source:
     - patches/fix-iterator-include.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-containers-include.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/remove-clang-only-warnings.patch  # [(gpu_variant or "").startswith('cuda')]
-    - patches/disable-triecompiler.patch  # [(gpu_variant or "").startswith('cuda')]
-    - patches/fix-tokenizer-triecompiler-dep.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-type-erasure-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-error-attributes-static-assert.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-shared-range-new-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
