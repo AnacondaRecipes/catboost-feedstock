@@ -1,0 +1,14 @@
+--- a/library/cpp/par/par_context.h
++++ b/library/cpp/par/par_context.h
+@@ -298,9 +298,9 @@
+         struct TFullCtxInfo {
+             TVector<int> Computer2HostId;
+             TVector<TVector<int>> HostId2Computer;
+-            TVector<TVector<bool>> ReadyMask, CopyInitiated;
++            TVector<TVector<char>> ReadyMask, CopyInitiated;
+             TVector<TCtxDataPart> Data;
+-            TVector<bool> IsFullyDistributed;
++            TVector<char> IsFullyDistributed;
+             int MaxVersion; // max version of all groups
+             int ParentEnvId;
+

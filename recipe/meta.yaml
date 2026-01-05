@@ -36,6 +36,9 @@ source:
     - patches/fix-triecompiler-vectorbool.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-packers-vectorbool.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-dot-product-avx2-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-hnsw-index-writer-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-par-context-vectorbool-h.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-par-context-vectorbool-cpp.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}

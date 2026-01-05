@@ -1,0 +1,29 @@
+--- a/library/cpp/par/par_context.cpp
++++ b/library/cpp/par/par_context.cpp
+@@ -11,7 +11,7 @@
+ const int MAX_SIMULTANEOUS_SENDS = 1;
+
+ namespace NPar {
+-    static int IsAllSet(const TVector<bool>& v) {
++    static int IsAllSet(const TVector<char>& v) {
+         int res = true;
+         for (int i = 0; i < v.ysize(); ++i) {
+             res &= (int)v[i];
+@@ -19,7 +19,7 @@
+         return res;
+     }
+
+-    static void FilterSelected(TVector<TVector<int>>* arr, const TVector<TVector<bool>>& ready, bool* hasNotReadyHost) {
++    static void FilterSelected(TVector<TVector<int>>* arr, const TVector<TVector<char>>& ready, bool* hasNotReadyHost) {
+         for (int hostId = 0; hostId < arr->ysize(); ++hostId) {
+             TVector<int>& vec = (*arr)[hostId];
+             int dst = 0;
+@@ -61,7 +61,7 @@
+         for (THashMap<int, TFullCtxInfo>::iterator i = EnvId2Info.begin(); i != EnvId2Info.end(); ++i) {
+             TFullCtxInfo& info = i->second;
+             for (int hostId = 0; hostId < info.HostId2Computer.ysize(); ++hostId) {
+-                bool& isFullyDistributed = info.IsFullyDistributed[hostId];
++                char& isFullyDistributed = info.IsFullyDistributed[hostId];
+                 if (isFullyDistributed)
+                     continue;
+
