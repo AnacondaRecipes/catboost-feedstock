@@ -1,0 +1,22 @@
+--- a/catboost/libs/helpers/array_subset.h
++++ b/catboost/libs/helpers/array_subset.h
+@@ -125,8 +125,8 @@ namespace NCB {
+         {
+             const auto& blocks = rangesSubset.Blocks;
+             CurrentBlock = LowerBound(
+-                blocks.begin(),
+-                blocks.end(),
++                blocks.data(),
++                blocks.data() + blocks.size(),
+                 offset,
+                 [] (const TSubsetBlock<TSize>& block, TSize offset) {
+                     return block.GetDstEnd() <= offset;
+@@ -1086,7 +1086,7 @@ namespace NCB {
+                 return MakeHolder<TArraySubsetBlockIterator<TDstValue, TArrayLike, TIterator, TTransformer>>(
+                     std::move(src),
+                     remainingSize,
+-                    TIterator(indexedSubset.begin() + offset, indexedSubset.end()),
++                    TIterator(indexedSubset.data() + offset, indexedSubset.data() + indexedSubset.size()),
+                     std::move(transformer)
+                 );
+             }
