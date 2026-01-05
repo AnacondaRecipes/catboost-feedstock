@@ -1,0 +1,22 @@
+--- a/catboost/libs/helpers/guid.h
++++ b/catboost/libs/helpers/guid.h
+@@ -11,7 +11,7 @@
+ #include <util/string/hex.h>
+ #include <util/str_stl.h>
+
+-#include <contrib/libs/cxxsupp/libcxx/include/array>
++#include <array>
+
+ namespace NCB {
+
+--- a/catboost/private/libs/text_features/feature_calcer.h
++++ b/catboost/private/libs/text_features/feature_calcer.h
+@@ -15,7 +15,7 @@
+ #include <util/stream/input.h>
+ #include <util/system/mutex.h>
+
+-#include <contrib/libs/cxxsupp/libcxx/include/array>
++#include <array>
+
+ namespace NCB {
+
