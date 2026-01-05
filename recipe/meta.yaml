@@ -42,6 +42,7 @@ source:
     - patches/fix-array-subset-iterator-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-array-subset-stdvisit-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-guid-use-system-array.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-abseil-strings-link-profiling.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
