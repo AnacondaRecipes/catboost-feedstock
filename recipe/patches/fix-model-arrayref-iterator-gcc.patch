@@ -1,0 +1,21 @@
+--- a/catboost/libs/model/model.h
++++ b/catboost/libs/model/model.h
+@@ -355,15 +355,15 @@ public:
+     }
+
+     TConstArrayRef<TTextFeature> GetTextFeatures() const noexcept {
+-        return TConstArrayRef<TTextFeature>(TextFeatures.begin(), TextFeatures.end());
++        return TConstArrayRef<TTextFeature>(TextFeatures);
+     }
+
+     TConstArrayRef<TEmbeddingFeature> GetEmbeddingFeatures() const noexcept {
+-        return TConstArrayRef<TEmbeddingFeature>(EmbeddingFeatures.begin(), EmbeddingFeatures.end());
++        return TConstArrayRef<TEmbeddingFeature>(EmbeddingFeatures);
+     }
+
+     TConstArrayRef<TEstimatedFeature> GetEstimatedFeatures() const noexcept {
+-        return TConstArrayRef<TEstimatedFeature>(EstimatedFeatures.begin(), EstimatedFeatures.end());
++        return TConstArrayRef<TEstimatedFeature>(EstimatedFeatures);
+     }
+
+     void SetApproxDimension(int approxDimension) {
