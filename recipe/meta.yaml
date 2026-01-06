@@ -58,6 +58,7 @@ source:
     - patches/fix-error-functions-sqrtl-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-langevin-utils-indexrange-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-statistics-max-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-vector-helpers-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
