@@ -1,12 +1,6 @@
 --- a/catboost/libs/helpers/polymorphic_type_containers.h
 +++ b/catboost/libs/helpers/polymorphic_type_containers.h
-@@ -290,11 +290,11 @@
-             std::visit(
-                 [&] (const auto& subsetIndexingAlternative) {
-                     CreateSubRangesIterators(
-                         subsetIndexingAlternative,
-                         definedApproximateBlockSize,
-                         subRangeIterators,
+@@ -296,7 +296,7 @@
                          subRangeStarts
                      );
                  },
