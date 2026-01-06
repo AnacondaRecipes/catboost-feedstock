@@ -1,0 +1,15 @@
+--- a/catboost/cuda/gpu_data/dataset_helpers.h
++++ b/catboost/cuda/gpu_data/dataset_helpers.h
+@@ -81,9 +81,9 @@
+             constexpr ui32 FeatureBlockSize = 16;
+             const auto featureCount = floatFeatureIds.size();
+             for (auto featureIdx : xrange<ui32>(0, featureCount, FeatureBlockSize)) {
+-                const auto begin = floatFeatureIds.begin() + featureIdx;
+-                const auto end = floatFeatureIds.begin() + Min<ui32>(featureCount, featureIdx + FeatureBlockSize);
+-                WriteFloatFeatures(MakeArrayRef(begin, end), DataProvider);
++                const ui32* begin = floatFeatureIds.data() + featureIdx;
++                const ui32* end = floatFeatureIds.data() + Min<ui32>(featureCount, featureIdx + FeatureBlockSize);
++                WriteFloatFeatures(TConstArrayRef<ui32>(begin, end), DataProvider);
+                 CheckInterrupted(); // check after long-lasting operation
+             }
+         }
