@@ -1,14 +1,14 @@
 --- a/catboost/libs/loggers/catboost_logger_helpers.h
 +++ b/catboost/libs/loggers/catboost_logger_helpers.h
-@@ -120,7 +120,7 @@
- TString GetTrainToken();
- TString GetTestToken();
- TString GetParametersToken();
+@@ -121,7 +121,7 @@
+ );
+
+ TString GetTrainModelLearnToken();
 -TVector<const TString> GetTrainModelTestTokens(int testCount);
 +TVector<TString> GetTrainModelTestTokens(int testCount);
+ TString GetParametersToken();
 
- void InitializeFileLoggers(
-     const NCatboostOptions::TOutputFilesOptions& outputFileOptions,
+
 --- a/catboost/libs/loggers/catboost_logger_helpers.cpp
 +++ b/catboost/libs/loggers/catboost_logger_helpers.cpp
 @@ -333,9 +333,9 @@
