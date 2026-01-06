@@ -48,6 +48,8 @@ source:
     - patches/fix-polymorphic-type-containers-stdvisit.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-sparse-array-iterator-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-graph-include-variant.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-features-layout-findif-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-data-provider-builders-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
