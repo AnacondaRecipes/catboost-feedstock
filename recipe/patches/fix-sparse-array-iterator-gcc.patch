@@ -1,0 +1,38 @@
+--- a/catboost/libs/helpers/sparse_array-inl.h
++++ b/catboost/libs/helpers/sparse_array-inl.h
+@@ -572,13 +572,14 @@
+         const auto& blockBitmaps = sparseSubsetHybridIndex.BlockBitmaps;
+
+         const TSize* blockIndicesCurrent
+-            = LowerBound(blockIndices.begin(), blockIndices.end(), beginBlockIdx);
++            = blockIndices.data() + (std::lower_bound(blockIndices.begin(), blockIndices.end(), beginBlockIdx) - blockIndices.begin());
++        const TSize* blockIndicesEnd = blockIndices.data() + blockIndices.size();
+
+-        const TSize blockOffset = blockIndicesCurrent - blockIndices.begin();
+-        const ui64* blockBitmapsCurrent = blockBitmaps.begin() + blockOffset;
++        const TSize blockOffset = blockIndicesCurrent - blockIndices.data();
++        const ui64* blockBitmapsCurrent = blockBitmaps.data() + blockOffset;
+
+         TSize inBlockIdx;
+         TSize nonDefaultInBlockBeforeBegin;
+-        if ((blockIndicesCurrent != blockIndices.end()) && (beginBlockIdx == *blockIndicesCurrent)) {
++        if ((blockIndicesCurrent != blockIndicesEnd) && (beginBlockIdx == *blockIndicesCurrent)) {
+             inBlockIdx = begin % TSparseSubsetHybridIndex<TSize>::BLOCK_SIZE;
+             if (*blockBitmapsCurrent >> inBlockIdx) {
+                 nonDefaultInBlockBeforeBegin
+@@ -597,13 +598,13 @@
+
+         *nonDefaultBegin
+             = std::accumulate(
+-                blockBitmaps.begin(),
++                blockBitmaps.data(),
+                 blockBitmapsCurrent,
+                 nonDefaultInBlockBeforeBegin,
+                 [] (TSize sum, ui64 element) { return sum + (TSize)std::popcount(element); });
+
+         iteratorData->BlockIndicesCurrent = blockIndicesCurrent;
+-        iteratorData->BlockIndicesEnd = blockIndices.end();
++        iteratorData->BlockIndicesEnd = blockIndicesEnd;
+         iteratorData->BlockBitmapsCurrent = blockBitmapsCurrent;
+         iteratorData->InBlockIdx = inBlockIdx;
+     }
