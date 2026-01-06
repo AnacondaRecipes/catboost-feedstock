@@ -1,7 +1,7 @@
 --- a/catboost/libs/loggers/catboost_logger_helpers.h
 +++ b/catboost/libs/loggers/catboost_logger_helpers.h
 @@ -86,7 +86,7 @@
-
+ 
  void AddConsoleLogger(
      const TString& learnToken,
 -    const TVector<const TString>& testTokens,
@@ -20,13 +20,13 @@
  );
 @@ -120,7 +120,7 @@
  );
-
+ 
  TString GetTrainModelLearnToken();
 -TVector<const TString> GetTrainModelTestTokens(int testCount);
 +TVector<TString> GetTrainModelTestTokens(int testCount);
  TString GetParametersToken();
-
-
+ 
+ 
 @@ -128,7 +128,7 @@
                             const TOutputFiles& outputFiles,
                             const TVector<const IMetric*>& metrics,
@@ -35,10 +35,11 @@
 +                           const TVector<TString>& testTokens,
                             int metricPeriod,
                             TLogger* logger);
+ 
 --- a/catboost/libs/loggers/catboost_logger_helpers.cpp
 +++ b/catboost/libs/loggers/catboost_logger_helpers.cpp
 @@ -193,7 +193,7 @@
-
+ 
  void AddConsoleLogger(
          const TString& learnToken,
 -        const TVector<const TString>& testTokens,
@@ -58,7 +59,7 @@
 @@ -331,9 +331,9 @@
      return "parameters";
  }
-
+ 
 -TVector<const TString> GetTrainModelTestTokens(int testCount) {
 +TVector<TString> GetTrainModelTestTokens(int testCount) {
      TString testTokenPrefix = "test";
