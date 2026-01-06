@@ -1,0 +1,25 @@
+--- a/catboost/libs/loggers/catboost_logger_helpers.h
++++ b/catboost/libs/loggers/catboost_logger_helpers.h
+@@ -120,7 +120,7 @@
+ TString GetTrainToken();
+ TString GetTestToken();
+ TString GetParametersToken();
+-TVector<const TString> GetTrainModelTestTokens(int testCount);
++TVector<TString> GetTrainModelTestTokens(int testCount);
+
+ void InitializeFileLoggers(
+     const NCatboostOptions::TOutputFilesOptions& outputFileOptions,
+--- a/catboost/libs/loggers/catboost_logger_helpers.cpp
++++ b/catboost/libs/loggers/catboost_logger_helpers.cpp
+@@ -333,9 +333,9 @@
+     return "parameters";
+ }
+
+-TVector<const TString> GetTrainModelTestTokens(int testCount) {
++TVector<TString> GetTrainModelTestTokens(int testCount) {
+     TString testTokenPrefix = "test";
+-    TVector<const TString> testTokens;
++    TVector<TString> testTokens;
+     for (int testIdx = 0; testIdx < testCount; ++testIdx) {
+         TString testToken = testTokenPrefix + (testIdx > 0 ? ToString(testIdx) : "");
+         testTokens.push_back(testToken);

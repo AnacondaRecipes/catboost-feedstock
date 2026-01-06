@@ -53,6 +53,10 @@ source:
     - patches/fix-quantization-iterator-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-eval-helpers-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-dataset-helpers-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-logger-helpers-const-vector.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-error-functions-expl-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-error-functions-sqrtl-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-langevin-utils-indexrange-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
