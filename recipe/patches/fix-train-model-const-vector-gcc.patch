@@ -1,0 +1,10 @@
+--- a/catboost/libs/train_lib/train_model.cpp
++++ b/catboost/libs/train_lib/train_model.cpp
+@@ -228,7 +228,7 @@ namespace {
+ struct TLoggingData {
+     TString LearnToken;
+-    TVector<const TString> TestTokens;
++    TVector<TString> TestTokens;
+     TLogger Logger;
+ };
+ }

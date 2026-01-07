@@ -79,6 +79,7 @@ source:
     - patches/fix-par-util-vectorbool-map-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-cross-validation-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-data-provider-lambda-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-train-model-const-vector-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
