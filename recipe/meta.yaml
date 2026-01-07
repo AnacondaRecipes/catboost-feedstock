@@ -77,6 +77,7 @@ source:
     - patches/fix-compare-documents-abs-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-master-vectorbool-andassign-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-par-util-vectorbool-map-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-cross-validation-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
