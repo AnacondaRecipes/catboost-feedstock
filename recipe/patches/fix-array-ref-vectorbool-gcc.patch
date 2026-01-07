@@ -1,20 +1,19 @@
 --- a/util/generic/array_ref.h
 +++ b/util/generic/array_ref.h
 @@ -6,6 +6,7 @@
-
+ #include <algorithm>
  #include <initializer_list>
  #include <iterator>
 +#include <vector>
-
- template <class T>
- class TArrayRef {
-@@ -74,6 +75,54 @@ public:
-     }
+ 
+ /**
+  * `TArrayRef` works pretty much like `std::span` with dynamic extent, presenting
+@@ -231,6 +232,48 @@
+     size_t S_;
  };
-
+ 
 +// Thread-local storage for vector<bool> to TArrayRef<const bool> conversion
 +// This is a workaround for GCC where std::vector<bool> is bit-packed
-+// We use vector<char> which is NOT bit-packed and reinterpret_cast to bool*
 +namespace NPrivate {
 +    inline thread_local std::vector<char> gBoolStorage;
 +
@@ -34,41 +33,27 @@
 +public:
 +    using iterator = const bool*;
 +    using const_iterator = const bool*;
-+    using reference = const bool&;
-+    using const_reference = const bool&;
 +    using value_type = bool;
-+    using reverse_iterator = std::reverse_iterator<iterator>;
 +
 +private:
-+    const bool* Data_ = nullptr;
-+    size_t Len_ = 0;
++    const bool* T_ = nullptr;
++    size_t S_ = 0;
 +
 +public:
 +    constexpr TArrayRef() noexcept = default;
-+
-+    constexpr TArrayRef(const bool* data, size_t len) noexcept
-+        : Data_(data)
-+        , Len_(len)
-+    {
-+    }
-+
++    constexpr TArrayRef(const bool* data, size_t len) noexcept : T_(data), S_(len) {}
 +    template <class Alloc>
-+    TArrayRef(const std::vector<bool, Alloc>& v)
-+        : Data_(v.empty() ? nullptr : NPrivate::GetBoolStorageData(v))
-+        , Len_(v.size())
-+    {
-+    }
-+
++    TArrayRef(const std::vector<bool, Alloc>& v) : T_(v.empty() ? nullptr : NPrivate::GetBoolStorageData(v)), S_(v.size()) {}
 +    constexpr TArrayRef(const TArrayRef&) noexcept = default;
-+
-+    constexpr const_iterator begin() const noexcept { return Data_; }
-+    constexpr const_iterator end() const noexcept { return Data_ + Len_; }
-+    constexpr const bool* data() const noexcept { return Data_; }
-+    constexpr size_t size() const noexcept { return Len_; }
-+    Y_PURE_FUNCTION constexpr bool empty() const noexcept { return !Len_; }
-+    constexpr const_reference operator[](size_t n) const noexcept { return Data_[n]; }
++    constexpr const_iterator begin() const noexcept { return T_; }
++    constexpr const_iterator end() const noexcept { return T_ + S_; }
++    constexpr const bool* data() const noexcept { return T_; }
++    constexpr size_t size() const noexcept { return S_; }
++    Y_PURE_FUNCTION constexpr bool empty() const noexcept { return !S_; }
++    constexpr const bool& operator[](size_t n) const noexcept { return T_[n]; }
 +};
 +
- template <class T>
- using TConstArrayRef = TArrayRef<const T>;
-
++
+ /**
+  * Obtains a view to the object representation of the elements of the TArrayRef arrayRef.
+  *
