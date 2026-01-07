@@ -1,8 +1,6 @@
 --- a/catboost/libs/data/data_provider.h
 +++ b/catboost/libs/data/data_provider.h
-@@ -467,29 +467,31 @@ namespace NCB {
-         TDataProvidersTemplate result;
-
+@@ -469,28 +469,30 @@ namespace NCB {
          TVector<std::function<void()>> tasks;
 -        tasks.emplace_back(
 -            [&]() {
