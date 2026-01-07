@@ -1,0 +1,11 @@
+--- a/catboost/cuda/methods/leaves_estimation/oblivious_tree_leaves_estimator.cpp
++++ b/catboost/cuda/methods/leaves_estimation/oblivious_tree_leaves_estimator.cpp
+@@ -247,7 +247,7 @@ namespace NCatboostCuda {
+     }
+
+     void TObliviousTreeLeavesEstimator::Regularize(TVector<float>* point) {
+-        RegularizeImpl(LeavesEstimationConfig, TConstArrayRef<double>(LeafWeights.begin(), LeafWeights.begin() + PointDim()), point);
++        RegularizeImpl(LeavesEstimationConfig, TConstArrayRef<double>(LeafWeights.data(), PointDim()), point);
+     }
+
+     void TObliviousTreeLeavesEstimator::NormalizeDerivatives(TVector<double>& derOrDer2) {
