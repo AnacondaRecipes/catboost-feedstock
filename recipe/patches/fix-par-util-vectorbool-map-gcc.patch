@@ -1,0 +1,15 @@
+--- a/library/cpp/par/par_util.h
++++ b/library/cpp/par/par_util.h
+@@ -99,8 +99,10 @@ namespace NPar {
+     inline void Map(TJobDescription* job, TMapReduceCmd<TInput, TOutput>* cmd, TVector<TInput>* src) {
+         job->SetCurrentOperation(cmd);
+         TVector<char> buf;
+-        for (int i = 0; i < src->ysize(); ++i)
+-            job->AddMap((*src)[i]);
++        for (int i = 0; i < src->ysize(); ++i) {
++            TInput val = (*src)[i];
++            job->AddMap(val);
++        }
+     }
+
+     class TJobExecutor {
