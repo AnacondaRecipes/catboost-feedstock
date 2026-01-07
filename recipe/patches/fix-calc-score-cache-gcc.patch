@@ -1,0 +1,64 @@
+--- a/catboost/private/libs/algo/calc_score_cache.cpp
++++ b/catboost/private/libs/algo/calc_score_cache.cpp
+@@ -859,25 +859,19 @@ void TCalcScoreFold::TFoldPartitionOutput::SetOffsetsAndSizes(TIndexRange<ui32>
+
+ TCalcScoreFold::TFoldPartitionOutput::TSlice TCalcScoreFold::TFoldPartitionOutput::GetSlice(TIndexRange<ui32> range) {
+     TSlice slice;
+-    slice.SampleWeights = {
+-        SampleWeights.begin() + range.Begin,
+-        SampleWeights.begin() + range.End
+-    };
+-    slice.IndexInFold = {
+-        IndexInFold.begin() + range.Begin,
+-        IndexInFold.begin() + range.End
+-    };
+-    slice.LearnPermutationFeaturesSubset = {
+-        LearnPermutationFeaturesSubset.begin() + range.Begin,
+-        LearnPermutationFeaturesSubset.begin() + range.End
+-    };
++    slice.SampleWeights = TArrayRef<float>(
++        SampleWeights.data() + range.Begin,
++        range.End - range.Begin);
++    slice.IndexInFold = TArrayRef<ui32>(
++        IndexInFold.data() + range.Begin,
++        range.End - range.Begin);
++    slice.LearnPermutationFeaturesSubset = TArrayRef<ui32>(
++        LearnPermutationFeaturesSubset.data() + range.Begin,
++        range.End - range.Begin);
+     if (HasOfflineEstimatedFeatures) {
+-        slice.LearnPermutationOfflineEstimatedFeaturesSubset = {
+-            LearnPermutationOfflineEstimatedFeaturesSubset.begin() + range.Begin,
+-            LearnPermutationOfflineEstimatedFeaturesSubset.begin() + range.End
+-        };
++        slice.LearnPermutationOfflineEstimatedFeaturesSubset = TArrayRef<ui32>(
++            LearnPermutationOfflineEstimatedFeaturesSubset.data() + range.Begin,
++            range.End - range.Begin);
+     }
+     slice.SampleWeightedDerivatives.resize(Dimension);
+     for (auto dim : xrange(Dimension)) {
+-        slice.SampleWeightedDerivatives[dim] = {
+-            SampleWeightedDerivatives[dim].begin() + range.Begin,
+-            SampleWeightedDerivatives[dim].begin() + range.End
+-        };
++        slice.SampleWeightedDerivatives[dim] = TArrayRef<double>(
++            SampleWeightedDerivatives[dim].data() + range.Begin,
++            range.End - range.Begin);
+     }
+     return slice;
+ }
+@@ -997,12 +991,12 @@ void TCalcScoreFold::UpdateIndicesInLeafwiseSortedFoldForSingleLeafImpl(
+     ParallelFill(
+         leftChildIdx,
+         blockSize,
+         localExecutor,
+-        {Indices.begin() + leafBounds.Begin, static_cast<size_t>(leftCount)});
++        TArrayRef<TIndexType>(Indices.data() + leafBounds.Begin, static_cast<size_t>(leftCount)));
+     ParallelFill(
+         rightChildIdx,
+         blockSize,
+         localExecutor,
+-        {Indices.begin() + leafBounds.Begin + leftCount, static_cast<size_t>(rightCount)});
++        TArrayRef<TIndexType>(Indices.data() + leafBounds.Begin + leftCount, static_cast<size_t>(rightCount)));
+ }
+
+ void TCalcScoreFold::UpdateIndicesInLeafwiseSortedFoldForSingleLeaf(

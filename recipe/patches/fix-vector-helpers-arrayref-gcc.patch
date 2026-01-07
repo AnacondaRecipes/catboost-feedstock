@@ -9,3 +9,12 @@
  }
 
  template <typename TArrayLike, typename TIsDefined>
+@@ -125,7 +125,7 @@ inline TVector<TArrayRef<T>> To2DArrayRef(T2DArrayLike& array, size_t offset, si
+ inline static TVector<TConstArrayRef<T>> To2DConstArrayRef(const T2DArrayLike& array, size_t offset, size_t count) {
+     auto arrayView = TVector<TConstArrayRef<T>>();
+     for (const auto& subArray : array) {
+-        arrayView.emplace_back(MakeArrayRef(subArray.begin() + offset, count));
++        arrayView.emplace_back(MakeArrayRef(subArray.data() + offset, count));
+     }
+     return arrayView;
+ }

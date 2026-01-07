@@ -1,0 +1,11 @@
+--- a/catboost/private/libs/algo/approx_delta_calcer_multi.cpp
++++ b/catboost/private/libs/algo/approx_delta_calcer_multi.cpp
+@@ -158,7 +158,7 @@ void CalcApproxDeltaMulti(
+     }
+
+     const auto lossCalcerFunc = [&] (const TVector<TVector<double>>& /*approxDeltas*/, const TVector<TVector<double>>& leafDeltas) {
+-        TConstArrayRef<TQueryInfo> bodyTailQueryInfo(fold.LearnQueriesInfo.begin(), bt.BodyQueryFinish);
++        TConstArrayRef<TQueryInfo> bodyTailQueryInfo(fold.LearnQueriesInfo.data(), bt.BodyQueryFinish);
+         TVector<TVector<double>> localLeafDeltas(*sumLeafDeltas);
+         AddElementwise(leafDeltas, &localLeafDeltas);
+         const auto& additiveStats = EvalErrorsWithLeaves(

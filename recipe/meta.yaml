@@ -59,6 +59,9 @@ source:
     - patches/fix-langevin-utils-indexrange-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-statistics-max-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-vector-helpers-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-approx-delta-calcer-multi-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-approx-calcer-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-calc-score-cache-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
