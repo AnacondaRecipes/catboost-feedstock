@@ -1,0 +1,53 @@
+--- a/util/ysaveload.h
++++ b/util/ysaveload.h
+@@ -357,6 +357,48 @@ class TSerializer<TVector<T, A>>: public TVectorSerializer<TVector<T, A>> {
+ template <class T, class A>
+ class TSerializer<std::vector<T, A>>: public TVectorSerializer<std::vector<T, A>> {
+ };
++
++// Specialization for vector<bool> - handle proxy reference issue
++// vector<bool>::iterator::reference is a proxy type, not bool&
++template <class A>
++class TSerializer<TVector<bool, A>> {
++public:
++    static inline void Save(IOutputStream* rh, const TVector<bool, A>& v) {
++        ::SaveSize(rh, v.size());
++        for (size_t i = 0; i < v.size(); ++i) {
++            bool val = v[i];
++            ::Save(rh, val);
++        }
++    }
++
++    static inline void Load(IInputStream* rh, TVector<bool, A>& v) {
++        ::LoadSizeAndResize(rh, v);
++        for (size_t i = 0; i < v.size(); ++i) {
++            bool val;
++            ::Load(rh, val);
++            v[i] = val;
++        }
++    }
++};
++
++template <class A>
++class TSerializer<std::vector<bool, A>> {
++public:
++    static inline void Save(IOutputStream* rh, const std::vector<bool, A>& v) {
++        ::SaveSize(rh, v.size());
++        for (size_t i = 0; i < v.size(); ++i) {
++            bool val = v[i];
++            ::Save(rh, val);
++        }
++    }
++
++    static inline void Load(IInputStream* rh, std::vector<bool, A>& v) {
++        ::LoadSizeAndResize(rh, v);
++        for (size_t i = 0; i < v.size(); ++i) {
++            bool val;
++            ::Load(rh, val);
++            v[i] = val;
++        }
++    }
++};
+
+ template <class T, class A>
+ class TSerializer<TList<T, A>>: public TVectorSerializer<TList<T, A>> {
