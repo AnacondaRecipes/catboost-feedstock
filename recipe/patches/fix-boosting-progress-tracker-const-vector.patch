@@ -1,0 +1,11 @@
+--- a/catboost/cuda/methods/boosting_progress_tracker.h
++++ b/catboost/cuda/methods/boosting_progress_tracker.h
+@@ -173,7 +173,7 @@ namespace NCatboostCuda {
+         ITrainingCallbacks* const TrainingCallbacks;
+
+         TString LearnToken;
+-        TVector<const TString> TestTokens;
++        TVector<TString> TestTokens;
+         bool ForceCalcEvalMetricOnEveryIteration = false;
+         bool HasTest = false;
+         bool HasTestTarget = false;
