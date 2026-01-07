@@ -1,6 +1,6 @@
 --- a/catboost/private/libs/algo/calc_score_cache.cpp
 +++ b/catboost/private/libs/algo/calc_score_cache.cpp
-@@ -859,25 +859,19 @@ void TCalcScoreFold::TFoldPartitionOutput::SetOffsetsAndSizes(TIndexRange<ui32>
+@@ -859,30 +859,25 @@
 
  TCalcScoreFold::TFoldPartitionOutput::TSlice TCalcScoreFold::TFoldPartitionOutput::GetSlice(TIndexRange<ui32> range) {
      TSlice slice;
@@ -46,8 +46,7 @@
      }
      return slice;
  }
-@@ -997,12 +991,12 @@ void TCalcScoreFold::UpdateIndicesInLeafwiseSortedFoldForSingleLeafImpl(
-     ParallelFill(
+@@ -1001,12 +996,12 @@
          leftChildIdx,
          blockSize,
          localExecutor,
@@ -61,4 +60,4 @@
 +        TArrayRef<TIndexType>(Indices.data() + leafBounds.Begin + leftCount, static_cast<size_t>(rightCount)));
  }
 
- void TCalcScoreFold::UpdateIndicesInLeafwiseSortedFoldForSingleLeaf(
+ // for lossguide
