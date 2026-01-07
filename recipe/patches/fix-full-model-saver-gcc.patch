@@ -1,0 +1,13 @@
+--- a/catboost/private/libs/algo/full_model_saver.cpp
++++ b/catboost/private/libs/algo/full_model_saver.cpp
+@@ -733,8 +733,8 @@ for (auto estimatedFeatureId : xrange(1, estimatedFeatures.ysize() + 1)) {
+                 estimatedFeatures[estimatedFeatureId].ModelEstimatedFeature.CalcerId) {
+
+                 auto calcerId = estimatedFeatures[firstFeatureFromCalcer].ModelEstimatedFeature.CalcerId;
+-                TConstArrayRef<TEstimatedFeature> usedEstimatedFeatures(estimatedFeatures.begin() + firstFeatureFromCalcer,
+-                                                                        estimatedFeatures.begin() + estimatedFeatureId);
++                TConstArrayRef<TEstimatedFeature> usedEstimatedFeatures(estimatedFeatures.data() + firstFeatureFromCalcer,
++                                                                        estimatedFeatureId - firstFeatureFromCalcer);
+
+                 if (featureEstimators.GetEstimatorSourceType(calcerId) == EFeatureType::Text) {
+                     textCollectionBuilder.AddFeatureEstimator(calcerId, usedEstimatedFeatures, reorderedEstimatedFeatures);

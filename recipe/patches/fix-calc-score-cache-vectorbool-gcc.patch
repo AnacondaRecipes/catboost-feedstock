@@ -1,0 +1,18 @@
+--- a/catboost/private/libs/algo/calc_score_cache.h
++++ b/catboost/private/libs/algo/calc_score_cache.h
+@@ -42,12 +42,12 @@ static inline const TData* GetDataPtr(TConstArrayRef<TData> data, size_t offset
+ }
+
+ template <typename TData, typename TAlloc>
+ static inline TData* GetDataPtr(TVector<TData, TAlloc>& data, size_t offset = 0) {
+-    return GetDataPtr(TArrayRef<TData>(data), offset);
++    return data.empty() ? nullptr : data.data() + offset;
+ }
+
+ template <typename TData, typename TAlloc>
+ static inline const TData* GetDataPtr(const TVector<TData, TAlloc>& data, size_t offset = 0) {
+-    return GetDataPtr(TConstArrayRef<TData>(data), offset);
++    return data.empty() ? nullptr : data.data() + offset;
+ }
+
+ static inline float GetBernoulliSampleRate(
