@@ -1,0 +1,11 @@
+--- a/catboost/cuda/methods/leaves_estimation/matrix_per_tree_oracle_base.h
++++ b/catboost/cuda/methods/leaves_estimation/matrix_per_tree_oracle_base.h
+@@ -102,7 +102,7 @@ namespace NCatboostCuda {
+         }
+
+         void Regularize(TVector<float>* point) final {
+-            RegularizeImpl(LeavesEstimationConfig, TConstArrayRef<double>(BinWeightsSum.begin(), BinWeightsSum.begin() + PointDim()), point);
++            RegularizeImpl(LeavesEstimationConfig, TConstArrayRef<double>(BinWeightsSum.data(), PointDim()), point);
+         }
+
+         void WriteValueAndFirstDerivatives(double* value,
