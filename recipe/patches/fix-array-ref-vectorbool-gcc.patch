@@ -5,13 +5,13 @@
  #include <initializer_list>
  #include <iterator>
 +#include <vector>
- 
+
  /**
   * `TArrayRef` works pretty much like `std::span` with dynamic extent, presenting
-@@ -231,6 +232,48 @@
+@@ -231,6 +232,49 @@
      size_t S_;
  };
- 
+
 +// Thread-local storage for vector<bool> to TArrayRef<const bool> conversion
 +// This is a workaround for GCC where std::vector<bool> is bit-packed
 +namespace NPrivate {
@@ -51,6 +51,7 @@
 +    constexpr size_t size() const noexcept { return S_; }
 +    Y_PURE_FUNCTION constexpr bool empty() const noexcept { return !S_; }
 +    constexpr const bool& operator[](size_t n) const noexcept { return T_[n]; }
++    constexpr explicit operator bool() const noexcept { return S_ > 0; }
 +};
 +
 +
