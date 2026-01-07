@@ -74,6 +74,7 @@ source:
     - patches/fix-pointwise-oracle-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-model-quantization-adapter-arrayref-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-online-ctr-iterator-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-compare-documents-abs-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
