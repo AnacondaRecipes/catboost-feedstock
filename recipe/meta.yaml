@@ -65,6 +65,8 @@ source:
     - patches/fix-calc-score-cache-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-greedy-tensor-search-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-full-model-saver-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-index-calcer-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-binsaver-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}

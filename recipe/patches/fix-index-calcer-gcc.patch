@@ -1,0 +1,29 @@
+--- a/catboost/private/libs/algo/index_calcer.cpp
++++ b/catboost/private/libs/algo/index_calcer.cpp
+@@ -528,7 +528,7 @@ TVector<bool> GetIsLeafEmpty(ui32 leafCount, const TSplitTree& tree, TConstArray
+         /*merge*/[=] (TVector<bool>* isLeafEmpty, TVector<TVector<bool>>&& outputs) {
+             for (const auto& output : outputs) {
+                 for (auto idx : xrange(leafCount)) {
+-                    (*isLeafEmpty)[idx] &= output[idx];
++                    (*isLeafEmpty)[idx] = (*isLeafEmpty)[idx] && output[idx];
+                 }
+             }
+         },
+@@ -670,7 +670,7 @@ TVector<TIndexType> BuildIndices(
+             onlineCtrs,
+             /*objectSubsetIdx*/ 0, // learn
+             localExecutor,
+-            indices.begin());
++            indices.data());
+     }
+     if (dataParts != EBuildIndicesDataParts::LearnOnly) {
+         ui32 docOffset = learnSampleCount;
+@@ -684,7 +684,7 @@ TVector<TIndexType> BuildIndices(
+                 onlineCtrs,
+                 testIdx + 1,
+                 localExecutor,
+-                indices.begin() + docOffset);
++                indices.data() + docOffset);
+             docOffset += testSet.GetObjectCount();
+         }
+     }

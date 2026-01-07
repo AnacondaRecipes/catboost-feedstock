@@ -1,0 +1,53 @@
+--- a/library/cpp/binsaver/bin_saver.h
++++ b/library/cpp/binsaver/bin_saver.h
+@@ -85,6 +85,24 @@ public:
+         }
+     }
+
++    // Specialization for vector<bool> - handle proxy reference issue
++    template <class TA>
++    void DoVector(TVector<bool, TA>& data) {
++        TStoredSize nSize;
++        if (IsReading()) {
++            data.clear();
++            Add(2, &nSize);
++            data.resize(nSize);
++        } else {
++            nSize = data.size();
++            CheckOverflow(nSize, data.size());
++            Add(2, &nSize);
++        }
++        for (TStoredSize i = 0; i < nSize; i++) {
++            bool val = IsReading() ? false : data[i];
++            Add(1, &val);
++            if (IsReading()) data[i] = val;
++        }
++    }
++
+     // vector
+     template <class T, class TA>
+     void DoVector(TVector<T, TA>& data) {
+@@ -117,6 +135,23 @@ public:
+         }
+     }
+
++    // Specialization for vector<bool> - cannot use DataChunk
++    template <class TA>
++    void DoDataVector(TVector<bool, TA>& data) {
++        TStoredSize nSize = data.size();
++        CheckOverflow(nSize, data.size());
++        Add(1, &nSize);
++        if (IsReading()) {
++            data.clear();
++            data.resize(nSize);
++        }
++        for (TStoredSize i = 0; i < nSize; i++) {
++            bool val = IsReading() ? false : data[i];
++            Add(1, &val);
++            if (IsReading()) data[i] = val;
++        }
++    }
++
+     template <class T, class TA>
+     void DoDataVector(TVector<T, TA>& data) {
+         TStoredSize nSize = data.size();
