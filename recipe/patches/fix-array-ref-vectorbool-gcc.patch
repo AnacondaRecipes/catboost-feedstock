@@ -5,13 +5,13 @@
  #include <initializer_list>
  #include <iterator>
 +#include <vector>
-
+ 
  /**
   * `TArrayRef` works pretty much like `std::span` with dynamic extent, presenting
-@@ -231,6 +232,49 @@
+@@ -231,6 +232,53 @@
      size_t S_;
  };
-
+ 
 +// Thread-local storage for vector<bool> to TArrayRef<const bool> conversion
 +// This is a workaround for GCC where std::vector<bool> is bit-packed
 +namespace NPrivate {
