@@ -73,7 +73,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     # Disable linker garbage collection to preserve LAPACK symbols like ilaslc_
     # These symbols are called indirectly by other LAPACK functions but not directly by catboost
     # Remove --gc-sections from LDFLAGS as it strips needed LAPACK symbols
-    export LDFLAGS=$(echo "$LDFLAGS" | sed 's/-Wl,--gc-sections//g')
+    # Also remove --as-needed which can prevent transitive LAPACK dependencies from being linked
+    export LDFLAGS=$(echo "$LDFLAGS" | sed 's/-Wl,--gc-sections//g' | sed 's/-Wl,--as-needed//g')
 
     echo "=== Processed Environment Flags ==="
     echo "CFLAGS=$CFLAGS"
