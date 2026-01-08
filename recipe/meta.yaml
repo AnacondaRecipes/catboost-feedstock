@@ -141,6 +141,8 @@ requirements:
     - jupyterlab >=3.0,<4.0                                             # [(gpu_variant or "").startswith('cuda')]
     - cuda-version {{ cuda_compiler_version }}                        # [(gpu_variant or "").startswith('cuda')]
     - cuda-cudart-dev                                                 # [(gpu_variant or "").startswith('cuda')]
+    - liblapack                                                       # [(gpu_variant or "").startswith('cuda')]
+    - libblas                                                         # [(gpu_variant or "").startswith('cuda')]
 
   run:
     - python

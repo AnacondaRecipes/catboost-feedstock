@@ -121,8 +121,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DCMAKE_CUDA_FLAGS="-O2 -fPIC" \
             -DCMAKE_C_FLAGS="${CFLAGS}" \
             -DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
-            -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS}" \
-            -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS}" \
+            -DCMAKE_EXE_LINKER_FLAGS="${LDFLAGS} -llapack -lblas" \
+            -DCMAKE_SHARED_LINKER_FLAGS="${LDFLAGS} -llapack -lblas" \
             -DTHREADS_PREFER_PTHREAD_FLAG=ON \
             -DCMAKE_THREAD_LIBS_INIT="-lpthread" \
             -DCMAKE_USE_PTHREADS_INIT=ON \
