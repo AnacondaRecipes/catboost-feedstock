@@ -160,6 +160,7 @@ requirements:
     - {{ pin_compatible('cuda-version', max_pin='x.x') }}             # [(gpu_variant or "").startswith('cuda')]
     - liblapack                                                       # [(gpu_variant or "").startswith('cuda')]
     - libblas                                                         # [(gpu_variant or "").startswith('cuda')]
+    - libopenblas                                                     # [(gpu_variant or "").startswith('cuda')]
 
   run_constrained:
     - ipywidgets >=7.0,<9.0
