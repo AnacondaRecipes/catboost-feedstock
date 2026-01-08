@@ -44,6 +44,10 @@
 +    constexpr TArrayRef(const bool* data, size_t len) noexcept : T_(data), S_(len) {}
 +    template <class Alloc>
 +    TArrayRef(const std::vector<bool, Alloc>& v) : T_(v.empty() ? nullptr : NPrivate::GetBoolStorageData(v)), S_(v.size()) {}
++    // Constructor accepting vector<unsigned char> (TVector<ui8>) - directly reinterprets as bool*
++    template <class Alloc>
++    constexpr TArrayRef(const std::vector<unsigned char, Alloc>& v) noexcept
++        : T_(v.empty() ? nullptr : reinterpret_cast<const bool*>(v.data())), S_(v.size()) {}
 +    constexpr TArrayRef(const TArrayRef&) noexcept = default;
 +    constexpr const_iterator begin() const noexcept { return T_; }
 +    constexpr const_iterator end() const noexcept { return T_ + S_; }
