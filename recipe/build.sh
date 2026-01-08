@@ -92,7 +92,9 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         -e 's/-faligned-allocation//g' \
         -e 's/-fdebug-default-version=4//g' \
         -e 's/-fuse-init-array//g' \
-        -e 's/-Wimport-preprocessor-directive-pedantic//g'
+        -e 's/-Wimport-preprocessor-directive-pedantic//g' \
+        -e 's/-Wl,--gc-sections//g' \
+        -e 's/-Wl,--as-needed//g'
 
     # Disable vendored libc++ for CUDA builds on Linux (since we removed the patch)
     if [[ "$target_platform" == "linux-"* ]]; then
