@@ -70,10 +70,15 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export DEBUG_CXXFLAGS=$(echo "$DEBUG_CXXFLAGS" | sed "s/$flag//g")
     done
     
+    # Disable linker garbage collection to preserve LAPACK symbols like ilaslc_
+    # These symbols are called indirectly by other LAPACK functions but not directly by catboost
+    export LDFLAGS="${LDFLAGS} -Wl,--no-gc-sections"
+
     echo "=== Processed Environment Flags ==="
     echo "CFLAGS=$CFLAGS"
     echo "CXXFLAGS=$CXXFLAGS"
     echo "CPPFLAGS=$CPPFLAGS"
+    echo "LDFLAGS=$LDFLAGS"
     echo "==================================="
 
     # recursively remove clang-specific flags from all CMakeLists.txt and .cmake files
