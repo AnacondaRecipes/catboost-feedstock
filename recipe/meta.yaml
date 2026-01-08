@@ -84,6 +84,7 @@ source:
     - patches/fix-array-ref-vectorbool-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-maybe-owning-array-holder-const-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-catboost-pyx-vectorbool-data-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-setup-jupyterlab-version.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
