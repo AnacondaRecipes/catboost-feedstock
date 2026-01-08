@@ -177,6 +177,10 @@ test:
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
     - pip
+  # Set OpenBLAS threading to avoid conflicts with bundled CLAPACK
+  script_env:                                                         # [(gpu_variant or "").startswith('cuda')]
+    - OPENBLAS_NUM_THREADS=1                                          # [(gpu_variant or "").startswith('cuda')]
+    - OMP_NUM_THREADS=1                                               # [(gpu_variant or "").startswith('cuda')]
 
 about:
   home: https://catboost.ai
