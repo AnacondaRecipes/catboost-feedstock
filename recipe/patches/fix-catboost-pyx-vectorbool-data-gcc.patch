@@ -1,0 +1,91 @@
+--- a/catboost/python-package/catboost/_catboost.pyx
++++ b/catboost/python-package/catboost/_catboost.pyx
+@@ -2317,8 +2317,8 @@ cdef ITypedSequencePtr[np.float64_t] _make_embeddings_data_from_scipy_sparse_row
+     return result
+
+
+-cdef TVector[bool_t] _get_is_feature_type_mask(const TFeaturesLayout* featuresLayout, EFeatureType featureType) except *:
+-    cdef TVector[bool_t] mask
++cdef TVector[ui8] _get_is_feature_type_mask(const TFeaturesLayout* featuresLayout, EFeatureType featureType) except *:
++    cdef TVector[ui8] mask
+     mask.resize(featuresLayout.GetExternalFeatureCount(), False)
+
+     cdef ui32 idx
+@@ -3027,9 +3027,9 @@ cdef _set_objects_order_data_from_numpy_ndarray(
+     cdef ui32 objCount = data.shape[0]
+     cdef ui32 objStride = data.strides[0] / data.itemsize
+
+-    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
+-    cdef TVector[bool_t] is_text_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Text)
+-    cdef TVector[bool_t] is_embedding_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Embedding)
++    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
++    cdef TVector[ui8] is_text_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Text)
++    cdef TVector[ui8] is_embedding_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Embedding)
+
+     # actual data type is double or float
+     mainDataFeatureIdxToDstFeatureIdx = _get_main_data_feature_idx_to_dst_feature_idx(
+@@ -3148,7 +3148,7 @@ cdef _set_objects_order_data_from_scipy_sparse_csr_matrix(
+     cdef ui32 objStride = 1
+     cdef TVector[ui32] mainDataFeatureIdxToDstFeatureIdx
+
+-    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
++    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
+     cdef TConstArrayRef[ui32] mainDataFeatureIdxToDstFeatureIdxRef
+
+     cdef _npindexed_element_t[::1] data_memview = data.data
+@@ -3338,7 +3338,7 @@ cdef void _set_objects_order_data_scipy_sparse_csr_row(
+
+
+ cdef void _set_objects_order_text_data(object text_feature_data, Py_ObjectsOrderBuilderVisitor py_builder_visitor) except *:
+-    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(py_builder_visitor.features_layout, EFeatureType_Categorical)
++    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(py_builder_visitor.features_layout, EFeatureType_Categorical)
+
+     cdef ui32 obj_count = len(text_feature_data[0])
+     cdef ui32 text_feature_count = len(text_feature_data)
+@@ -3525,9 +3525,9 @@ cdef _set_features_order_data_scipy_sparse_matrix(
+         raise CatBoostError("only scipy.sparse csr_matrix is supported")
+
+
+-    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
+-    cdef TVector[bool_t] is_text_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Text)
+-    cdef TVector[bool_t] is_embedding_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Embedding)
++    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
++    cdef TVector[ui8] is_text_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Text)
++    cdef TVector[ui8] is_embedding_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Embedding)
+
+     cdef _npindexed_element_t[::1] csr_data_memview = data.data
+     cdef np.int32_t[::1] csr_indices_memview = data.indices
+@@ -3595,7 +3595,7 @@ cdef _set_features_order_data_scipy_sparse_matrix(
+     return new_data_holders
+
+ cdef void _set_features_order_text_data(object text_feature_data, Py_FeaturesOrderBuilderVisitor py_builder_visitor) except *:
+-    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
++    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
+
+     cdef ui32 obj_count = len(text_feature_data[0])
+     cdef ui32 text_feature_count = len(text_feature_data)
+@@ -4162,7 +4162,9 @@ cdef class _PoolBase:
+         cdef IRawFeaturesOrderDataVisitor* builder_visitor = py_builder_visitor.builder_visitor
+         py_builder_visitor.set_features_layout(data_meta_info.FeaturesLayout.Get())
+
+         cdef TVector[ui32] main_data_feature_idx_to_dst_feature_idx
+-        cdef TVector[bool_t] cat_features_mask # used only if data is np.ndarray
++        cdef TVector[ui8] cat_features_mask # used only if data is np.ndarray
++        cdef TVector[ui8] text_features_mask
++        cdef TVector[ui8] embedding_features_mask
+
+         cdef TVector[TIntrusivePtr[IResourceHolder]] resource_holders
+         builder_visitor[0].Start(
+@@ -4217,9 +4219,9 @@ cdef class _PoolBase:
+             _set_features_order_data_ndarray(
+                 data,
+                 <ui32[:main_data_feature_idx_to_dst_feature_idx.size()]>main_data_feature_idx_to_dst_feature_idx.data(),
+-                <bool_t[:features_layout[0].GetExternalFeatureCount()]>cat_features_mask.data(),
+-                <bool_t[:features_layout[0].GetExternalFeatureCount()]>text_features_mask.data(),
+-                <bool_t[:features_layout[0].GetExternalFeatureCount()]>embedding_features_mask.data(),
++                <ui8[:features_layout[0].GetExternalFeatureCount()]>cat_features_mask.data(),
++                <ui8[:features_layout[0].GetExternalFeatureCount()]>text_features_mask.data(),
++                <ui8[:features_layout[0].GetExternalFeatureCount()]>embedding_features_mask.data(),
+                 py_builder_visitor
+             )
+
