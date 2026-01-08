@@ -1,0 +1,59 @@
+--- /dev/null
++++ b/contrib/libs/clapack/ilaslc_impl.c
+@@ -0,0 +1,43 @@
++/*
++ * ilaslc_ - LAPACK auxiliary function
++ *
++ * Finds the last non-zero column of a matrix.
++ * This function is missing from catboost's bundled CLAPACK.
++ *
++ * Reference: https://netlib.org/lapack/explore-html/d6/d44/ilaslc_8f.html
++ */
++
++typedef int integer;
++typedef float real;
++
++integer ilaslc_(integer *m, integer *n, real *a, integer *lda)
++{
++    integer a_dim1, ret_val;
++    integer i, j;
++
++    a_dim1 = *lda;
++
++    /* Quick return if possible */
++    if (*n == 0) {
++        return *n;
++    }
++
++    /* Check the last column first (optimization) */
++    /* a[i + j*lda] accesses element (i,j) in 0-indexed terms */
++    /* LAPACK uses 1-indexed, so we adjust */
++    if (a[0 + (*n - 1) * a_dim1] != 0.f || a[*m - 1 + (*n - 1) * a_dim1] != 0.f) {
++        return *n;
++    }
++
++    /* Scan from the last column backwards */
++    ret_val = 0;
++    for (j = *n; j >= 1; --j) {
++        for (i = 1; i <= *m; ++i) {
++            /* Access element (i,j) using 1-indexed LAPACK convention */
++            if (a[(i - 1) + (j - 1) * a_dim1] != 0.f) {
++                return j;
++            }
++        }
++    }
++
++    return ret_val;
++}
+--- a/contrib/libs/clapack/CMakeLists.linux-x86_64-cuda.txt
++++ b/contrib/libs/clapack/CMakeLists.linux-x86_64-cuda.txt
+@@ -5,4 +5,8 @@
+ # limitations under the License.
+
+ add_subdirectory(part1)
+-add_subdirectory(part2)
++add_subdirectory(part2)
++
++# Add ilaslc_ implementation (missing from bundled CLAPACK)
++add_library(libs-clapack-ilaslc STATIC ilaslc_impl.c)
++target_link_libraries(libs-clapack-part2 INTERFACE libs-clapack-ilaslc)

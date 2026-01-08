@@ -85,6 +85,7 @@ source:
     - patches/fix-maybe-owning-array-holder-const-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-catboost-pyx-vectorbool-data-gcc.patch  # [(gpu_variant or "").startswith('cuda')]
     - patches/fix-setup-jupyterlab-version.patch  # [(gpu_variant or "").startswith('cuda')]
+    - patches/fix-ilaslc-missing-symbol.patch  # [(gpu_variant or "").startswith('cuda')]
 
 build:
   number: {{ build_number }}
@@ -141,8 +142,6 @@ requirements:
     - jupyterlab >=3.0,<4.0                                             # [(gpu_variant or "").startswith('cuda')]
     - cuda-version {{ cuda_compiler_version }}                        # [(gpu_variant or "").startswith('cuda')]
     - cuda-cudart-dev                                                 # [(gpu_variant or "").startswith('cuda')]
-    - liblapack                                                       # [(gpu_variant or "").startswith('cuda')]
-    - libblas                                                         # [(gpu_variant or "").startswith('cuda')]
 
   run:
     - python
@@ -158,9 +157,6 @@ requirements:
 
     # CUDA runtime requirements
     - {{ pin_compatible('cuda-version', max_pin='x.x') }}             # [(gpu_variant or "").startswith('cuda')]
-    - liblapack                                                       # [(gpu_variant or "").startswith('cuda')]
-    - libblas                                                         # [(gpu_variant or "").startswith('cuda')]
-    - libopenblas                                                     # [(gpu_variant or "").startswith('cuda')]
 
   run_constrained:
     - ipywidgets >=7.0,<9.0
@@ -177,10 +173,6 @@ test:
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
     - pip
-  # Set OpenBLAS threading to avoid conflicts with bundled CLAPACK
-  script_env:                                                         # [(gpu_variant or "").startswith('cuda')]
-    - OPENBLAS_NUM_THREADS=1                                          # [(gpu_variant or "").startswith('cuda')]
-    - OMP_NUM_THREADS=1                                               # [(gpu_variant or "").startswith('cuda')]
 
 about:
   home: https://catboost.ai
