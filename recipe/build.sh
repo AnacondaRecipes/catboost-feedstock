@@ -105,9 +105,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         sed -i 's/add_subdirectory(builtins)/# add_subdirectory(builtins)/g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
         sed -i 's/libs-cxxsupp-libcxxcuda11//g' contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
 
-        # Add missing ilaslc.c to CLAPACK part2 build (fixes undefined symbol: ilaslc_)
-        echo "Adding ilaslc.c to CLAPACK part2 build..."
-        sed -i 's|\${PROJECT_SOURCE_DIR}/contrib/libs/clapack/zupmtr.c|${PROJECT_SOURCE_DIR}/contrib/libs/clapack/zupmtr.c\n  ${PROJECT_SOURCE_DIR}/contrib/libs/clapack/ilaslc.c|' \
+        # Add missing LAPACK helper functions to CLAPACK part2 build
+        # These are called by other LAPACK routines but not included in catboost's CLAPACK subset
+        # ilaslc_ = find last column, ilaslr_ = find last row (used by xGEQRFP etc.)
+        echo "Adding ilaslc.c and ilaslr.c to CLAPACK part2 build..."
+        sed -i 's|\${PROJECT_SOURCE_DIR}/contrib/libs/clapack/zupmtr.c|${PROJECT_SOURCE_DIR}/contrib/libs/clapack/zupmtr.c\n  ${PROJECT_SOURCE_DIR}/contrib/libs/clapack/ilaslc.c\n  ${PROJECT_SOURCE_DIR}/contrib/libs/clapack/ilaslr.c|' \
             contrib/libs/clapack/part2/CMakeLists.linux-x86_64-cuda.txt
     fi
 
