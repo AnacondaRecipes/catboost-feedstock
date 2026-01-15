@@ -1,5 +1,5 @@
 # CatBoost CUDA variant configuration
-# Based on conda-forge catboost-feedstock
+# Based on llama.cpp-feedstock pattern (CI/PBP now supports CUDA builds)
 
 # Python versions
 python:
@@ -7,33 +7,31 @@ python:
   - 3.11
   - 3.12
 
-# C stdlib configuration
-c_stdlib:
-  - sysroot                        # [linux]
-  - macosx_deployment_target       # [osx]
-
-c_stdlib_version:
-  - 2.28                           # [linux]
-  - 12.1                           # [osx]
+# NOTE: c_stdlib and c_stdlib_version are intentionally NOT defined here.
+# When defined with only Linux/macOS selectors (no Windows value), conda-build
+# on Windows tries to find a non-existent c_win-64 package. By not defining
+# these, conda-build uses its internal defaults which work correctly on all
+# platforms. See pytorch-feedstock and llama.cpp-feedstock for reference.
 
 # GPU acceleration variants
 # - none: CPU-only build (downloads PyPI wheels)
 # - cuda-12: CUDA-enabled build (builds from source with clang)
 gpu_variant:
   - none
-  - cuda-12                    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+  - cuda-12                    # [linux and x86_64]
 
 # CUDA compiler configuration
-# Note: CatBoost 1.2.8 works best with CUDA 12.0, but conda packages use 12.4
-cuda_compiler_version:         # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  - none                       # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  - 12.0                       # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+# Note: CatBoost 1.2.8 requires CUDA 12.0 (doesn't support 12.3+)
+# See: https://github.com/catboost/catboost/issues/2755
+cuda_compiler_version:         # [linux and x86_64]
+  - none                       # [linux and x86_64]
+  - 12.0                       # [linux and x86_64]
 
-cuda_compiler:                 # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  - cuda-nvcc                  # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+cuda_compiler:                 # [linux and x86_64]
+  - cuda-nvcc                  # [linux and x86_64]
 
 # Zip gpu_variant with cuda_compiler_version
-zip_keys:                      # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-  -                            # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-    - gpu_variant              # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
-    - cuda_compiler_version    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+zip_keys:                      # [linux and x86_64]
+  -                            # [linux and x86_64]
+    - gpu_variant              # [linux and x86_64]
+    - cuda_compiler_version    # [linux and x86_64]
