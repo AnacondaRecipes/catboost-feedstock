@@ -1,0 +1,39 @@
+# CatBoost CUDA variant configuration
+# Based on conda-forge catboost-feedstock
+
+# Python versions
+python:
+  - 3.10
+  - 3.11
+  - 3.12
+
+# C stdlib configuration
+c_stdlib:
+  - sysroot                        # [linux]
+  - macosx_deployment_target       # [osx]
+
+c_stdlib_version:
+  - 2.28                           # [linux]
+  - 12.1                           # [osx]
+
+# GPU acceleration variants
+# - none: CPU-only build (downloads PyPI wheels)
+# - cuda-12: CUDA-enabled build (builds from source with clang)
+gpu_variant:
+  - none
+  - cuda-12                    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+
+# CUDA compiler configuration
+# Note: CatBoost 1.2.8 works best with CUDA 12.0, but conda packages use 12.4
+cuda_compiler_version:         # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+  - none                       # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+  - 12.0                       # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+
+cuda_compiler:                 # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+  - cuda-nvcc                  # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+
+# Zip gpu_variant with cuda_compiler_version
+zip_keys:                      # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+  -                            # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+    - gpu_variant              # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
+    - cuda_compiler_version    # [ANACONDA_ROCKET_ENABLE_CUDA and linux and x86_64]
