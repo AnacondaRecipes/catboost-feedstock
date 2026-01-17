@@ -11,11 +11,10 @@ package:
   version: {{ version }}
 
 source:
-  # Source tarball for CUDA builds
-  url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz  # [(gpu_variant or "").startswith("cuda")]
-  sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd                # [(gpu_variant or "").startswith("cuda")]
-  patches:                                                                                  # [(gpu_variant or "").startswith("cuda")]
-    - patches/conda.diff                                                                    # [(gpu_variant or "").startswith("cuda")]
+  url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
+  patches:                                                                                      # [(gpu_variant or "").startswith("cuda")]
+    - patches/conda.diff                                                                        # [(gpu_variant or "").startswith("cuda")]
 
 build:
   number: {{ build_num }}
