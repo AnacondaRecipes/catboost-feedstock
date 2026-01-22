@@ -42,7 +42,8 @@ requirements:
     - make                            # [(gpu_variant or "").startswith("cuda")]
     - {{ compiler('cxx') }}           # [(gpu_variant or "").startswith("cuda")]
     # Clang is required for CUDA builds (catboost requirement)
-    - clangxx >=15,<16                # [(gpu_variant or "").startswith("cuda")]
+    # Note: conda-forge uses clangxx 15.x, but Anaconda channels only have 14.0.6, 17.0.6+
+    - clangxx >=17,<18                # [(gpu_variant or "").startswith("cuda")]
     - {{ stdlib('c') }}               # [(gpu_variant or "").startswith("cuda")]
     - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
     - lld >=7                         # [(gpu_variant or "").startswith("cuda")]
