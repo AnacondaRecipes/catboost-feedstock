@@ -32,12 +32,13 @@ index 7cb81ff061..a2fb977b04 100644
  set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm")
 
 +# CUDA on Linux requires libstdc++ (not libc++)
-+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
++# Undefine _LIBCPP_VERSION to prevent CUDA header detection issues
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++ -U_LIBCPP_VERSION")
 +
  set(CMAKE_CUDA_COMPILER nvcc)
--set(CMAKE_CUDA_HOST_COMPILER clang-14)
 
- set(CMAKE_CUDA_FLAGS_INIT "--allow-unsupported-compiler")
++# Pass libstdc++ flags to CUDA host compiler
+ set(CMAKE_CUDA_FLAGS_INIT "--allow-unsupported-compiler -Xcompiler=-stdlib=libstdc++ -Xcompiler=-U_LIBCPP_VERSION")
 
 @@ -14,9 +14,6 @@ if (NOT APPLE)
    set(CMAKE_SHARED_LINKER_FLAGS -fuse-ld=lld)
