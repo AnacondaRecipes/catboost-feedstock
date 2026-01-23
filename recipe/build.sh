@@ -16,8 +16,13 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CXX=${HOST}-clang++
         export CC_FOR_BUILD=${BUILD}-clang
         export CXX_FOR_BUILD=${BUILD}-clang++
-        # Use clang as NVCC host compiler (critical for catboost)
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+
+        # CUDA on Linux requires libstdc++ (not libc++ which is clang's default)
+        export CXXFLAGS="${CXXFLAGS} -stdlib=libstdc++"
+        export CFLAGS="${CFLAGS}"
+
+        # Use clang as NVCC host compiler with libstdc++ (critical for catboost)
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=-stdlib=libstdc++"
     fi
 
     # Python configuration for CMake
