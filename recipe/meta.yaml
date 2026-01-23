@@ -40,8 +40,9 @@ requirements:
     - swig >=4.0.2                    # [(gpu_variant or "").startswith("cuda")]
     - cmake >=3.24                    # [(gpu_variant or "").startswith("cuda")]
     - make                            # [(gpu_variant or "").startswith("cuda")]
+    - {{ compiler('c') }}             # [(gpu_variant or "").startswith("cuda")]
+    - {{ compiler('cxx') }}           # [(gpu_variant or "").startswith("cuda")]
     # Clang is required for CUDA builds (catboost requirement)
-    # Note: Using clangxx instead of {{ compiler('cxx') }} to avoid GCC 14.x vs CUDA <13 conflict
     - clangxx >=17,<18                # [(gpu_variant or "").startswith("cuda")]
     - {{ stdlib('c') }}               # [(gpu_variant or "").startswith("cuda")]
     - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
