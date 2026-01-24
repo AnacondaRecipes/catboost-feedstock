@@ -17,15 +17,28 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CC_FOR_BUILD=${BUILD}-clang
         export CXX_FOR_BUILD=${BUILD}-clang++
 
-        # CUDA on Linux requires libstdc++ (not libc++ which is clang's default)
-        # Use --gcc-toolchain to tell clang to use GCC headers/libs instead of libc++
-        # Also undefine _LIBCPP_VERSION to prevent CUDA header detection issues
-        GCC_TOOLCHAIN_FLAGS="--gcc-toolchain=${BUILD_PREFIX} -stdlib=libstdc++ -U_LIBCPP_VERSION"
-        export CXXFLAGS="${CXXFLAGS} ${GCC_TOOLCHAIN_FLAGS}"
+        # CUDA on Linux requires libstdc++ (not libc++)
+        # The conda clang has libc++ headers that define _LIBCPP_VERSION which CUDA rejects
+        # Solution: Use -nostdinc++ to remove default C++ headers, then add libstdc++ explicitly
+
+        # Find GCC version and construct include paths
+        GCC_VERSION=$(${BUILD_PREFIX}/bin/${HOST}-g++ -dumpversion)
+        GCC_INCLUDE="${BUILD_PREFIX}/include/c++/${GCC_VERSION}"
+        GCC_INCLUDE_TARGET="${BUILD_PREFIX}/include/c++/${GCC_VERSION}/${HOST}"
+        GCC_INCLUDE_BACKWARD="${BUILD_PREFIX}/include/c++/${GCC_VERSION}/backward"
+
+        echo "Using GCC ${GCC_VERSION} libstdc++ headers from: ${GCC_INCLUDE}"
+
+        # Build flags: remove default C++ headers, add libstdc++ headers explicitly
+        STDLIB_FLAGS="-nostdinc++ -isystem ${GCC_INCLUDE} -isystem ${GCC_INCLUDE_TARGET} -isystem ${GCC_INCLUDE_BACKWARD}"
+        # Also use C++17 (not gnu++17) to avoid GNU extension issues with CUDA
+        STDLIB_FLAGS="${STDLIB_FLAGS} -std=c++17"
+
+        export CXXFLAGS="${CXXFLAGS} ${STDLIB_FLAGS}"
         export CFLAGS="${CFLAGS}"
 
-        # Use clang as NVCC host compiler with GCC toolchain (critical for catboost)
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=\"${GCC_TOOLCHAIN_FLAGS}\""
+        # Use clang as NVCC host compiler with same flags (critical for catboost)
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=-nostdinc++ -Xcompiler=-isystem -Xcompiler=${GCC_INCLUDE} -Xcompiler=-isystem -Xcompiler=${GCC_INCLUDE_TARGET}"
     fi
 
     # Python configuration for CMake

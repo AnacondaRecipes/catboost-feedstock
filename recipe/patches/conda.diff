@@ -24,21 +24,17 @@ diff --git a/build/toolchains/clang.toolchain b/build/toolchains/clang.toolchain
 index 7cb81ff061..a2fb977b04 100644
 --- a/build/toolchains/clang.toolchain
 +++ b/build/toolchains/clang.toolchain
-@@ -1,11 +1,11 @@
+@@ -1,11 +1,8 @@
 -set(CMAKE_C_COMPILER clang)
 -set(CMAKE_CXX_COMPILER clang++)
 
  set(CMAKE_C_STANDARD_LIBRARIES "-lc -lm")
  set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm")
 
-+# CUDA on Linux requires libstdc++ (not libc++)
-+# Undefine _LIBCPP_VERSION to prevent CUDA header detection issues
-+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++ -U_LIBCPP_VERSION")
-+
  set(CMAKE_CUDA_COMPILER nvcc)
 
-+# Pass libstdc++ flags to CUDA host compiler
- set(CMAKE_CUDA_FLAGS_INIT "--allow-unsupported-compiler -Xcompiler=-stdlib=libstdc++ -Xcompiler=-U_LIBCPP_VERSION")
++# Allow newer CUDA/compiler combinations; libstdc++ flags passed via environment
+ set(CMAKE_CUDA_FLAGS_INIT "--allow-unsupported-compiler")
 
 @@ -14,9 +14,6 @@ if (NOT APPLE)
    set(CMAKE_SHARED_LINKER_FLAGS -fuse-ld=lld)
