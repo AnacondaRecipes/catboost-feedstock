@@ -8,27 +8,23 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
     # Setup Clang compiler (required for catboost CUDA builds)
     if [[ "$target_platform" == "linux-"* ]]; then
-        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${BUILD}-clang++
-        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${BUILD}-clang
-        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${HOST}-clang++
-        ln -sf $BUILD_PREFIX/bin/clang $BUILD_PREFIX/bin/${HOST}-clang
-        export CC=${HOST}-clang
-        export CXX=${HOST}-clang++
-        export CC_FOR_BUILD=${BUILD}-clang
-        export CXX_FOR_BUILD=${BUILD}-clang++
+        # Use raw clang with --gcc-toolchain to bypass conda's libc++ configuration
+        # This forces clang to use GCC's libstdc++ headers exclusively
+        export CC=$BUILD_PREFIX/bin/clang
+        export CXX=$BUILD_PREFIX/bin/clang++
+        export CC_FOR_BUILD=$BUILD_PREFIX/bin/clang
+        export CXX_FOR_BUILD=$BUILD_PREFIX/bin/clang++
 
         # CUDA on Linux requires libstdc++ (not libc++)
-        # CUDA's host_defines.h checks for _LIBCPP_VERSION and errors if found
-        # Solution: Undefine _LIBCPP_VERSION to bypass CUDA's libc++ detection
-        # Also use -stdlib=libstdc++ and C++17 (not gnu++17) to avoid issues
-
-        STDLIB_FLAGS="-stdlib=libstdc++ -U_LIBCPP_VERSION -std=c++17"
+        # CUDA's host_defines.h errors if _LIBCPP_VERSION is defined
+        # Use --gcc-toolchain to force clang to use GCC's headers/libs completely
+        STDLIB_FLAGS="--gcc-toolchain=$BUILD_PREFIX -stdlib=libstdc++ -std=c++17"
 
         export CXXFLAGS="${CXXFLAGS} ${STDLIB_FLAGS}"
         export CFLAGS="${CFLAGS}"
 
-        # Use clang as NVCC host compiler with same flags (critical for catboost)
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=-stdlib=libstdc++ -Xcompiler=-U_LIBCPP_VERSION -Xcompiler=-std=c++17"
+        # Use raw clang as NVCC host compiler with GCC toolchain
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/clang++ -Xcompiler=--gcc-toolchain=$BUILD_PREFIX -Xcompiler=-stdlib=libstdc++ -Xcompiler=-std=c++17"
     fi
 
     # Python configuration for CMake
