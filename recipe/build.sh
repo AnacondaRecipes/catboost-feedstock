@@ -8,23 +8,95 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
     # Setup Clang compiler (required for catboost CUDA builds)
     if [[ "$target_platform" == "linux-"* ]]; then
-        # Use raw clang with --gcc-toolchain to bypass conda's libc++ configuration
-        # This forces clang to use GCC's libstdc++ headers exclusively
+        echo "========== DEBUG: Build Environment =========="
+        echo "BUILD_PREFIX=$BUILD_PREFIX"
+        echo "PREFIX=$PREFIX"
+        echo "HOST=$HOST"
+        echo "BUILD=$BUILD"
+        echo ""
+
+        echo "========== DEBUG: Available compilers =========="
+        ls -la $BUILD_PREFIX/bin/clang* || true
+        ls -la $BUILD_PREFIX/bin/*g++* || true
+        ls -la $BUILD_PREFIX/bin/*gcc* || true
+        echo ""
+
+        echo "========== DEBUG: GCC toolchain location =========="
+        echo "Checking $BUILD_PREFIX/targets/${HOST}:"
+        ls -la $BUILD_PREFIX/targets/${HOST}/ 2>/dev/null || echo "  Directory not found"
+        echo "Checking $BUILD_PREFIX/include/c++:"
+        ls -la $BUILD_PREFIX/include/c++/ 2>/dev/null || echo "  Directory not found"
+        echo ""
+
+        echo "========== DEBUG: GCC search dirs =========="
+        $BUILD_PREFIX/bin/${HOST}-g++ -print-search-dirs 2>/dev/null || echo "  g++ not found"
+        echo ""
+
+        echo "========== DEBUG: Raw clang include paths (no flags) =========="
+        $BUILD_PREFIX/bin/clang++ -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo ""
+
+        echo "========== DEBUG: Clang with -stdlib=libstdc++ =========="
+        $BUILD_PREFIX/bin/clang++ -stdlib=libstdc++ -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo ""
+
+        echo "========== DEBUG: Clang with --gcc-toolchain =========="
+        $BUILD_PREFIX/bin/clang++ --gcc-toolchain=$BUILD_PREFIX -stdlib=libstdc++ -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo ""
+
+        echo "========== DEBUG: Clang with --gcc-toolchain pointing to targets =========="
+        $BUILD_PREFIX/bin/clang++ --gcc-toolchain=$BUILD_PREFIX/targets/${HOST} -stdlib=libstdc++ -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo ""
+
+        echo "========== DEBUG: Check for libc++ headers (c++/v1) =========="
+        find $BUILD_PREFIX -name "v1" -type d 2>/dev/null | head -10 || true
+        find $BUILD_PREFIX -name "__config" 2>/dev/null | head -10 || true
+        echo ""
+
+        echo "========== DEBUG: Check _LIBCPP_VERSION definition =========="
+        echo '#include <cstddef>' | $BUILD_PREFIX/bin/clang++ -stdlib=libstdc++ -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with -stdlib=libstdc++"
+        echo '#include <cstddef>' | $BUILD_PREFIX/bin/clang++ -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined (default)"
+        echo ""
+
+        echo "========== DEBUG: Conda clang wrapper vs raw clang =========="
+        echo "x86_64-conda-linux-gnu-clang++ location:"
+        which ${HOST}-clang++ 2>/dev/null || echo "  Not found in PATH"
+        ls -la $BUILD_PREFIX/bin/${HOST}-clang++ 2>/dev/null || echo "  Not in BUILD_PREFIX"
+        echo ""
+
+        # For now, keep using the approach but with better toolchain path
         export CC=$BUILD_PREFIX/bin/clang
         export CXX=$BUILD_PREFIX/bin/clang++
         export CC_FOR_BUILD=$BUILD_PREFIX/bin/clang
         export CXX_FOR_BUILD=$BUILD_PREFIX/bin/clang++
 
-        # CUDA on Linux requires libstdc++ (not libc++)
-        # CUDA's host_defines.h errors if _LIBCPP_VERSION is defined
-        # Use --gcc-toolchain to force clang to use GCC's headers/libs completely
-        STDLIB_FLAGS="--gcc-toolchain=$BUILD_PREFIX -stdlib=libstdc++ -std=c++17"
+        # Try both toolchain paths and see which works
+        if [ -d "$BUILD_PREFIX/targets/${HOST}" ]; then
+            GCC_TOOLCHAIN="$BUILD_PREFIX/targets/${HOST}"
+        else
+            GCC_TOOLCHAIN="$BUILD_PREFIX"
+        fi
+        echo "========== DEBUG: Using GCC_TOOLCHAIN=$GCC_TOOLCHAIN =========="
+
+        STDLIB_FLAGS="--gcc-toolchain=$GCC_TOOLCHAIN -stdlib=libstdc++ -std=c++17 -U_LIBCPP_VERSION"
 
         export CXXFLAGS="${CXXFLAGS} ${STDLIB_FLAGS}"
         export CFLAGS="${CFLAGS}"
 
-        # Use raw clang as NVCC host compiler with GCC toolchain
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/clang++ -Xcompiler=--gcc-toolchain=$BUILD_PREFIX -Xcompiler=-stdlib=libstdc++ -Xcompiler=-std=c++17"
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/clang++ -Xcompiler=--gcc-toolchain=$GCC_TOOLCHAIN -Xcompiler=-stdlib=libstdc++ -Xcompiler=-std=c++17 -Xcompiler=-U_LIBCPP_VERSION"
+
+        echo "========== DEBUG: Final flags =========="
+        echo "CC=$CC"
+        echo "CXX=$CXX"
+        echo "CXXFLAGS=$CXXFLAGS"
+        echo "NVCC_PREPEND_FLAGS=$NVCC_PREPEND_FLAGS"
+        echo ""
+
+        echo "========== DEBUG: Verify final clang config =========="
+        $CXX $STDLIB_FLAGS -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo '#include <cstddef>' | $CXX $STDLIB_FLAGS -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with final flags"
+        echo "========== END DEBUG =========="
+        echo ""
     fi
 
     # Python configuration for CMake
@@ -59,6 +131,21 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
         mkdir -p bin
         ln -sf ${BUILD_PREFIX}/bin/{swig,ragel,yasm} bin/
+
+        echo "========== DEBUG: Toolchain file after patching =========="
+        cat ${SRC_DIR}/build/toolchains/clang.toolchain
+        echo ""
+        echo "========== DEBUG: CMAKE_ARGS =========="
+        echo "$CMAKE_ARGS"
+        echo ""
+        echo "========== DEBUG: Environment before cmake =========="
+        echo "CC=$CC"
+        echo "CXX=$CXX"
+        echo "CXXFLAGS=$CXXFLAGS"
+        echo "CUDAHOSTCXX=$CUDAHOSTCXX"
+        echo "NVCC_PREPEND_FLAGS=$NVCC_PREPEND_FLAGS"
+        echo "========================================="
+        echo ""
 
         cmake ${CMAKE_ARGS} \
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
