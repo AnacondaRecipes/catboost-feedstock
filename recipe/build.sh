@@ -95,7 +95,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         fi
 
         # Force NVCC to use GCC as host compiler via -ccbin
-        export NVCC_PREPEND_FLAGS="-ccbin=${CUDAHOSTCXX} --allow-unsupported-compiler"
+        # Also pass -B to ensure binutils (ld) is found under BUILD_PREFIX.
+        export NVCC_PREPEND_FLAGS="-ccbin=${CUDAHOSTCXX} --allow-unsupported-compiler -Xcompiler=-B$BUILD_PREFIX/bin"
 
         echo "========== DEBUG: Final flags =========="
         echo "CC=$CC"
