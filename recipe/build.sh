@@ -83,12 +83,19 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CXXFLAGS="${CXXFLAGS} ${STDLIB_FLAGS}"
         export CFLAGS="${CFLAGS}"
 
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/clang++ -Xcompiler=--gcc-toolchain=$GCC_TOOLCHAIN -Xcompiler=-stdlib=libstdc++ -Xcompiler=-std=c++17 -Xcompiler=-U_LIBCPP_VERSION"
+        # Use GCC as NVCC host compiler to avoid libc++ issues
+        # CUDA's bundled libcu++ defines _LIBCPP_VERSION which triggers host_defines.h error
+        # Using GCC as NVCC host compiler completely avoids this issue
+        export CUDAHOSTCXX=$BUILD_PREFIX/bin/${HOST}-g++
+
+        # Force NVCC to use GCC as host compiler via -ccbin
+        export NVCC_PREPEND_FLAGS="-ccbin=${CUDAHOSTCXX} --allow-unsupported-compiler"
 
         echo "========== DEBUG: Final flags =========="
         echo "CC=$CC"
         echo "CXX=$CXX"
         echo "CXXFLAGS=$CXXFLAGS"
+        echo "CUDAHOSTCXX=$CUDAHOSTCXX"
         echo "NVCC_PREPEND_FLAGS=$NVCC_PREPEND_FLAGS"
         echo ""
 
@@ -108,6 +115,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
     # CUDA configuration
     if [[ "$cuda_compiler_version" != "None" ]]; then
+        # Set CUDA host compiler explicitly to GCC via CMake
+        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_HOST_COMPILER=${CUDAHOSTCXX}"
+
+        echo "========== DEBUG: CUDA host compiler =========="
+        echo "CUDAHOSTCXX=$CUDAHOSTCXX"
+        ls -la $CUDAHOSTCXX || echo "  Host compiler not found!"
+        echo ""
+
         # Remove older CUDA architectures for CUDA 12+
         if [[ "$cuda_compiler_version" != "11.8" ]]; then
             find . -name "CMakeLists*cuda.txt" -type f -print0 | xargs -0 sed -i -z -r "s/-gencode\s*=?arch=compute_35,code=sm_35//g"
