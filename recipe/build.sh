@@ -85,8 +85,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
         # Use GCC as NVCC host compiler to avoid libc++ issues
         # CUDA's bundled libcu++ defines _LIBCPP_VERSION which triggers host_defines.h error
-        # Using GCC as NVCC host compiler completely avoids this issue
+        # Using GCC as NVCC host compiler avoids this in the NVCC host compile path.
         export CUDAHOSTCXX=$BUILD_PREFIX/bin/${HOST}-g++
+
+        # Ensure a linker named "ld" is available for nvcc's host link step.
+        # conda provides ${HOST}-ld, but GCC/collect2 looks for "ld".
+        if [[ -x "$BUILD_PREFIX/bin/${HOST}-ld" && ! -x "$BUILD_PREFIX/bin/ld" ]]; then
+            ln -sf "$BUILD_PREFIX/bin/${HOST}-ld" "$BUILD_PREFIX/bin/ld"
+        fi
 
         # Force NVCC to use GCC as host compiler via -ccbin
         export NVCC_PREPEND_FLAGS="-ccbin=${CUDAHOSTCXX} --allow-unsupported-compiler"
