@@ -88,10 +88,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         # Using GCC as NVCC host compiler avoids this in the NVCC host compile path.
         export CUDAHOSTCXX=$BUILD_PREFIX/bin/${HOST}-g++
 
-        # Ensure a linker named "ld" is available for nvcc's host link step.
+        # Ensure linkers are available for nvcc's host link step.
         # conda provides ${HOST}-ld, but GCC/collect2 looks for "ld".
         if [[ -x "$BUILD_PREFIX/bin/${HOST}-ld" && ! -x "$BUILD_PREFIX/bin/ld" ]]; then
             ln -sf "$BUILD_PREFIX/bin/${HOST}-ld" "$BUILD_PREFIX/bin/ld"
+        fi
+        # clang.toolchain sets -fuse-ld=lld, so GCC looks for "ld.lld"
+        if [[ -x "$BUILD_PREFIX/bin/lld" && ! -x "$BUILD_PREFIX/bin/ld.lld" ]]; then
+            ln -sf "$BUILD_PREFIX/bin/lld" "$BUILD_PREFIX/bin/ld.lld"
         fi
 
         # Force NVCC to use GCC as host compiler via -ccbin
