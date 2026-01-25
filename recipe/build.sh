@@ -172,6 +172,13 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
 
+        # Remove Clang-only flags from CUDA-related CMake files.
+        find . -type f \( -name "CMakeLists*cuda*.txt" -o -name "*cuda*.cmake" \) -print0 | xargs -0 sed -i \
+            -e 's/-fcolor-diagnostics//g' \
+            -e 's/-fdebug-default-version=[0-9]*//g' \
+            -e 's/-fuse-init-array//g' \
+            -e 's/-Wimport-preprocessor-directive-pedantic//g'
+
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 
@@ -209,8 +216,16 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
             -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_VERBOSE_MAKEFILE=ON \
             -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
             ..
+
+        echo "========== DEBUG: CMake cache flags =========="
+        grep -E "CMAKE_(C|CXX|CUDA)_FLAGS|CMAKE_(EXE|SHARED)_LINKER_FLAGS" CMakeCache.txt || true
+        echo ""
+        echo "========== DEBUG: Remaining Clang-only flags in build dir =========="
+        rg -n "fcolor-diagnostics|fdebug-default-version|fuse-init-array|import-preprocessor-directive-pedantic" "${SRC_DIR}" || true
+        echo ""
 
         make -j${CPU_COUNT} _catboost _hnsw
         popd
