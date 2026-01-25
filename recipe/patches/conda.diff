@@ -3,9 +3,9 @@ index 93f044a17e..44a625b092 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -19,6 +19,17 @@ endif()
- 
+
  project(CATBOOST LANGUAGES C CXX ASM)
- 
+
 +# Use OpenSSL from system instead of the version provided by conan.
 +#  1. conan supplied FindOpenSSL.cmake provides openssl::openssl
 +#  2. cmake supplied FindOpenSSL.cmake provides OpenSSL::SSL and OpenSSL::Crypto.
@@ -53,7 +53,7 @@ index 0d140f566c..3ff63efbf7 100644
 --- a/catboost/pytest/smoke_tests/classification_tutorial_cpu.py
 +++ b/catboost/pytest/smoke_tests/classification_tutorial_cpu.py
 @@ -42,7 +42,6 @@ except:
- 
+
  #!pip install --user --upgrade catboost
  #!pip install --user --upgrade ipywidgets
 -#!pip install shap
@@ -62,8 +62,8 @@ index 0d140f566c..3ff63efbf7 100644
  #!jupyter nbextension enable --py widgetsnbextension
 @@ -643,24 +642,6 @@ shap_values = shap_values[:,:-1]
  print(shap_values.shape)
- 
- 
+
+
 -import shap
 -shap.initjs()
 -shap.force_plot(expected_value, shap_values[3,:], X.iloc[3,:], show=False)
@@ -83,8 +83,8 @@ index 0d140f566c..3ff63efbf7 100644
 -
 -
  ### Feature evaluation
- 
- 
+
+
 diff --git a/catboost/python-package/pyproject.toml b/catboost/python-package/pyproject.toml
 index e864b0738d..d49f6f20d6 100644
 --- a/catboost/python-package/pyproject.toml
@@ -105,12 +105,12 @@ index 0cef47c1ab..6cb1ee6c3b 100644
 --- a/catboost/python-package/setup.py
 +++ b/catboost/python-package/setup.py
 @@ -95,7 +95,7 @@ def setup_hnsw_submodule(argv, extensions):
- 
- 
+
+
  def get_setup_requires(argv):
 -    setup_requires = ['cmake', 'wheel', 'conan ~= 2.4.1', 'cython ~= 3.0.10', 'numpy']
 +    setup_requires = ['wheel', 'cython ~= 3.0.10', 'numpy']
- 
+
      if ('build_widget' in argv) or (not ('--no-widget' in argv)):
          setup_requires += ['jupyterlab (>=3.0.6, <3.6.0)']
 diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-aarch64.txt b/contrib/libs/cxxsupp/CMakeLists.linux-aarch64.txt
@@ -120,7 +120,7 @@ index a660fcaeda..871123ae20 100644
 @@ -12,7 +12,12 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
- 
+
 -add_subdirectory(libcxx)
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    add_subdirectory(libcxxcuda11)
@@ -132,12 +132,12 @@ index a660fcaeda..871123ae20 100644
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
 @@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
- 
+
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
  )
- 
+
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    target_link_libraries(contrib-libs-cxxsupp INTERFACE
 +      libs-cxxsupp-libcxxcuda11
@@ -149,6 +149,28 @@ index a660fcaeda..871123ae20 100644
 +endif()
 +
 +
+diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+index a660fcaeda..b1c2d3e4f5 100644
+--- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
++++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
+@@ -12,7 +12,8 @@
+ # Please refer to the build instructions in the repository for more information about manual
+ # changes in this file.
+
+-add_subdirectory(libcxxcuda11)
++# Disable libcxxcuda11 to avoid _LIBCPP_VERSION conflict with CUDA host_defines.h
++# add_subdirectory(libcxxcuda11)
+ add_subdirectory(libcxxabi-parts)
+ add_subdirectory(libcxxrt)
+ add_subdirectory(builtins)
+@@ -22,7 +23,8 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+
+ target_link_libraries(contrib-libs-cxxsupp INTERFACE
+   contrib-libs-linux-headers
+-  libs-cxxsupp-libcxxcuda11
++  # Disabled: libs-cxxsupp-libcxxcuda11
+ )
+
 diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-ppc64le.txt b/contrib/libs/cxxsupp/CMakeLists.linux-ppc64le.txt
 index a660fcaeda..871123ae20 100644
 --- a/contrib/libs/cxxsupp/CMakeLists.linux-ppc64le.txt
@@ -156,7 +178,7 @@ index a660fcaeda..871123ae20 100644
 @@ -12,7 +12,12 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
- 
+
 -add_subdirectory(libcxx)
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    add_subdirectory(libcxxcuda11)
@@ -168,12 +190,12 @@ index a660fcaeda..871123ae20 100644
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
 @@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
- 
+
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
  )
- 
+
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    target_link_libraries(contrib-libs-cxxsupp INTERFACE
 +      libs-cxxsupp-libcxxcuda11
@@ -192,7 +214,7 @@ index a660fcaeda..871123ae20 100644
 @@ -12,7 +12,12 @@
  # Please refer to the build instructions in the repository for more information about manual
  # changes in this file.
- 
+
 -add_subdirectory(libcxx)
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    add_subdirectory(libcxxcuda11)
@@ -204,12 +226,12 @@ index a660fcaeda..871123ae20 100644
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
 @@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
- 
+
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
 -  libs-cxxsupp-libcxx
  )
- 
+
 +if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16)
 +    target_link_libraries(contrib-libs-cxxsupp INTERFACE
 +      libs-cxxsupp-libcxxcuda11
@@ -225,29 +247,9 @@ diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt b/c
 index fd3c4bf84f..fd7ce4608d 100644
 --- a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
 +++ b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
-diff --git a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-index a660fcaeda..bbbbbbbbbb 100644
---- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-+++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64-cuda.txt
-@@ -12,7 +12,7 @@
- # Please refer to the build instructions in the repository for more information about manual
- # changes in this file.
- 
--add_subdirectory(libcxxcuda11)
-+# add_subdirectory(libcxxcuda11)
- add_subdirectory(libcxxabi-parts)
- add_subdirectory(libcxxrt)
- add_subdirectory(builtins)
-@@ -22,7 +22,7 @@ add_library(contrib-libs-cxxsupp INTERFACE)
- 
- target_link_libraries(contrib-libs-cxxsupp INTERFACE
-   contrib-libs-linux-headers
--  libs-cxxsupp-libcxxcuda11
-+  # libs-cxxsupp-libcxxcuda11
- )
 @@ -24,16 +24,6 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
  )
- 
+
  target_sources(libs-cxxsupp-builtins PRIVATE
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/extendbfsf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncdfbf2.c
@@ -276,7 +278,7 @@ index fd3c4bf84f..fd7ce4608d 100644
 +++ b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64.txt
 @@ -24,16 +24,6 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
  )
- 
+
  target_sources(libs-cxxsupp-builtins PRIVATE
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/extendbfsf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncdfbf2.c
