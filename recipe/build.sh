@@ -141,6 +141,19 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
     # CUDA configuration
     if [[ "$cuda_compiler_version" != "None" ]]; then
+        # Remove Clang-only flags from env vars that NVCC forwards to GCC.
+        for var in CXXFLAGS CFLAGS CPPFLAGS DEBUG_CXXFLAGS DEBUG_CFLAGS; do
+            value="${!var:-}"
+            if [[ -n "$value" ]]; then
+                value="$(echo "$value" | sed \
+                    -e 's/-fcolor-diagnostics//g' \
+                    -e 's/-fdebug-default-version=[0-9]*//g' \
+                    -e 's/-fuse-init-array//g' \
+                    -e 's/-Wimport-preprocessor-directive-pedantic//g')"
+                export "${var}=${value}"
+            fi
+        done
+
         # Set CUDA host compiler explicitly to GCC via CMake
         CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_HOST_COMPILER=${CUDAHOSTCXX}"
 
