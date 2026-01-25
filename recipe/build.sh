@@ -90,6 +90,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
         # Ensure linkers are available for nvcc's host link step.
         # conda provides ${HOST}-ld, but GCC/collect2 looks for "ld".
+        echo "========== DEBUG: Linker availability =========="
+        echo "PATH=$PATH"
+        echo "which ld: $(command -v ld || echo not found)"
+        echo "which ld.lld: $(command -v ld.lld || echo not found)"
+        echo "which lld: $(command -v lld || echo not found)"
+        ls -la "$BUILD_PREFIX/bin/${HOST}-ld" "$BUILD_PREFIX/bin/ld" 2>/dev/null || true
+        ls -la "$BUILD_PREFIX/bin/lld" "$BUILD_PREFIX/bin/ld.lld" 2>/dev/null || true
+        echo ""
         if [[ -x "$BUILD_PREFIX/bin/${HOST}-ld" && ! -x "$BUILD_PREFIX/bin/ld" ]]; then
             ln -sf "$BUILD_PREFIX/bin/${HOST}-ld" "$BUILD_PREFIX/bin/ld"
         fi
@@ -97,6 +105,10 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         if [[ -x "$BUILD_PREFIX/bin/lld" && ! -x "$BUILD_PREFIX/bin/ld.lld" ]]; then
             ln -sf "$BUILD_PREFIX/bin/lld" "$BUILD_PREFIX/bin/ld.lld"
         fi
+        echo "========== DEBUG: Linker symlinks after setup =========="
+        ls -la "$BUILD_PREFIX/bin/${HOST}-ld" "$BUILD_PREFIX/bin/ld" 2>/dev/null || true
+        ls -la "$BUILD_PREFIX/bin/lld" "$BUILD_PREFIX/bin/ld.lld" 2>/dev/null || true
+        echo ""
 
         # Force NVCC to use GCC as host compiler via -ccbin
         # Also pass -B to ensure binutils (ld) is found under BUILD_PREFIX.
@@ -129,10 +141,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         # Set CUDA host compiler explicitly to GCC via CMake
         CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_HOST_COMPILER=${CUDAHOSTCXX}"
 
-        # clang.toolchain forces -fuse-ld=lld. GCC doesn't search BUILD_PREFIX/bin
-        # for linker tools unless we pass -B, so add it explicitly.
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld\ -B${BUILD_PREFIX}/bin"
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld\ -B${BUILD_PREFIX}/bin"
+        # Clear linker flags - clang.toolchain sets -fuse-ld=lld which GCC can't use
+        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS= -DCMAKE_SHARED_LINKER_FLAGS="
 
         echo "========== DEBUG: CUDA host compiler =========="
         echo "CUDAHOSTCXX=$CUDAHOSTCXX"
@@ -175,6 +185,9 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         echo "CXXFLAGS=$CXXFLAGS"
         echo "CUDAHOSTCXX=$CUDAHOSTCXX"
         echo "NVCC_PREPEND_FLAGS=$NVCC_PREPEND_FLAGS"
+        echo "which ld: $(command -v ld || echo not found)"
+        echo "which ld.lld: $(command -v ld.lld || echo not found)"
+        echo "which lld: $(command -v lld || echo not found)"
         echo "========================================="
         echo ""
 
