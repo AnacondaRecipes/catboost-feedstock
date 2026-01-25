@@ -129,6 +129,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         # Set CUDA host compiler explicitly to GCC via CMake
         CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_HOST_COMPILER=${CUDAHOSTCXX}"
 
+        # clang.toolchain forces -fuse-ld=lld. GCC doesn't search BUILD_PREFIX/bin
+        # for linker tools unless we pass -B, so add it explicitly.
+        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld\ -B${BUILD_PREFIX}/bin"
+        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_SHARED_LINKER_FLAGS=-fuse-ld=lld\ -B${BUILD_PREFIX}/bin"
+
         echo "========== DEBUG: CUDA host compiler =========="
         echo "CUDAHOSTCXX=$CUDAHOSTCXX"
         ls -la $CUDAHOSTCXX || echo "  Host compiler not found!"
