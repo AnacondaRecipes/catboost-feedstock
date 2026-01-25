@@ -126,8 +126,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         echo ""
 
         echo "========== DEBUG: Verify final clang config =========="
-        $CXX $CLANG_CXX_FLAGS -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
-        echo '#include <cstddef>' | $CXX $CLANG_CXX_FLAGS -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with final flags"
+        $CXX ${CLANG_CXX_FLAGS} -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo '#include <cstddef>' | $CXX ${CLANG_CXX_FLAGS} -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with final flags"
         echo "========== END DEBUG =========="
         echo ""
     fi
@@ -138,12 +138,6 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_EXECUTABLE:PATH=${PYTHON}"
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_NumPy_INCLUDE_DIR=${Python3_NumPy_INCLUDE_DIR}"
-
-    # Pass Clang-specific flags via CMAKE_CXX_FLAGS (not CXXFLAGS which leaks to NVCC->GCC)
-    # Escape spaces to prevent splitting into separate CMake args
-    if [[ -n "${CLANG_CXX_FLAGS:-}" ]]; then
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_FLAGS=${CLANG_CXX_FLAGS// /\\ }"
-    fi
 
     # CUDA configuration
     if [[ "$cuda_compiler_version" != "None" ]]; then
@@ -198,6 +192,7 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         echo ""
 
         cmake ${CMAKE_ARGS} \
+            -DCMAKE_CXX_FLAGS="${CLANG_CXX_FLAGS}" \
             -DCMAKE_POSITION_INDEPENDENT_CODE=On \
             -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
             -DCMAKE_BUILD_TYPE=Release \
