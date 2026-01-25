@@ -179,6 +179,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
             -e 's/-fuse-init-array//g' \
             -e 's/-Wimport-preprocessor-directive-pedantic//g'
 
+        # Keep libcxxcuda11 for non-CUDA code, but strip its include path from CUDA builds
+        # so _LIBCPP_VERSION does not leak into CUDA host compilation.
+        find . -type f \( -name "CMakeLists*.txt" -o -name "*.cmake" \) -print0 | xargs -0 sed -i \
+            -e 's|/contrib/libs/cxxsupp/libcxxcuda11/include||g'
+
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 
