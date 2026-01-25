@@ -172,8 +172,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
 
-        # Remove Clang-only flags from CUDA-related CMake files.
-        find . -type f \( -name "CMakeLists*cuda*.txt" -o -name "*cuda*.cmake" \) -print0 | xargs -0 sed -i \
+        # Remove Clang-only flags from all CMake inputs to avoid leaking into NVCC/GCC.
+        find . -type f \( -name "CMakeLists*.txt" -o -name "*.cmake" -o -name "*.toolchain" \) -print0 | xargs -0 sed -i \
             -e 's/-fcolor-diagnostics//g' \
             -e 's/-fdebug-default-version=[0-9]*//g' \
             -e 's/-fuse-init-array//g' \
