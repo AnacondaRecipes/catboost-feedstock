@@ -163,7 +163,7 @@ index a660fcaeda..b1c2d3e4f5 100644
  add_subdirectory(libcxxabi-parts)
  add_subdirectory(libcxxrt)
  add_subdirectory(builtins)
-@@ -22,7 +23,8 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+@@ -22,6 +23,6 @@ add_library(contrib-libs-cxxsupp INTERFACE)
 
  target_link_libraries(contrib-libs-cxxsupp INTERFACE
    contrib-libs-linux-headers
