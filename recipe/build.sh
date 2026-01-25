@@ -78,9 +78,11 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         fi
         echo "========== DEBUG: Using GCC_TOOLCHAIN=$GCC_TOOLCHAIN =========="
 
-        STDLIB_FLAGS="--gcc-toolchain=$GCC_TOOLCHAIN -stdlib=libstdc++ -std=c++17 -U_LIBCPP_VERSION"
+        # Clang-specific flags - pass via CMAKE_CXX_FLAGS, NOT CXXFLAGS
+        # CXXFLAGS gets passed to NVCC which forwards to GCC, causing errors
+        CLANG_CXX_FLAGS="--gcc-toolchain=$GCC_TOOLCHAIN -stdlib=libstdc++ -std=c++17 -U_LIBCPP_VERSION"
 
-        export CXXFLAGS="${CXXFLAGS} ${STDLIB_FLAGS}"
+        # Keep CXXFLAGS clean - don't add Clang-specific flags here
         export CFLAGS="${CFLAGS}"
 
         # Use GCC as NVCC host compiler to avoid libc++ issues
@@ -118,13 +120,14 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         echo "CC=$CC"
         echo "CXX=$CXX"
         echo "CXXFLAGS=$CXXFLAGS"
+        echo "CLANG_CXX_FLAGS=$CLANG_CXX_FLAGS"
         echo "CUDAHOSTCXX=$CUDAHOSTCXX"
         echo "NVCC_PREPEND_FLAGS=$NVCC_PREPEND_FLAGS"
         echo ""
 
         echo "========== DEBUG: Verify final clang config =========="
-        $CXX $STDLIB_FLAGS -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
-        echo '#include <cstddef>' | $CXX $STDLIB_FLAGS -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with final flags"
+        $CXX $CLANG_CXX_FLAGS -v -E -x c++ /dev/null 2>&1 | grep -A 20 "include" || true
+        echo '#include <cstddef>' | $CXX $CLANG_CXX_FLAGS -dM -E -x c++ - 2>/dev/null | grep LIBCPP || echo "  _LIBCPP_VERSION not defined with final flags"
         echo "========== END DEBUG =========="
         echo ""
     fi
@@ -136,13 +139,16 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_INCLUDE_DIR:PATH=${Python3_INCLUDE_DIR}"
     CMAKE_ARGS="${CMAKE_ARGS} -DPython3_NumPy_INCLUDE_DIR=${Python3_NumPy_INCLUDE_DIR}"
 
+    # Pass Clang-specific flags via CMAKE_CXX_FLAGS (not CXXFLAGS which leaks to NVCC->GCC)
+    # Escape spaces to prevent splitting into separate CMake args
+    if [[ -n "${CLANG_CXX_FLAGS:-}" ]]; then
+        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CXX_FLAGS=${CLANG_CXX_FLAGS// /\\ }"
+    fi
+
     # CUDA configuration
     if [[ "$cuda_compiler_version" != "None" ]]; then
         # Set CUDA host compiler explicitly to GCC via CMake
         CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_HOST_COMPILER=${CUDAHOSTCXX}"
-
-        # Clear linker flags - clang.toolchain sets -fuse-ld=lld which GCC can't use
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS= -DCMAKE_SHARED_LINKER_FLAGS="
 
         echo "========== DEBUG: CUDA host compiler =========="
         echo "CUDAHOSTCXX=$CUDAHOSTCXX"
