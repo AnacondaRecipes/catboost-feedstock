@@ -346,7 +346,7 @@ diff --git a/util/system/file.h b/util/system/file.h
 index 1ff9b3a8c2..5f9e16b56a 100644
 --- a/util/system/file.h
 +++ b/util/system/file.h
-@@ -1,6 +1,7 @@
+@@ -1,5 +1,6 @@
  #pragma once
  
 +#include <filesystem>
@@ -357,7 +357,7 @@ diff --git a/util/stream/file.h b/util/stream/file.h
 index 4d0c64b18e..f8b8c4bada 100644
 --- a/util/stream/file.h
 +++ b/util/stream/file.h
-@@ -1,6 +1,7 @@
+@@ -1,4 +1,5 @@
  #pragma once
  
 +#include <filesystem>
