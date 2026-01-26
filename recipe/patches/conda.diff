@@ -368,13 +368,10 @@ diff --git a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h b/libra
 index 8bfc1a2a69..bd0a7c4d2b 100644
 --- a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
 +++ b/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
-@@ -1,5 +1,6 @@
- #pragma once
- 
+@@ -2,1 +2,2 @@
+-#include "concepts.h"
 +#include <cstddef>
- #include "concepts.h"
- 
- /* Concepts:
++#include "concepts.h"
 diff --git a/contrib/libs/libc_compat/reallocarray/stdlib.h b/contrib/libs/libc_compat/reallocarray/stdlib.h
 index 4b7a4d8b6b..21b4d0a50d 100644
 --- a/contrib/libs/libc_compat/reallocarray/stdlib.h
