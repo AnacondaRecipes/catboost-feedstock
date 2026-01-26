@@ -187,6 +187,10 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 
+    # Fix stlfwd includes - the shim is in util/generic/, so use quotes not angle brackets
+    # This is needed because libcxxcuda11 is disabled to avoid _LIBCPP_VERSION conflicts
+    find . -path ./cmake_build -prune -o -name "*.h" -type f -print0 | xargs -0 sed -i 's/#include <stlfwd>/#include "stlfwd"/g'
+
     # Restrict CUDA compilation parallelism
     cp ci/cmake/cuda.cmake cmake/cuda.cmake
 
