@@ -364,3 +364,31 @@ index 4d0c64b18e..f8b8c4bada 100644
  #include "fwd.h"
  #include "input.h"
 
+diff --git a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h b/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
+index 8bfc1a2a69..bd0a7c4d2b 100644
+--- a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
++++ b/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <cstddef>
+ #include "concepts.h"
+ 
+ /* Concepts:
+diff --git a/contrib/libs/libc_compat/reallocarray/stdlib.h b/contrib/libs/libc_compat/reallocarray/stdlib.h
+index 4b7a4d8b6b..21b4d0a50d 100644
+--- a/contrib/libs/libc_compat/reallocarray/stdlib.h
++++ b/contrib/libs/libc_compat/reallocarray/stdlib.h
+@@ -15,6 +15,10 @@ extern "C" {
+ #endif
+ 
+-void* reallocarray(void*, size_t, size_t);
++#if defined(__cplusplus) && __cplusplus >= 201103L
++void* reallocarray(void*, size_t, size_t) noexcept;
++#else
++void* reallocarray(void*, size_t, size_t) throw();
++#endif
+ 
+ #ifdef __cplusplus
+ } // extern "C"
+
