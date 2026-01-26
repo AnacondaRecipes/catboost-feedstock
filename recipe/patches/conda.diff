@@ -306,19 +306,21 @@ diff --git a/util/generic/fwd.h b/util/generic/fwd.h
 index 901b0da2d4..6c463f5b46 100644
 --- a/util/generic/fwd.h
 +++ b/util/generic/fwd.h
-@@ -3,6 +3,6 @@
+@@ -3,7 +3,7 @@
  #include <util/system/defaults.h>
  
 -#include <stlfwd>
 +#include "stlfwd"
  
  template <typename TCharType, typename TTraits = std::char_traits<TCharType>>
+ class TBasicString;
+ 
 diff --git a/util/generic/stlfwd b/util/generic/stlfwd
 new file mode 100644
 index 0000000000..c3f4527f4d
 --- /dev/null
 +++ b/util/generic/stlfwd
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +#pragma once
 +
 +// Shim header to provide STL declarations without libcxxcuda11.
@@ -339,3 +341,4 @@ index 0000000000..c3f4527f4d
 +#include <functional>
 +#include <array>
 +#include <tuple>
+
