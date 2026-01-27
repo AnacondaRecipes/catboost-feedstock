@@ -1,0 +1,10 @@
+diff --git a/library/cpp/containers/flat_hash/lib/probings.h b/library/cpp/containers/flat_hash/lib/probings.h
+--- a/library/cpp/containers/flat_hash/lib/probings.h
++++ b/library/cpp/containers/flat_hash/lib/probings.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <cstddef>
+ #include <util/system/types.h>
+
+ namespace NFlatHash {
