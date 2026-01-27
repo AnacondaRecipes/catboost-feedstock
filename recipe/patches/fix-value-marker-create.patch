@@ -1,0 +1,12 @@
+diff --git a/library/cpp/containers/flat_hash/lib/value_markers.h b/library/cpp/containers/flat_hash/lib/value_markers.h
+--- a/library/cpp/containers/flat_hash/lib/value_markers.h
++++ b/library/cpp/containers/flat_hash/lib/value_markers.h
+@@ -107,7 +107,7 @@ public:
+         return *this;
+     }
+
+-    auto Create() const noexcept { return std::tie(Key_, Value_); }
++    auto Create() const noexcept { return std::pair<Key, T>{Key_, Value_}; }
+
+     template <class U>
+     bool Equals(const U& rhs) const {

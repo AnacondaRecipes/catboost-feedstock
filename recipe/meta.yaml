@@ -16,6 +16,7 @@ source:
   patches:                                                                                      # [(gpu_variant or "").startswith("cuda")]
     - patches/conda.diff                                                                        # [(gpu_variant or "").startswith("cuda")]
     - patches/reallocarray-c-compat.patch                                                       # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-value-marker-create.patch                                                     # [(gpu_variant or "").startswith("cuda")]
 
 build:
   number: {{ build_num }}
