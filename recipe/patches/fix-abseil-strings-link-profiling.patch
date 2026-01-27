@@ -1,0 +1,10 @@
+--- a/contrib/restricted/abseil-cpp-tstring/y_absl/strings/CMakeLists.linux-x86_64-cuda.txt
++++ b/contrib/restricted/abseil-cpp-tstring/y_absl/strings/CMakeLists.linux-x86_64-cuda.txt
+@@ -27,6 +27,7 @@ target_link_libraries(abseil-cpp-tstring-y_absl-strings PUBLIC
+   yutil
+   abseil-cpp-tstring-y_absl-base
+   abseil-cpp-tstring-y_absl-numeric
++  abseil-cpp-tstring-y_absl-profiling
+ )
+
+ target_sources(abseil-cpp-tstring-y_absl-strings PRIVATE

@@ -44,6 +44,11 @@ source:
     - patches/fix-ysaveload-vectorbool-gcc.patch                                                # [(gpu_variant or "").startswith("cuda")]
     # local vector<bool> handling to avoid global TArrayRef specialization
     - patches/fix-calc-score-cache-bool-control.patch                                           # [(gpu_variant or "").startswith("cuda")]
+    # Linker fix: re-add default libs when using -nodefaultlibs (from PR #9)
+    - patches/fix-nodefaultlibs-add-libc.patch                                                  # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-abseil-strings-link-profiling.patch                                           # [(gpu_variant or "").startswith("cuda")]
+    # CUDA build fixes (from PR #9)
+    - patches/disable-bfloat16-builtins-x86_64-cuda.patch                                       # [(gpu_variant or "").startswith("cuda")]
 
 build:
   number: {{ build_num }}
