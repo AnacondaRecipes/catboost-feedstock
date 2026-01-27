@@ -1,0 +1,9 @@
+diff --git a/library/cpp/containers/flat_hash/lib/expanders.h b/library/cpp/containers/flat_hash/lib/expanders.h
+--- a/library/cpp/containers/flat_hash/lib/expanders.h
++++ b/library/cpp/containers/flat_hash/lib/expanders.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <cstddef>
+
+ namespace NFlatHash {
