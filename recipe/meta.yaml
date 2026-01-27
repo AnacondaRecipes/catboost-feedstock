@@ -24,6 +24,11 @@ source:
     - patches/fix-size-fitters-include.patch                                                    # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-iterator-include.patch                                                        # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-containers-include.patch                                                      # [(gpu_variant or "").startswith("cuda")]
+    # Missing <limits> for std::numeric_limits
+    - patches/fix-ref-counted-limits.patch                                                      # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-yt-string-limits.patch                                                        # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-yt-format-limits.patch                                                        # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-yt-cast-limits.patch                                                          # [(gpu_variant or "").startswith("cuda")]
 
 build:
   number: {{ build_num }}

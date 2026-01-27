@@ -1,0 +1,9 @@
+--- a/library/cpp/yt/misc/cast.h
++++ b/library/cpp/yt/misc/cast.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <limits>
+ #include "enum.h"
+
+ #include <library/cpp/yt/exception/exception.h>

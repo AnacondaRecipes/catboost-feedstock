@@ -1,0 +1,9 @@
+--- a/library/cpp/yt/memory/ref_counted-inl.h
++++ b/library/cpp/yt/memory/ref_counted-inl.h
+@@ -9,6 +9,7 @@
+ #include <util/system/sanitizers.h>
+
+ #include <stdlib.h>
++#include <limits>
+
+ namespace NYT {

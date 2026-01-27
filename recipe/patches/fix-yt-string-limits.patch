@@ -1,0 +1,9 @@
+--- a/library/cpp/yt/string/string.h
++++ b/library/cpp/yt/string/string.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <limits>
+ #include "format_arg.h"
+
+ #include <util/datetime/base.h>

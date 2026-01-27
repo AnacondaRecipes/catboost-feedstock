@@ -1,0 +1,9 @@
+--- a/library/cpp/yt/string/format.h
++++ b/library/cpp/yt/string/format.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <limits>
+ #include "format_string.h"
+ #include "string_builder.h"
+
