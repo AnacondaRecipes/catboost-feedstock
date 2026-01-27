@@ -1,0 +1,14 @@
+--- a/catboost/private/libs/distributed/master.cpp
++++ b/catboost/private/libs/distributed/master.cpp
+@@ -416,8 +416,9 @@ int MapGetRedundantSplitIdx(TLearnContext* ctx) {
+
+     for (size_t workerIdx = 1; workerIdx < validWorkersSize; ++workerIdx) {
+         for (int leafIdx = 0; leafIdx < isLeafEmptyFromAllWorkers[0].ysize(); ++leafIdx) {
+-            isLeafEmptyFromAllWorkers[validWorkers[0]][leafIdx]
+-                &= isLeafEmptyFromAllWorkers[validWorkers[workerIdx]][leafIdx];
++            bool val = isLeafEmptyFromAllWorkers[validWorkers[0]][leafIdx]
++                && isLeafEmptyFromAllWorkers[validWorkers[workerIdx]][leafIdx];
++            isLeafEmptyFromAllWorkers[validWorkers[0]][leafIdx] = val;
+         }
+     }
+     return GetRedundantSplitIdx(isLeafEmptyFromAllWorkers[validWorkers[0]]);

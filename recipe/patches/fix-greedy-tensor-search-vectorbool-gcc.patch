@@ -1,0 +1,13 @@
+--- a/catboost/private/libs/algo/greedy_tensor_search.cpp
++++ b/catboost/private/libs/algo/greedy_tensor_search.cpp
+@@ -1128,9 +1128,8 @@ TMap<ui32, TVector<bool>>* usedFeatures
+         const auto externalFeatureIndex = layout.GetExternalFeatureIdx(internalFeatureIndex, type);
+         auto it = usedFeatures->find(externalFeatureIndex);
+         if (it != usedFeatures->end()) { //if we want to keep this feature usage by objects
+-            TArrayRef<bool> perObjectUsage(it->second);
+             for (const auto idx : docsSubset) {
+-                perObjectUsage[idx] = true;
++                it->second[idx] = true;
+             }
+         }
+     };

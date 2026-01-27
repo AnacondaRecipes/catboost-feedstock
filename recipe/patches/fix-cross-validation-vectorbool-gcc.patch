@@ -1,0 +1,11 @@
+--- a/catboost/libs/train_lib/cross_validation.cpp
++++ b/catboost/libs/train_lib/cross_validation.cpp
+@@ -218,7 +218,7 @@ private:
+
+ static TVector<double> GetMetricValues(
+     TConstArrayRef<THolder<IMetric>> metrics,
+-    TConstArrayRef<bool> skipMetric,
++    const TVector<bool>& skipMetric,
+     const THashMap<TString, double>& iterationMetrics
+ ) {
+     TVector<double> result;

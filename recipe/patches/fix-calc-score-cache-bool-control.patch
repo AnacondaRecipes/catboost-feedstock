@@ -1,0 +1,30 @@
+--- a/catboost/private/libs/algo/calc_score_cache.cpp
++++ b/catboost/private/libs/algo/calc_score_cache.cpp
+@@ -75,7 +75,13 @@ void TCalcScoreFold::TVectorSlicing::CreateByControl(
+     NPar::ILocalExecutor* localExecutor
+ ) {
+     Slices.yresize(docBlockParams.GetBlockCount());
+-    const bool* controlData = GetDataPtr(control);
++    TVector<ui8> controlBytes;
++    controlBytes.yresize(control.size());
++    for (size_t i = 0; i < control.size(); ++i) {
++        controlBytes[i] = control[i] ? 1 : 0;
++    }
++    const ui8* controlData = controlBytes.data();
+     TSlice* slicesData = GetDataPtr(Slices);
+     localExecutor->ExecRange(
+         [=](int sliceIdx) {
+@@ -132,7 +138,13 @@ void TCalcScoreFold::TVectorSlicing::CreateByQueriesInfoAndControl(
+     dstQueriesInfo->resize(srcQueriesInfo.size());
+     Slices.yresize(queryBlockParams.GetBlockCount());
+ 
+-    const bool* controlData = GetDataPtr(control);
++    TVector<ui8> controlBytes;
++    controlBytes.yresize(control.size());
++    for (size_t i = 0; i < control.size(); ++i) {
++        controlBytes[i] = control[i] ? 1 : 0;
++    }
++    const ui8* controlData = controlBytes.data();
+     localExecutor->ExecRange(
+         [&](int sliceIdx) {
+             int beginQueryIdx = queryBlockParams.GetBlockSize() * sliceIdx;

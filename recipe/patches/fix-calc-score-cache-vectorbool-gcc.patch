@@ -1,0 +1,45 @@
+--- a/catboost/private/libs/algo/calc_score_cache.h
++++ b/catboost/private/libs/algo/calc_score_cache.h
+@@ -15,6 +15,8 @@
+ #include <library/cpp/deprecated/atomic/atomic.h>
+ #include <util/system/info.h>
+ #include <util/system/spinlock.h>
++
++#include <type_traits>
+
+
+ struct TRestorableFastRng64;
+@@ -41,13 +43,27 @@ static inline const TData* GetDataPtr(TConstArrayRef<TData> data, size_t offset
+     return data.empty() ? nullptr : data.data() + offset;
+ }
+
+-template <typename TData, typename TAlloc>
+-static inline TData* GetDataPtr(TVector<TData, TAlloc>& data, size_t offset = 0) {
+-    return GetDataPtr(TArrayRef<TData>(data), offset);
++template <typename TData, typename TAlloc,
++          typename = std::enable_if_t<!std::is_same_v<TData, bool>>>
++static inline TData* GetDataPtr(TVector<TData, TAlloc>& data, size_t offset = 0) {
++    return data.empty() ? nullptr : data.data() + offset;
+ }
+
+-template <typename TData, typename TAlloc>
++template <typename TData, typename TAlloc,
++          typename = std::enable_if_t<!std::is_same_v<TData, bool>>>
+ static inline const TData* GetDataPtr(const TVector<TData, TAlloc>& data, size_t offset = 0) {
+-    return GetDataPtr(TConstArrayRef<TData>(data), offset);
++    return data.empty() ? nullptr : data.data() + offset;
++}
++
++// Explicit overloads for vector<bool> - these return nullptr as vector<bool>
++// cannot provide raw pointer access (it stores packed bits)
++template <typename TAlloc>
++static inline bool* GetDataPtr(TVector<bool, TAlloc>& /*data*/, size_t /*offset*/ = 0) {
++    return nullptr;
++}
++
++template <typename TAlloc>
++static inline const bool* GetDataPtr(const TVector<bool, TAlloc>& /*data*/, size_t /*offset*/ = 0) {
++    return nullptr;
+ }
+
+ static inline float GetBernoulliSampleRate(
