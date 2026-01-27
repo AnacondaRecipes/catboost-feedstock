@@ -1,0 +1,19 @@
+diff --git a/contrib/libs/libc_compat/reallocarray/stdlib.h b/contrib/libs/libc_compat/reallocarray/stdlib.h
+--- a/contrib/libs/libc_compat/reallocarray/stdlib.h
++++ b/contrib/libs/libc_compat/reallocarray/stdlib.h
+@@ -15,7 +15,15 @@ extern "C" {
+ #endif
+
+-void* reallocarray(void*, size_t, size_t);
++#if defined(__cplusplus)
++#if __cplusplus >= 201103L
++void* reallocarray(void*, size_t, size_t) noexcept;
++#else
++void* reallocarray(void*, size_t, size_t) throw();
++#endif
++#else
++void* reallocarray(void*, size_t, size_t);
++#endif
+
+ #ifdef __cplusplus
+ } // extern "C"
