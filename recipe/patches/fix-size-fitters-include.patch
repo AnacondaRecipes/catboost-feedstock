@@ -1,0 +1,9 @@
+--- a/library/cpp/containers/flat_hash/lib/size_fitters.h
++++ b/library/cpp/containers/flat_hash/lib/size_fitters.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <cstddef>
+ #include "concepts/size_fitter.h"
+ 
+ #include <util/system/yassert.h>

@@ -1,0 +1,10 @@
+--- a/library/cpp/containers/flat_hash/lib/probings.h
++++ b/library/cpp/containers/flat_hash/lib/probings.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <type_traits>
++#include <cstddef>
+ 
+ namespace NFlatHash {
+ 

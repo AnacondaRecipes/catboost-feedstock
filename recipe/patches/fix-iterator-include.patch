@@ -1,0 +1,9 @@
+--- a/library/cpp/containers/flat_hash/lib/iterator.h
++++ b/library/cpp/containers/flat_hash/lib/iterator.h
+@@ -1,5 +1,6 @@
+ #pragma once
+ 
++#include <cstddef>
+ #include "concepts/container.h"
+ 
+ #include <util/system/yassert.h>

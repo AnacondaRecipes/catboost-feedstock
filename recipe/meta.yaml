@@ -13,14 +13,17 @@ package:
 source:
   url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
-  patches:
-    # C++ compatibility patches for GCC 14+ (apply to all builds)
-    - patches/fix-expanders-cstddef.patch
-    - patches/fix-probings-cstddef.patch
-    # CUDA-specific patches
+  patches:                                                                                      # [(gpu_variant or "").startswith("cuda")]
     - patches/conda.diff                                                                        # [(gpu_variant or "").startswith("cuda")]
     - patches/reallocarray-c-compat.patch                                                       # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-value-marker-create.patch                                                     # [(gpu_variant or "").startswith("cuda")]
+    # Missing <cstddef> includes (from PR #9)
+    - patches/fix-expanders-include.patch                                                       # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-size-fitter-include.patch                                                     # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-probings-include.patch                                                        # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-size-fitters-include.patch                                                    # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-iterator-include.patch                                                        # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-containers-include.patch                                                      # [(gpu_variant or "").startswith("cuda")]
 
 build:
   number: {{ build_num }}

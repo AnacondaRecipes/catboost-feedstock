@@ -364,13 +364,3 @@ index 4d0c64b18e..f8b8c4bada 100644
  #include "fwd.h"
  #include "input.h"
 
-diff --git a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h b/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
-index 8bfc1a2a69..bd0a7c4d2b 100644
---- a/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
-+++ b/library/cpp/containers/flat_hash/lib/concepts/size_fitter.h
-@@ -1,4 +1,5 @@
- #pragma once
- 
-+#include <cstddef>
- #include <type_traits>
-
