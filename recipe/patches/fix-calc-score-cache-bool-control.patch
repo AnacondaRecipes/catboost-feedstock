@@ -1,6 +1,6 @@
 --- a/catboost/private/libs/algo/calc_score_cache.cpp
 +++ b/catboost/private/libs/algo/calc_score_cache.cpp
-@@ -75,7 +75,13 @@ void TCalcScoreFold::TVectorSlicing::CreateByControl(
+@@ -75,7 +75,12 @@ void TCalcScoreFold::TVectorSlicing::CreateByControl(
      NPar::ILocalExecutor* localExecutor
  ) {
      Slices.yresize(docBlockParams.GetBlockCount());
@@ -14,7 +14,7 @@
      TSlice* slicesData = GetDataPtr(Slices);
      localExecutor->ExecRange(
          [=](int sliceIdx) {
-@@ -132,7 +138,13 @@ void TCalcScoreFold::TVectorSlicing::CreateByQueriesInfoAndControl(
+@@ -132,7 +137,12 @@ void TCalcScoreFold::TVectorSlicing::CreateByQueriesInfoAndControl(
      dstQueriesInfo->resize(srcQueriesInfo.size());
      Slices.yresize(queryBlockParams.GetBlockCount());
  
