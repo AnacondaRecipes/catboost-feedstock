@@ -1,0 +1,41 @@
+--- a/catboost/libs/model/model.h
++++ b/catboost/libs/model/model.h
+@@ -339,31 +339,31 @@
+     }
+ 
+     TConstArrayRef<TCatFeature> GetCatFeatures() const noexcept {
+-        return TConstArrayRef<TCatFeature>(CatFeatures.begin(), CatFeatures.end());
++        return TConstArrayRef<TCatFeature>(CatFeatures);
+     }
+ 
+     TConstArrayRef<TFloatFeature> GetFloatFeatures() const noexcept {
+-        return TConstArrayRef<TFloatFeature>(FloatFeatures.begin(), FloatFeatures.end());
++        return TConstArrayRef<TFloatFeature>(FloatFeatures);
+     }
+ 
+     TConstArrayRef<TOneHotFeature> GetOneHotFeatures() const noexcept {
+-        return TConstArrayRef<TOneHotFeature>(OneHotFeatures.begin(), OneHotFeatures.end());
++        return TConstArrayRef<TOneHotFeature>(OneHotFeatures);
+     }
+ 
+     TConstArrayRef<TCtrFeature> GetCtrFeatures() const noexcept {
+-        return TConstArrayRef<TCtrFeature>(CtrFeatures.begin(), CtrFeatures.end());
++        return TConstArrayRef<TCtrFeature>(CtrFeatures);
+     }
+ 
+     TConstArrayRef<TTextFeature> GetTextFeatures() const noexcept {
+-        return TConstArrayRef<TTextFeature>(TextFeatures.begin(), TextFeatures.end());
++        return TConstArrayRef<TTextFeature>(TextFeatures);
+     }
+ 
+     TConstArrayRef<TEmbeddingFeature> GetEmbeddingFeatures() const noexcept {
+-        return TConstArrayRef<TEmbeddingFeature>(EmbeddingFeatures.begin(), EmbeddingFeatures.end());
++        return TConstArrayRef<TEmbeddingFeature>(EmbeddingFeatures);
+     }
+ 
+     TConstArrayRef<TEstimatedFeature> GetEstimatedFeatures() const noexcept {
+-        return TConstArrayRef<TEstimatedFeature>(EstimatedFeatures.begin(), EstimatedFeatures.end());
++        return TConstArrayRef<TEstimatedFeature>(EstimatedFeatures);
+     }
+ 
+     void SetApproxDimension(int approxDimension) {

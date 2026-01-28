@@ -1,0 +1,71 @@
+--- a/catboost/libs/helpers/sparse_array-inl.h
++++ b/catboost/libs/helpers/sparse_array-inl.h
+@@ -572,14 +572,15 @@
+         const auto& blockBitmaps = sparseSubsetHybridIndex.BlockBitmaps;
+ 
+         const TSize* blockIndicesCurrent
+-            = LowerBound(blockIndices.begin(), blockIndices.end(), beginBlockIdx);
++            = blockIndices.data() + (std::lower_bound(blockIndices.begin(), blockIndices.end(), beginBlockIdx) - blockIndices.begin());
++        const TSize* blockIndicesEnd = blockIndices.data() + blockIndices.size();
+ 
+-        const TSize blockOffset = blockIndicesCurrent - blockIndices.begin();
+-        const ui64* blockBitmapsCurrent = blockBitmaps.begin() + blockOffset;
++        const TSize blockOffset = blockIndicesCurrent - blockIndices.data();
++        const ui64* blockBitmapsCurrent = blockBitmaps.data() + blockOffset;
+ 
+         TSize inBlockIdx;
+         TSize nonDefaultInBlockBeforeBegin;
+-        if ((blockIndicesCurrent != blockIndices.end()) && (beginBlockIdx == *blockIndicesCurrent)) {
++        if ((blockIndicesCurrent != blockIndicesEnd) && (beginBlockIdx == *blockIndicesCurrent)) {
+             inBlockIdx = begin % TSparseSubsetHybridIndex<TSize>::BLOCK_SIZE;
+             if (*blockBitmapsCurrent >> inBlockIdx) {
+                 nonDefaultInBlockBeforeBegin
+@@ -597,13 +598,13 @@
+ 
+         *nonDefaultBegin
+             = std::accumulate(
+-                blockBitmaps.begin(),
++                blockBitmaps.data(),
+                 blockBitmapsCurrent,
+                 nonDefaultInBlockBeforeBegin,
+                 [] (TSize sum, ui64 element) { return sum + (TSize)std::popcount(element); });
+ 
+         iteratorData->BlockIndicesCurrent = blockIndicesCurrent;
+-        iteratorData->BlockIndicesEnd = blockIndices.end();
++        iteratorData->BlockIndicesEnd = blockIndicesEnd;
+         iteratorData->BlockBitmapsCurrent = blockBitmapsCurrent;
+         iteratorData->InBlockIdx = inBlockIdx;
+     }
+@@ -715,8 +716,8 @@
+     template <class TSize>
+     TSparseArrayIndexing<TSize> TSparseSubsetBlocksBuilder<TSize>::Build(TMaybe<TSize> size) {
+         if (NonOrdered && (BlockStarts.size() > 1)) {
+-            TDoubleArrayIterator<TSize, TSize> beginIter{BlockStarts.begin(), BlockLengths.begin()};
+-            TDoubleArrayIterator<TSize, TSize> endIter{BlockStarts.end(), BlockLengths.end()};
++            TDoubleArrayIterator<TSize, TSize> beginIter{BlockStarts.data(), BlockLengths.data()};
++            TDoubleArrayIterator<TSize, TSize> endIter{BlockStarts.data() + BlockStarts.size(), BlockLengths.data() + BlockLengths.size()};
+ 
+             Sort(beginIter, endIter, [](auto lhs, auto rhs) { return lhs.first < rhs.first; });
+ 
+@@ -767,8 +768,8 @@
+     template <class TSize>
+     TSparseArrayIndexing<TSize> TSparseSubsetHybridIndexBuilder<TSize>::Build(TMaybe<TSize> size) {
+         if (NonOrdered && (BlockIndices.size() > 1)) {
+-            TDoubleArrayIterator<TSize, ui64> beginIter{BlockIndices.begin(), BlockBitmaps.begin()};
+-            TDoubleArrayIterator<TSize, ui64> endIter{BlockIndices.end(), BlockBitmaps.end()};
++            TDoubleArrayIterator<TSize, ui64> beginIter{BlockIndices.data(), BlockBitmaps.data()};
++            TDoubleArrayIterator<TSize, ui64> endIter{BlockIndices.data() + BlockIndices.size(), BlockBitmaps.data() + BlockBitmaps.size()};
+ 
+             Sort(beginIter, endIter, [](auto lhs, auto rhs) { return lhs.first < rhs.first; });
+ 
+@@ -1268,8 +1269,8 @@
+         }
+ 
+         if (!ordered) {
+-            TDoubleArrayIterator<TSize, TSrcValue> dstBegin{indexing.begin(), nonDefaultValues.begin()};
+-            TDoubleArrayIterator<TSize, TSrcValue> dstEnd{indexing.end(), nonDefaultValues.end()};
++            TDoubleArrayIterator<TSize, TSrcValue> dstBegin{indexing.data(), nonDefaultValues.data()};
++            TDoubleArrayIterator<TSize, TSrcValue> dstEnd{indexing.data() + indexing.size(), nonDefaultValues.data() + nonDefaultValues.size()};
+ 
+             Sort(dstBegin, dstEnd, [](auto lhs, auto rhs) { return lhs.first < rhs.first; });
+         }

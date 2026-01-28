@@ -1,0 +1,12 @@
+--- a/catboost/private/libs/algo/model_quantization_adapter.cpp
++++ b/catboost/private/libs/algo/model_quantization_adapter.cpp
+@@ -82,7 +82,7 @@ namespace {
+                         if (rawFeaturesBlockIterator.GetFloatValues()[featurePosition.FlatIndex]) {
+                             featuresVec[i][featurePosition.Index] = rawFeatureAccessor.GetFloatAccessor()(featurePosition, i);
+                         }
+                     }
+-                    featuresVecSecond[i] = MakeArrayRef(featuresVec[i].begin(), featuresVec[i].end());
++                    featuresVecSecond[i] = MakeArrayRef(featuresVec[i]);
+                 }
+
+                 IQuantizedData* iQuantizedData = reinterpret_cast<IQuantizedData*>(ResultGpu.Get());

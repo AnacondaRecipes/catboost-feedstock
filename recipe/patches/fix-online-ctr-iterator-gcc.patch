@@ -1,0 +1,29 @@
+--- a/catboost/private/libs/algo/online_ctr.cpp
++++ b/catboost/private/libs/algo/online_ctr.cpp
+@@ -890,8 +890,8 @@ static void CalcFinalCtrsImpl(
+         leafCount = ComputeReindexHash(
+             ctrLeafCountLimit,
+             &tmpHash,
+-            hashArr->begin(),
+-            hashArr->begin() + totalSampleCount);
++            hashArr->data(),
++            hashArr->data() + totalSampleCount);
+         auto hashIndexBuilder = result->GetIndexHashBuilder(leafCount);
+         for (const auto& kv : tmpHash) {
+             hashIndexBuilder.SetIndex(kv.first, kv.second);
+@@ -964,12 +964,12 @@ void CalcFinalCtrs(
+         *datasetDataForFinalCtrs.Data.Learn->ObjectsData,
+         learnFeaturesSubsetIndexing,
+         &perfectHashedToHashedCatValuesMap,
+-        hashArr.begin(),
+-        hashArr.begin() + learnSampleCount,
++        hashArr.data(),
++        hashArr.data() + learnSampleCount,
+         localExecutor
+     );
+     if (totalSampleCount > learnSampleCount) {
+-        ui64* testHashBegin = hashArr.begin() + learnSampleCount;
++        ui64* testHashBegin = hashArr.data() + learnSampleCount;
+         for (const auto& testDataPtr : datasetDataForFinalCtrs.Data.Test) {
+             ui64* testHashEnd = testHashBegin + testDataPtr->GetObjectCount();
+             CalcHashes(

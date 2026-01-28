@@ -1,0 +1,20 @@
+--- a/catboost/libs/helpers/vector_helpers.h
++++ b/catboost/libs/helpers/vector_helpers.h
+@@ -75,7 +75,7 @@ inline TArrayRef<typename TArrayLike::value_type> GetSlice(TArrayLike& array, si
+     if (array.empty()) {
+         return TArrayRef<typename TArrayLike::value_type>();
+     }
+-    return TArrayRef<typename TArrayLike::value_type>(array.begin() + offset, count);
++    return TArrayRef<typename TArrayLike::value_type>(array.data() + offset, count);
+ }
+
+ template <typename TArrayLike, typename TIsDefined>
+@@ -125,7 +125,7 @@ inline TVector<TArrayRef<T>> To2DArrayRef(T2DArrayLike& array, size_t offset, si
+ inline static TVector<TConstArrayRef<T>> To2DConstArrayRef(const T2DArrayLike& array, size_t offset, size_t count) {
+     auto arrayView = TVector<TConstArrayRef<T>>();
+     for (const auto& subArray : array) {
+-        arrayView.emplace_back(MakeArrayRef(subArray.begin() + offset, count));
++        arrayView.emplace_back(MakeArrayRef(subArray.data() + offset, count));
+     }
+     return arrayView;
+ }

@@ -1,0 +1,15 @@
+--- a/catboost/libs/model/model_build_helper.cpp
++++ b/catboost/libs/model/model_build_helper.cpp
+@@ -104,9 +104,9 @@
+     }
+     trees->SetFloatFeatures(std::move(FloatFeatures));
+ 
+-    MakeFeaturesUnused(MakeArrayRef(CatFeatures.begin(), CatFeatures.end()));
+-    MakeFeaturesUnused(MakeArrayRef(TextFeatures.begin(), TextFeatures.end()));
+-    MakeFeaturesUnused(MakeArrayRef(EmbeddingFeatures.begin(), EmbeddingFeatures.end()));
++    MakeFeaturesUnused(MakeArrayRef(CatFeatures));
++    MakeFeaturesUnused(MakeArrayRef(TextFeatures));
++    MakeFeaturesUnused(MakeArrayRef(EmbeddingFeatures));
+ 
+     trees->SetCatFeatures(std::move(CatFeatures));
+     trees->SetTextFeatures(std::move(TextFeatures));

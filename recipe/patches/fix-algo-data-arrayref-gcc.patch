@@ -1,0 +1,11 @@
+--- a/catboost/private/libs/algo/data.cpp
++++ b/catboost/private/libs/algo/data.cpp
+@@ -59,7 +59,7 @@ namespace NCB {
+         TVector<TConstArrayRef<float>> bordersInInitModel;
+         bordersInInitModel.reserve((*initModel)->ModelTrees.GetMutable()->GetFloatFeatures().size());
+         for (const auto& floatFeature : (*initModel)->ModelTrees.GetMutable()->GetFloatFeatures()) {
+-            bordersInInitModel.emplace_back(floatFeature.Borders.begin(), floatFeature.Borders.end());
++            bordersInInitModel.emplace_back(floatFeature.Borders.data(), floatFeature.Borders.size());
+         }
+         return bordersInInitModel;
+     }
