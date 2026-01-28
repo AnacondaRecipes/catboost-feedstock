@@ -29,7 +29,8 @@ index 7cb81ff061..a2fb977b04 100644
 -set(CMAKE_CXX_COMPILER clang++)
 -
  set(CMAKE_C_STANDARD_LIBRARIES "-lc -lm")
- set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm")
+-set(CMAKE_CXX_STANDARD_LIBRARIES "-lc -lm")
++set(CMAKE_CXX_STANDARD_LIBRARIES "-lstdc++ -lm -ldl -lgcc_s -lc")
  
  set(CMAKE_CUDA_COMPILER nvcc)
 -set(CMAKE_CUDA_HOST_COMPILER clang-14)

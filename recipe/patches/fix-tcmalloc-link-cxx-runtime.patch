@@ -1,0 +1,15 @@
+--- a/contrib/libs/tcmalloc/no_percpu_cache/CMakeLists.txt
++++ b/contrib/libs/tcmalloc/no_percpu_cache/CMakeLists.txt
+@@ -44,6 +44,12 @@ target_compile_options(libs-tcmalloc-no_percpu_cache.global PRIVATE
+   $<IF:$<CXX_COMPILER_ID:MSVC>,,-Wno-everything>
+ )
+ 
++# Link C++ runtime libraries explicitly for tcmalloc
++# This is needed because tcmalloc contains C++ code but may be linked
++# into targets that don't otherwise use the C++ linker
++target_link_libraries(libs-tcmalloc-no_percpu_cache.global PRIVATE
++  stdc++ gcc_s c m dl)
++
+ target_link_libraries(libs-tcmalloc-no_percpu_cache.global PUBLIC
+   contrib-libs-linux-headers
+   contrib-libs-cxxsupp
