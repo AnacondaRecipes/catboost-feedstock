@@ -24,25 +24,67 @@
      cdef ui32 doc_count = data_frame.shape[0]
  
      cdef TString factor_string
-@@ -3148,7 +3148,7 @@
+@@ -3148,8 +3148,9 @@
      cdef ui32 num_feature_count = <ui32>(num_feature_values.shape[1] if num_feature_values is not None else 0)
      cdef ui32 cat_feature_count = <ui32>(cat_feature_values.shape[1] if cat_feature_values is not None else 0)
  
 -    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
+-    cdef TConstArrayRef[bool_t] is_cat_feature_ref = <TConstArrayRef[bool_t]>is_cat_feature_mask
 +    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(features_layout, EFeatureType_Categorical)
-     cdef TConstArrayRef[bool_t] is_cat_feature_ref = <TConstArrayRef[bool_t]>is_cat_feature_mask
++    # Construct TConstArrayRef from raw pointer (ui8 and bool have compatible memory layout)
++    cdef TConstArrayRef[bool_t] is_cat_feature_ref = TConstArrayRef[bool_t](<bool_t*>is_cat_feature_mask.data(), is_cat_feature_mask.size())
      cdef TConstArrayRef[bool_t] empty_mask
  
-@@ -3338,7 +3338,7 @@
+     cdef ui32 doc_idx
+@@ -3220,7 +3221,7 @@
+     ui32 feature_idx,
+     value,
+     bool_t is_float_value,
+-    TConstArrayRef[bool_t] is_cat_feature_mask,
++    TConstArrayRef[ui8] is_cat_feature_mask,
+     TString * factor_string_buf,
+     IRawObjectsOrderDataVisitor * builder_visitor
+ ):
+@@ -3239,7 +3240,7 @@
+ cdef _set_data_from_scipy_bsr_sparse(
+     data,
+     TConstArrayRef[ui32] main_data_feature_idx_to_dst_feature_idx,
+-    TConstArrayRef[bool_t] is_cat_feature_mask,
++    TConstArrayRef[ui8] is_cat_feature_mask,
+     IRawObjectsOrderDataVisitor * builder_visitor
+ ):
+     data_shape = np.shape(data)
+@@ -3292,7 +3293,7 @@
+     row,
+     col,
+     TConstArrayRef[ui32] main_data_feature_idx_to_dst_feature_idx,
+-    TConstArrayRef[bool_t] is_cat_feature_mask,
++    TConstArrayRef[ui8] is_cat_feature_mask,
+     IRawObjectsOrderDataVisitor * builder_visitor
+ ):
+     cdef int nonzero_count = data.shape[0]
+@@ -3338,8 +3339,9 @@
      )
      cdef TConstArrayRef[ui32] main_data_feature_idx_to_dst_feature_idx_ref = <TConstArrayRef[ui32]>main_data_feature_idx_to_dst_feature_idx
  
 -    cdef TVector[bool_t] is_cat_feature_mask = _get_is_feature_type_mask(py_builder_visitor.features_layout, EFeatureType_Categorical)
+-    cdef TConstArrayRef[bool_t] is_cat_feature_ref = <TConstArrayRef[bool_t]>is_cat_feature_mask
 +    cdef TVector[ui8] is_cat_feature_mask = _get_is_feature_type_mask(py_builder_visitor.features_layout, EFeatureType_Categorical)
-     cdef TConstArrayRef[bool_t] is_cat_feature_ref = <TConstArrayRef[bool_t]>is_cat_feature_mask
++    # Construct TConstArrayRef from raw pointer (ui8 and bool have compatible memory layout)
++    cdef TConstArrayRef[bool_t] is_cat_feature_ref = TConstArrayRef[bool_t](<bool_t*>is_cat_feature_mask.data(), is_cat_feature_mask.size())
  
      def cast_to_nparray(array, dtype):
-@@ -3525,9 +3525,9 @@
+         if isinstance(array, np.ndarray) and array.dtype == dtype and array.flags.c_contiguous:
+@@ -3481,7 +3483,7 @@
+ cdef _set_data_from_scipy_lil_sparse(
+     data,
+     TConstArrayRef[ui32] main_data_feature_idx_to_dst_feature_idx,
+-    TConstArrayRef[bool_t] is_cat_feature_mask,
++    TConstArrayRef[ui8] is_cat_feature_mask,
+     IRawObjectsOrderDataVisitor * builder_visitor
+ ):
+     data_shape = np.shape(data)
+@@ -3525,9 +3527,9 @@
      _set_cat_features_default_values_for_scipy_sparse(features_layout, builder_visitor)
  
      cdef TVector[ui32] main_data_feature_idx_to_dst_feature_idx = _get_main_data_feature_idx_to_dst_feature_idx(features_layout, has_separate_embedding_features_data)
@@ -55,7 +97,42 @@
      if features_layout.GetTextFeatureCount():
          raise CatBoostError('Text features reading is not supported in sparse matrix format')
      if (not has_separate_embedding_features_data) and features_layout.GetEmbeddingFeatureCount():
-@@ -3595,7 +3595,7 @@
+@@ -3537,7 +3539,7 @@
+         _set_data_from_scipy_bsr_sparse(
+             data,
+             <TConstArrayRef[ui32]>main_data_feature_idx_to_dst_feature_idx,
+-            <TConstArrayRef[bool_t]>is_cat_feature_mask,
++            <TConstArrayRef[ui8]>is_cat_feature_mask,
+             builder_visitor
+         )
+     elif isinstance(data, scipy.sparse.coo_matrix):
+@@ -3546,7 +3548,7 @@
+             data.row,
+             data.col,
+             <TConstArrayRef[ui32]>main_data_feature_idx_to_dst_feature_idx,
+-            <TConstArrayRef[bool_t]>is_cat_feature_mask,
++            <TConstArrayRef[ui8]>is_cat_feature_mask,
+             builder_visitor
+         )
+     elif isinstance(data, scipy.sparse.csr_matrix):
+@@ -3566,14 +3568,14 @@
+             coo_matrix.row,
+             coo_matrix.col,
+             <TConstArrayRef[ui32]>main_data_feature_idx_to_dst_feature_idx,
+-            <TConstArrayRef[bool_t]>is_cat_feature_mask,
++            <TConstArrayRef[ui8]>is_cat_feature_mask,
+             builder_visitor
+         )
+     elif isinstance(data, scipy.sparse.lil_matrix):
+         _set_data_from_scipy_lil_sparse(
+             data,
+             <TConstArrayRef[ui32]>main_data_feature_idx_to_dst_feature_idx,
+-            <TConstArrayRef[bool_t]>is_cat_feature_mask,
++            <TConstArrayRef[ui8]>is_cat_feature_mask,
+             builder_visitor
+         )
+ 
+@@ -3595,7 +3597,7 @@
      py_builder_visitor.get_features_layout(&features_layout)
  
      cdef TVector[ui32] main_data_feature_idx_to_dst_feature_idx = _get_main_data_feature_idx_to_dst_feature_idx(features_layout, has_separate_embedding_features_data)
@@ -64,7 +141,7 @@
  
      cdef np.float32_t float_default_value = 0.0
      cdef TString cat_default_value = to_arcadia_string(b"0")
-@@ -3723,9 +3723,9 @@
+@@ -3723,9 +3725,9 @@
      cdef int cat_feature_idx
  
      cdef TVector[ui32] main_data_feature_idx_to_dst_feature_idx = _get_main_data_feature_idx_to_dst_feature_idx(features_layout, has_separate_embedding_features_data)
@@ -77,7 +154,7 @@
      cdef TVector[ui32] embedding_dimensions
  
      # TODO(akhropov): make yresize accessible in Cython
-@@ -4162,7 +4162,7 @@
+@@ -4162,7 +4164,7 @@
          py_builder_visitor.set_features_layout(data_meta_info.FeaturesLayout.Get())
  
          cdef TVector[ui32] main_data_feature_idx_to_dst_feature_idx
@@ -86,7 +163,7 @@
  
          cdef TVector[TIntrusivePtr[IResourceHolder]] resource_holders
          builder_visitor[0].Start(
-@@ -4217,9 +4217,9 @@
+@@ -4217,9 +4219,9 @@
              _set_features_order_data_ndarray(
                  data,
                  <ui32[:main_data_feature_idx_to_dst_feature_idx.size()]>main_data_feature_idx_to_dst_feature_idx.data(),
