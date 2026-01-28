@@ -1,0 +1,11 @@
+--- a/catboost/private/libs/algo_helpers/error_functions.h
++++ b/catboost/private/libs/algo_helpers/error_functions.h
+@@ -1561,7 +1561,7 @@
+
+     inline double NormalDensity(double x, double mean, double sigma) const {
+         const long double z = Sqr((x - mean) / sigma);
+-        return std::expl(-z / 2.0) * INV_SQRT_2PI / sigma;
++        return std::exp(static_cast<double>(-z / 2.0)) * INV_SQRT_2PI / sigma;
+     }
+
+     inline double NormalDensityDiff(double x1, double x2, double mean, double sigma) const {

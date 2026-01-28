@@ -1,0 +1,119 @@
+--- a/catboost/libs/helpers/array_subset.h
++++ b/catboost/libs/helpers/array_subset.h
+@@ -238,7 +238,7 @@
+                 [](const TFullSubset<TSize>& subset) { return subset.Size; },
+                 [](const TRangesSubset<TSize>& subset) { return subset.Size; },
+                 [](const TIndexedSubset<TSize>& subset) -> TSize { return subset.size(); }
+-            }, *this);
++            }, static_cast<const TBase&>(*this));
+         }
+ 
+         // number of elements for TFullSubset or TIndexedSubset, number of ranges for TRangesSubset
+@@ -247,7 +247,7 @@
+                 [](const TFullSubset<TSize>& subset) -> TSize { return subset.Size; },
+                 [](const TRangesSubset<TSize>& subset) -> TSize { return subset.Blocks.size(); },
+                 [](const TIndexedSubset<TSize>& subset) -> TSize { return subset.size(); }
+-            }, *this);
++            }, static_cast<const TBase&>(*this));
+         }
+ 
+         // Had to redefine Get because automatic resolution does not work with current std::variant implementation
+@@ -290,7 +290,7 @@
+                     }
+                     return indices[0];
+                 }
+-            }, *this);
++            }, static_cast<const TBase&>(*this));
+         }
+ 
+         bool IsConsecutive() const {
+@@ -349,7 +349,7 @@
+                     );
+                 },
+                 [&](const TIndexedSubset<TSize>&) { return unitRange; }
+-            }, *this);
++            }, static_cast<const TBase&>(*this));
+         }
+ 
+ // need to be able to use 'break' or 'return' in iteration
+@@ -570,7 +570,7 @@
+ struct TDumper<NCB::TArraySubsetIndexing<TSize>> {
+     template <class S>
+     static inline void Dump(S& s, const NCB::TArraySubsetIndexing<TSize>& subset) {
+-        std::visit(NCB::TDumperArraySubsetVisitor<S, TSize>(s), subset);
++        std::visit(NCB::TDumperArraySubsetVisitor<S, TSize>(s), static_cast<const typename NCB::TArraySubsetIndexing<TSize>::TBase&>(subset));
+     }
+ };
+ 
+@@ -605,7 +605,7 @@
+                     );
+                 }
+             }
+-        }, srcSubset);
++        }, static_cast<const typename TArraySubsetIndexing<TSize>::TBase&>(srcSubset));
+     }
+ 
+ 
+@@ -721,7 +721,7 @@
+             },
+             [&](const TRangesSubset<TSize>& ranges) { return Compose(src, ranges); },
+             [&](const TIndexedSubset<TSize>& indices) { return Compose(src, indices); },
+-        }, srcSubset);
++        }, static_cast<const typename TArraySubsetIndexing<TSize>::TBase&>(srcSubset));
+     }
+ 
+     template <class TSize = size_t>
+@@ -783,7 +783,7 @@
+             },
+             [&](const TRangesSubset<TSize>& ranges) { return Compose(src, ranges); },
+             [&](const TIndexedSubset<TSize>& indices) { return Compose(src, indices); },
+-        }, srcSubset);
++        }, static_cast<const typename TArraySubsetIndexing<TSize>::TBase&>(srcSubset));
+     }
+ 
+ 
+@@ -796,7 +796,7 @@
+     ) {
+         return ::std::visit([&](const auto& val) {
+             return Compose(val, srcSubset);
+-        }, src);
++        }, static_cast<const typename TArraySubsetIndexing<TSize>::TBase&>(src));
+     }
+ 
+ 
+@@ -1090,7 +1090,7 @@
+                     std::move(transformer)
+                 );
+             }
+-        }, *subsetIndexing);
++        }, static_cast<const typename TArraySubsetIndexing<ui32>::TBase&>(*subsetIndexing));
+     }
+ 
+     template <class TDstValue, class TArrayLike>
+@@ -1163,7 +1163,7 @@
+         TSize GetSize() const {
+             return std::visit(
+                 [&] (const auto& variant) { return variant.GetSize(); },
+-                *this
++                static_cast<const TBase&>(*this)
+             );
+         }
+ 
+@@ -1171,7 +1171,7 @@
+             std::visit(TOverloaded{
+                 [](const TFullSubset<TSize>& subset) { return subset.GetSize(); },
+                 [](const TInvertedIndexedSubset<TSize>& inverted) { return inverted.GetMapping().size(); }
+-            }, *this);
++            }, static_cast<const TBase&>(*this));
+         }
+     };
+ 
+@@ -1289,7 +1289,7 @@
+ struct TDumper<NCB::TArraySubsetInvertedIndexing<TSize>> {
+     template <class S>
+     static inline void Dump(S& s, const NCB::TArraySubsetInvertedIndexing<TSize>& invertedSubset) {
+-        std::visit(NCB::TDumperArraySubsetInvertedIndexingVisitor<S, TSize>(s), invertedSubset);
++        std::visit(NCB::TDumperArraySubsetInvertedIndexingVisitor<S, TSize>(s), static_cast<const typename NCB::TArraySubsetInvertedIndexing<TSize>::TBase&>(invertedSubset));
+     }
+ };
+ 

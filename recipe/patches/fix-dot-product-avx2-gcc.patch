@@ -1,0 +1,154 @@
+--- a/library/cpp/dot_product/dot_product_avx2.cpp
++++ b/library/cpp/dot_product/dot_product_avx2.cpp
+@@ -15,41 +15,41 @@
+         return i64(-1) ^ ((i64(1) << (64 - n)) - 1);
+     }
+ 
+-    constexpr __m256 BlendMask64[8] = {
+-        __m256i{Bits(64), Bits(64), Bits(64), Bits(64)},
+-        __m256i{0, Bits(64), Bits(64), Bits(64)},
+-        __m256i{0, 0, Bits(64), Bits(64)},
+-        __m256i{0, 0, 0, Bits(64)},
++    constexpr __m256i BlendMask64[8] = {
++        {Bits(64), Bits(64), Bits(64), Bits(64)},
++        {0, Bits(64), Bits(64), Bits(64)},
++        {0, 0, Bits(64), Bits(64)},
++        {0, 0, 0, Bits(64)},
+     };
+ 
+-    constexpr __m256 BlendMask32[8] = {
+-        __m256i{Bits(64), Bits(64), Bits(64), Bits(64)},
+-        __m256i{Bits(32), Bits(64), Bits(64), Bits(64)},
+-        __m256i{0, Bits(64), Bits(64), Bits(64)},
+-        __m256i{0, Bits(32), Bits(64), Bits(64)},
+-        __m256i{0, 0, Bits(64), Bits(64)},
+-        __m256i{0, 0, Bits(32), Bits(64)},
+-        __m256i{0, 0, 0, Bits(64)},
+-        __m256i{0, 0, 0, Bits(32)},
++    constexpr __m256i BlendMask32[8] = {
++        {Bits(64), Bits(64), Bits(64), Bits(64)},
++        {Bits(32), Bits(64), Bits(64), Bits(64)},
++        {0, Bits(64), Bits(64), Bits(64)},
++        {0, Bits(32), Bits(64), Bits(64)},
++        {0, 0, Bits(64), Bits(64)},
++        {0, 0, Bits(32), Bits(64)},
++        {0, 0, 0, Bits(64)},
++        {0, 0, 0, Bits(32)},
+     };
+ 
+-    constexpr __m128 BlendMask8[16] = {
+-        __m128i{Bits(64), Bits(64)},
+-        __m128i{Bits(56), Bits(64)},
+-        __m128i{Bits(48), Bits(64)},
+-        __m128i{Bits(40), Bits(64)},
+-        __m128i{Bits(32), Bits(64)},
+-        __m128i{Bits(24), Bits(64)},
+-        __m128i{Bits(16), Bits(64)},
+-        __m128i{Bits(8), Bits(64)},
+-        __m128i{0, Bits(64)},
+-        __m128i{0, Bits(56)},
+-        __m128i{0, Bits(48)},
+-        __m128i{0, Bits(40)},
+-        __m128i{0, Bits(32)},
+-        __m128i{0, Bits(24)},
+-        __m128i{0, Bits(16)},
+-        __m128i{0, Bits(8)},
++    constexpr __m128i BlendMask8[16] = {
++        {Bits(64), Bits(64)},
++        {Bits(56), Bits(64)},
++        {Bits(48), Bits(64)},
++        {Bits(40), Bits(64)},
++        {Bits(32), Bits(64)},
++        {Bits(24), Bits(64)},
++        {Bits(16), Bits(64)},
++        {Bits(8), Bits(64)},
++        {0, Bits(64)},
++        {0, Bits(56)},
++        {0, Bits(48)},
++        {0, Bits(40)},
++        {0, Bits(32)},
++        {0, Bits(24)},
++        {0, Bits(16)},
++        {0, Bits(8)},
+     };
+ 
+     // See https://stackoverflow.com/a/60109639
+@@ -78,7 +78,7 @@
+     }
+ 
+     // Horizontal sum of four double values in an avx register
+-    double HsumDouble(__m256 v) {
++    double HsumDouble(__m256d v) {
+         __m128d x = _mm_add_pd(_mm256_castpd256_pd128(v), _mm256_extractf128_pd(v, 1));
+         x = _mm_add_pd(x, _mm_shuffle_pd(x, x, 1));
+         return _mm_cvtsd_f64(x);
+@@ -97,7 +97,7 @@
+     template <size_t size, class TInput, class TExtend>
+     i32 DotProductInt8Avx2_Unroll(const TInput* lhs, const TInput* rhs, TExtend extend) noexcept {
+         static_assert(size % 16 == 0);
+-        auto sum = _mm256_setzero_ps();
++        auto sum = _mm256_setzero_si256();
+         for (size_t i = 0; i != size; i += 16) {
+             sum = _mm256_add_epi32(sum, _mm256_madd_epi16(extend(Load128i(lhs + i)), extend(Load128i(rhs + i))));
+         }
+@@ -115,13 +115,13 @@
+             case 64: return DotProductInt8Avx2_Unroll<64>(lhs, rhs, extend);
+         }
+ 
+-        __m256i sum = _mm256_setzero_ps();
++        __m256i sum = _mm256_setzero_si256();
+ 
+         if (const auto leftover = length % 16; leftover != 0) {
+             auto a = _mm_blendv_epi8(
+-                    Load128i(lhs), _mm_setzero_ps(), BlendMask8[leftover]);
++                    Load128i(lhs), _mm_setzero_si128(), BlendMask8[leftover]);
+             auto b = _mm_blendv_epi8(
+-                    Load128i(rhs), _mm_setzero_ps(), BlendMask8[leftover]);
++                    Load128i(rhs), _mm_setzero_si128(), BlendMask8[leftover]);
+ 
+             sum = _mm256_madd_epi16(extend(a), extend(b));
+ 
+@@ -179,14 +179,14 @@
+     if (length < 16) {
+         return DotProductSse(lhs, rhs, length);
+     }
+-    __m256i res = _mm256_setzero_ps();
++    __m256i res = _mm256_setzero_si256();
+ 
+     if (const auto leftover = length % 8; leftover != 0) {
+         // Use floating-point blendv. Who cares as long as the size is right.
+-        __m256i a = _mm256_blendv_ps(
+-                Load256i(lhs), _mm256_setzero_ps(), BlendMask32[leftover]);
+-        __m256i b = _mm256_blendv_ps(
+-                Load256i(rhs), _mm256_setzero_ps(), BlendMask32[leftover]);
++        __m256i a = _mm256_castps_si256(_mm256_blendv_ps(
++                _mm256_castsi256_ps(Load256i(lhs)), _mm256_setzero_ps(), _mm256_castsi256_ps(BlendMask32[leftover])));
++        __m256i b = _mm256_castps_si256(_mm256_blendv_ps(
++                _mm256_castsi256_ps(Load256i(rhs)), _mm256_setzero_ps(), _mm256_castsi256_ps(BlendMask32[leftover])));
+ 
+         res = _mm256_mul_epi32(a, b);
+         a = _mm256_alignr_epi8(a, a, 4);
+@@ -223,9 +223,9 @@
+ 
+     if (const auto leftover = length % 8; leftover != 0) {
+         a1 = _mm256_blendv_ps(
+-                _mm256_loadu_ps(lhs), _mm256_setzero_ps(), BlendMask32[leftover]);
++                _mm256_loadu_ps(lhs), _mm256_setzero_ps(), _mm256_castsi256_ps(BlendMask32[leftover]));
+         b1 = _mm256_blendv_ps(
+-                _mm256_loadu_ps(rhs), _mm256_setzero_ps(), BlendMask32[leftover]);
++                _mm256_loadu_ps(rhs), _mm256_setzero_ps(), _mm256_castsi256_ps(BlendMask32[leftover]));
+         sum1 = _mm256_mul_ps(a1, b1);
+         lhs += leftover;
+         rhs += leftover;
+@@ -265,9 +265,9 @@
+ 
+     if (const auto leftover = length % 4; leftover != 0) {
+         a1 = _mm256_blendv_pd(
+-                _mm256_loadu_pd(lhs), _mm256_setzero_ps(), BlendMask64[leftover]);
++                _mm256_loadu_pd(lhs), _mm256_setzero_pd(), _mm256_castsi256_pd(BlendMask64[leftover]));
+         b1 = _mm256_blendv_pd(
+-                _mm256_loadu_pd(rhs), _mm256_setzero_ps(), BlendMask64[leftover]);
++                _mm256_loadu_pd(rhs), _mm256_setzero_pd(), _mm256_castsi256_pd(BlendMask64[leftover]));
+         sum1 = _mm256_mul_pd(a1, b1);
+         lhs += leftover;
+         rhs += leftover;

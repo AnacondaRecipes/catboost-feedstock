@@ -1,0 +1,17 @@
+--- a/catboost/libs/data/features_layout.cpp
++++ b/catboost/libs/data/features_layout.cpp
+@@ -364,11 +364,11 @@
+ }
+
+ bool TFeaturesLayout::HasSparseFeatures(bool checkOnlyAvailable) const noexcept {
+-    return FindIf(
++    return FindIf(
+         ExternalIdxToMetaInfo,
+         [=] (const TFeatureMetaInfo& metaInfo) {
+             return (!checkOnlyAvailable || metaInfo.IsAvailable) && metaInfo.IsSparse;
+         }
+-    );
++    ) != ExternalIdxToMetaInfo.end();
+ }
+
+ void TFeaturesLayout::IgnoreExternalFeature(ui32 externalFeatureIdx) noexcept {

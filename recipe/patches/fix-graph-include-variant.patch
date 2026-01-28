@@ -1,0 +1,10 @@
+--- a/catboost/libs/data/graph.h
++++ b/catboost/libs/data/graph.h
+@@ -8,6 +8,7 @@
+ #include <util/system/types.h>
+
+ #include <limits>
++#include <variant>
+ #include <string>
+
+ struct TPair;

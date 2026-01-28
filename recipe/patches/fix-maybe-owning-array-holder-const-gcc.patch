@@ -1,0 +1,12 @@
+--- a/catboost/libs/helpers/maybe_owning_array_holder.h
++++ b/catboost/libs/helpers/maybe_owning_array_holder.h
+@@ -163,7 +163,8 @@ namespace NCB {
+         if constexpr (std::is_same_v<std::remove_const_t<TDst>, TSrc>) {
+             return TMaybeOwningArrayHolder<TDst>::CreateOwningReinterpretCast(src);
+         } else {
+-            TVector<TDst> dstData(src.begin(), src.end());
++            using TNonConstDst = std::remove_const_t<TDst>;
++            TVector<TNonConstDst> dstData(src.begin(), src.end());
+             return TMaybeOwningArrayHolder<TDst>::CreateOwning(std::move(dstData));
+         }
+     }

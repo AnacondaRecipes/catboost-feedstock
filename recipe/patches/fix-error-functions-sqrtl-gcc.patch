@@ -1,0 +1,11 @@
+--- a/catboost/private/libs/algo_helpers/error_functions.cpp
++++ b/catboost/private/libs/algo_helpers/error_functions.cpp
+@@ -1166,7 +1166,7 @@
+             TargetMetric == ELossFunction::FilteredDCG ? 0 : (noiseSum - (score - approx)) / (count - 1)
+         );
+         const double sigma = Sigma * (
+-            TargetMetric == ELossFunction::FilteredDCG ? 1 : std::sqrtl(count / (count - 1.0))
++            TargetMetric == ELossFunction::FilteredDCG ? 1 : std::sqrt(static_cast<double>(count) / (count - 1.0))
+         );
+         double derSum = 0.0;
+         if (EqualToOneOf(TargetMetric, ELossFunction::DCG, ELossFunction::NDCG, ELossFunction::PFound, ELossFunction::FilteredDCG, ELossFunction::ERR)) {

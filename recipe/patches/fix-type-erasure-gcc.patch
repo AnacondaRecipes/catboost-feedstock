@@ -1,0 +1,42 @@
+--- a/library/cpp/yt/memory/type_erasure.h
++++ b/library/cpp/yt/memory/type_erasure.h
+@@ -114,8 +114,8 @@ public:
+     }
+
+ private:
+-    using TVTable = TVTable<TStorage, TCpos...>;
+-    using THolder = TVTableHolder<TStorage, TVTable, UseStaticVTable>;
++    using TLocalVTable = TVTable<TStorage, TCpos...>;
++    using THolder = TVTableHolder<TStorage, TLocalVTable, UseStaticVTable>;
+
+     TStorage Storage_ = {};
+     THolder Holder_ = {};
+@@ -152,7 +152,7 @@ struct TAnyRefPublicHelper<>
+ template <bool EnableCopy, CStorage TStorage, class... TCpos>
+ struct TRebindVTable
+ {
+-    using TVTable = TVTable<
++    using TLocalVTable = TVTable<
+         TStorage,
+         TTagInvokeTag<Deleter>,
+         TTagInvokeTag<Mover<TStorage>>,
+@@ -163,7 +163,7 @@ struct TRebindVTable
+ template <CStorage TStorage, class... TCpos>
+ struct TRebindVTable<false, TStorage, TCpos...>
+ {
+-    using TVTable = TVTable<
++    using TLocalVTable = TVTable<
+         TStorage,
+         TTagInvokeTag<Deleter>,
+         TTagInvokeTag<Mover<TStorage>>,
+@@ -333,8 +333,8 @@ public:
+     }
+
+ private:
+-    using TVTable = typename TRebindVTable<EnableCopy, TStorage, TCpos...>::TVTable;
+-    using THolder = TVTableHolder<TStorage, TVTable, UseStaticVTable>;
++    using TLocalVTable = typename TRebindVTable<EnableCopy, TStorage, TCpos...>::TLocalVTable;
++    using THolder = TVTableHolder<TStorage, TLocalVTable, UseStaticVTable>;
+     using TTraits = std::allocator_traits<std::allocator<std::byte>>;
+
+     TStorage Storage_ = {};

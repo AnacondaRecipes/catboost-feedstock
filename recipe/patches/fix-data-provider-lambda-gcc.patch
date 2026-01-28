@@ -1,0 +1,60 @@
+--- a/catboost/libs/data/data_provider.h
++++ b/catboost/libs/data/data_provider.h
+@@ -467,34 +467,35 @@
+         TDataProvidersTemplate result;
+ 
+         TVector<std::function<void()>> tasks;
+-        tasks.emplace_back(
+-            [&]() {
+-                result.Learn = srcData->GetSubset(
++        // Use explicit std::function assignment to help GCC with template instantiation
++        std::function<void()> trainTask = [&]() {
++            result.Learn = srcData->GetSubset(
++                GetSubset(
++                    srcData->ObjectsGrouping,
++                    std::move(trainIndices),
++                    objectsOrder
++                ),
++                perTaskCpuUsedRamLimit,
++                localExecutor
++            );
++        };
++        tasks.push_back(std::move(trainTask));
++
++        std::function<void()> testTask = [&]() {
++            result.Test.emplace_back(
++                srcData->GetSubset(
+                     GetSubset(
+                         srcData->ObjectsGrouping,
+-                        std::move(trainIndices),
++                        std::move(testIndices),
+                         objectsOrder
+                     ),
+                     perTaskCpuUsedRamLimit,
+                     localExecutor
+-                );
+-            }
+-        );
+-        tasks.emplace_back(
+-            [&]() {
+-                result.Test.emplace_back(
+-                    srcData->GetSubset(
+-                        GetSubset(
+-                            srcData->ObjectsGrouping,
+-                            std::move(testIndices),
+-                            objectsOrder
+-                        ),
+-                        perTaskCpuUsedRamLimit,
+-                        localExecutor
+-                    )
+-                );
+-            }
+-        );
++                )
++            );
++        };
++        tasks.push_back(std::move(testTask));
++
+         NCB::ExecuteTasksInParallel(&tasks, localExecutor);
+         return result;
+     }

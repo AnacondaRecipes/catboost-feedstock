@@ -1,0 +1,79 @@
+--- a/catboost/libs/loggers/catboost_logger_helpers.h
++++ b/catboost/libs/loggers/catboost_logger_helpers.h
+@@ -86,7 +86,7 @@
+ 
+ void AddConsoleLogger(
+     const TString& learnToken,
+-    const TVector<const TString>& testTokens,
++    const TVector<TString>& testTokens,
+     bool hasTrain,
+     int metricPeriod,
+     int iterationsCount,
+@@ -102,7 +102,7 @@
+     TMaybe<int> bestIteration,
+     const TProfileResults& profileResults,
+     const TString& learnToken,
+-    const TVector<const TString>& testTokens,
++    const TVector<TString>& testTokens,
+     bool outputMetrics,
+     TLogger* logger
+ );
+@@ -120,7 +120,7 @@
+ );
+ 
+ TString GetTrainModelLearnToken();
+-TVector<const TString> GetTrainModelTestTokens(int testCount);
++TVector<TString> GetTrainModelTestTokens(int testCount);
+ TString GetParametersToken();
+ 
+ 
+@@ -128,7 +128,7 @@
+                            const TOutputFiles& outputFiles,
+                            const TVector<const IMetric*>& metrics,
+                            const TString& learnToken,
+-                           const TVector<const TString>& testTokens,
++                           const TVector<TString>& testTokens,
+                            int metricPeriod,
+                            TLogger* logger);
+ 
+--- a/catboost/libs/loggers/catboost_logger_helpers.cpp
++++ b/catboost/libs/loggers/catboost_logger_helpers.cpp
+@@ -193,7 +193,7 @@
+ 
+ void AddConsoleLogger(
+         const TString& learnToken,
+-        const TVector<const TString>& testTokens,
++        const TVector<TString>& testTokens,
+         bool hasTrain,
+         int metricPeriod,
+         int iterationCount,
+@@ -218,7 +218,7 @@
+         TMaybe<int> bestIteration,
+         const TProfileResults& profileResults,
+         const TString& learnToken,
+-        const TVector<const TString>& testTokens,
++        const TVector<TString>& testTokens,
+         bool outputErrors,
+         TLogger* logger
+ ) {
+@@ -331,9 +331,9 @@
+     return "parameters";
+ }
+ 
+-TVector<const TString> GetTrainModelTestTokens(int testCount) {
++TVector<TString> GetTrainModelTestTokens(int testCount) {
+     TString testTokenPrefix = "test";
+-    TVector<const TString> testTokens;
++    TVector<TString> testTokens;
+     for (int testIdx = 0; testIdx < testCount; ++testIdx) {
+         TString testToken = testTokenPrefix + (testIdx > 0 ? ToString(testIdx) : "");
+         testTokens.push_back(testToken);
+@@ -347,7 +347,7 @@
+         const TOutputFiles& outputFiles,
+         const TVector<const IMetric*>& metrics,
+         const TString& learnToken,
+-        const TVector<const TString>& testTokens,
++        const TVector<TString>& testTokens,
+         int metricPeriod,
+         TLogger* logger) {
+     TVector<TString> metricDescriptions = GetMetricsDescription(metrics);

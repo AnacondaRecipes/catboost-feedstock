@@ -1,0 +1,10 @@
+--- a/catboost/libs/helpers/polymorphic_type_containers.h
++++ b/catboost/libs/helpers/polymorphic_type_containers.h
+@@ -296,7 +296,7 @@
+                         subRangeStarts
+                     );
+                 },
+-                *SubsetIndexing
++                static_cast<const typename TArraySubsetIndexing<ui32>::TBase&>(*SubsetIndexing)
+             );
+         }

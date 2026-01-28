@@ -1,0 +1,19 @@
+--- a/catboost/libs/fstr/compare_documents.cpp
++++ b/catboost/libs/fstr/compare_documents.cpp
+@@ -148,14 +148,14 @@ static TVector<double> GetPredictionDiffSingle(
+         for (int splitIdx = borders[featureIdx] - 1; splitIdx >= 0; --splitIdx) {
+             diff += floatFeatureImpact[featureIdx][splitIdx];
+             if ((tryIncrease && diff > 0.) || (!tryIncrease && diff < 0.)) {
+-                impact[externalIdx] = std::max(impact[externalIdx], abs(diff));
++                impact[externalIdx] = std::max(impact[externalIdx], std::abs(diff));
+             }
+         }
+         diff = 0;
+         for (int splitIdx = borders[featureIdx] + 1; splitIdx < floatFeatureImpact[featureIdx].ysize(); ++splitIdx) {
+             diff += floatFeatureImpact[featureIdx][splitIdx];
+             if ((tryIncrease && diff > 0.) || (!tryIncrease && diff < 0.)) {
+-                impact[externalIdx] = std::max(impact[externalIdx], abs(diff));
++                impact[externalIdx] = std::max(impact[externalIdx], std::abs(diff));
+             }
+         }
+     }
