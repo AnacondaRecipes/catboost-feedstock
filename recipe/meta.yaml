@@ -47,6 +47,8 @@ source:
     # Linker fix: re-add default libs when using -nodefaultlibs (from PR #9)
     - patches/fix-nodefaultlibs-add-libc.patch                                                  # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-abseil-strings-link-profiling.patch                                           # [(gpu_variant or "").startswith("cuda")]
+    # Force C++ linker for tcmalloc (contains C++ code with runtime deps)
+    - patches/fix-tcmalloc-linker-language.patch                                                # [(gpu_variant or "").startswith("cuda")]
     # CUDA build fixes (from PR #9)
     - patches/disable-bfloat16-builtins-x86_64-cuda.patch                                       # [(gpu_variant or "").startswith("cuda")]
     # Iterator to pointer conversion (from PR #9)
