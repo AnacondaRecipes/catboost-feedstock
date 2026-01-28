@@ -68,6 +68,9 @@ source:
     - patches/fix-vector-helpers-arrayref-gcc.patch                                             # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-matrix-oracle-arrayref-gcc.patch                                              # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-hnsw-index-writer-gcc.patch                                                   # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-calc-score-cache-gcc.patch                                                    # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-approx-calcer-gcc.patch                                                       # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-approx-delta-calcer-multi-gcc.patch                                           # [(gpu_variant or "").startswith("cuda")]
     # Remaining GCC compatibility patches (from PR #9)
     - patches/fix-type-erasure-gcc.patch                                                        # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-error-attributes-static-assert.patch                                          # [(gpu_variant or "").startswith("cuda")]

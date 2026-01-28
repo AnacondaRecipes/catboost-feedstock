@@ -1,0 +1,21 @@
+--- a/catboost/private/libs/algo/approx_calcer.cpp
++++ b/catboost/private/libs/algo/approx_calcer.cpp
+@@ -850,7 +850,7 @@ void CalcApproxDelta(
+     }
+
+     const auto lossCalcerFunc = [&](const TVector<TVector<double>>& approxDeltas, const TVector<TVector<double>>& leafDeltas) {
+-        TConstArrayRef<TQueryInfo> bodyTailQueryInfo(fold.LearnQueriesInfo.begin(), bt.BodyQueryFinish);
++        TConstArrayRef<TQueryInfo> bodyTailQueryInfo(fold.LearnQueriesInfo.data(), bt.BodyQueryFinish);
+         TMetricHolder additiveStats;
+         if (!ctx->Params.BoostingOptions->ApproxOnFullHistory) {
+             TVector<TVector<double>> localLeafDeltas(*sumLeafDeltas);
+@@ -875,7 +875,7 @@ void CalcApproxDelta(
+             additiveStats = EvalErrors(
+                 To2DConstArrayRef<double>(bt.Approx),
+                 To2DConstArrayRef<double>(localApproxDeltas),
+                 error.GetIsExpApprox(),
+-                MakeArrayRef<const float>(fold.LearnTarget[0].begin(), bt.BodyFinish),
++                MakeArrayRef<const float>(fold.LearnTarget[0].data(), bt.BodyFinish),
+                 fold.GetLearnWeights(),
+                 bodyTailQueryInfo,
+                 *lossFunction[0],
