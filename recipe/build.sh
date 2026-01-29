@@ -245,12 +245,8 @@ if [[ "${gpu_variant}" == cuda* ]]; then
     # Build and install Python wheel
     cd catboost/python-package/
 
-    export YARN_ENABLE_IMMUTABLE_INSTALLS=false
-    pushd catboost/widget/js/
-        yarn install
-    popd
-
-    $PYTHON setup.py bdist_wheel --with-hnsw --prebuilt-extensions-build-root-dir=${SRC_DIR}/cmake_build -vv
+    # Skip widget build to avoid jupyterlab dependency (not available in conda env)
+    $PYTHON setup.py bdist_wheel --with-hnsw --no-widget --prebuilt-extensions-build-root-dir=${SRC_DIR}/cmake_build -vv
     $PYTHON -m pip install dist/catboost*.whl
 
 else
