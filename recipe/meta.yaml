@@ -157,6 +157,14 @@ test:
   imports:
     - catboost
   commands:
+    # CUDA environment diagnostics (for GPU builds)
+    - echo "=== CUDA Environment Check ==="                                                                        # [(gpu_variant or "").startswith("cuda")]
+    - nvidia-smi || echo "nvidia-smi not available or no GPU"                                                      # [(gpu_variant or "").startswith("cuda")]
+    - ls -la /usr/lib/x86_64-linux-gnu/libcuda* 2>/dev/null || echo "libcuda not in /usr/lib/x86_64-linux-gnu/"    # [(gpu_variant or "").startswith("cuda")]
+    - ls -la /usr/local/cuda/lib64/libcuda* 2>/dev/null || echo "libcuda not in /usr/local/cuda/lib64/"            # [(gpu_variant or "").startswith("cuda")]
+    - ldconfig -p | grep -i cuda || echo "No CUDA libs in ldconfig"                                                # [(gpu_variant or "").startswith("cuda")]
+    - echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"                                                                      # [(gpu_variant or "").startswith("cuda")]
+    - echo "=== End CUDA Check ==="                                                                                # [(gpu_variant or "").startswith("cuda")]
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
