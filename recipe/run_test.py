@@ -5,9 +5,18 @@ import os
 
 # CUDA environment diagnostics
 print("=== CUDA Environment Check ===")
-subprocess.run(["nvidia-smi"], check=False)
-subprocess.run(["sh", "-c", "ls -la /usr/lib/x86_64-linux-gnu/libcuda* 2>/dev/null || echo 'libcuda not found'"], check=False)
-subprocess.run(["sh", "-c", "ldconfig -p | grep -i cuda || echo 'No CUDA in ldconfig'"], check=False)
+try:
+    subprocess.run(["nvidia-smi"], check=False)
+except FileNotFoundError:
+    print("nvidia-smi not found - no CUDA drivers installed")
+try:
+    subprocess.run(["sh", "-c", "ls -la /usr/lib/x86_64-linux-gnu/libcuda* 2>/dev/null || echo 'libcuda not found'"], check=False)
+except Exception as e:
+    print(f"libcuda check failed: {e}")
+try:
+    subprocess.run(["sh", "-c", "ldconfig -p | grep -i cuda || echo 'No CUDA in ldconfig'"], check=False)
+except Exception as e:
+    print(f"ldconfig check failed: {e}")
 print(f"LD_LIBRARY_PATH={os.environ.get('LD_LIBRARY_PATH', 'not set')}")
 print("=== End CUDA Check ===")
 
