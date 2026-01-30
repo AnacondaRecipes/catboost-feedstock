@@ -1,7 +1,7 @@
 {% set name = "catboost" %}
 {% set version = "1.2.8" %}
 
-{% set build_num = 1 %}
+{% set build_num = 2 %}
 {% if (gpu_variant or "").startswith("cuda") %}
 {% set build_num = build_num + 100 %}
 {% endif %}
@@ -154,8 +154,9 @@ requirements:
     - __cuda                          # [(gpu_variant or "").startswith("cuda")]
 
 test:
-  imports:                                                                                                         # [not (gpu_variant or "").startswith("cuda")]
-    - catboost                                                                                                     # [not (gpu_variant or "").startswith("cuda")]
+  # TODO: Restore imports section once CUDA segfault on import is fixed
+  # imports:
+  #   - catboost
   commands:
     # CUDA environment diagnostics (for GPU builds)
     - echo "=== CUDA Environment Check ==="                                                                        # [(gpu_variant or "").startswith("cuda")]
@@ -165,8 +166,8 @@ test:
     - ldconfig -p | grep -i cuda || echo "No CUDA libs in ldconfig"                                                # [(gpu_variant or "").startswith("cuda")]
     - echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"                                                                      # [(gpu_variant or "").startswith("cuda")]
     - echo "=== End CUDA Check ==="                                                                                # [(gpu_variant or "").startswith("cuda")]
-    # Import test for CUDA builds (after diagnostics)
-    - python -c "import catboost"                                                                                  # [(gpu_variant or "").startswith("cuda")]
+    # Import test
+    - python -c "import catboost"
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
