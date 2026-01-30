@@ -1,6 +1,15 @@
 import subprocess
 import pkgutil
 import platform
+import os
+
+# CUDA environment diagnostics
+print("=== CUDA Environment Check ===")
+subprocess.run(["nvidia-smi"], check=False)
+subprocess.run(["sh", "-c", "ls -la /usr/lib/x86_64-linux-gnu/libcuda* 2>/dev/null || echo 'libcuda not found'"], check=False)
+subprocess.run(["sh", "-c", "ldconfig -p | grep -i cuda || echo 'No CUDA in ldconfig'"], check=False)
+print(f"LD_LIBRARY_PATH={os.environ.get('LD_LIBRARY_PATH', 'not set')}")
+print("=== End CUDA Check ===")
 
 import catboost
 import numpy as np
