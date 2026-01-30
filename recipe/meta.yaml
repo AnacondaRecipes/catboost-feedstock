@@ -154,8 +154,8 @@ requirements:
     - __cuda                          # [(gpu_variant or "").startswith("cuda")]
 
 test:
-  imports:
-    - catboost
+  imports:                                                                                                         # [not (gpu_variant or "").startswith("cuda")]
+    - catboost                                                                                                     # [not (gpu_variant or "").startswith("cuda")]
   commands:
     # CUDA environment diagnostics (for GPU builds)
     - echo "=== CUDA Environment Check ==="                                                                        # [(gpu_variant or "").startswith("cuda")]
@@ -165,6 +165,8 @@ test:
     - ldconfig -p | grep -i cuda || echo "No CUDA libs in ldconfig"                                                # [(gpu_variant or "").startswith("cuda")]
     - echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"                                                                      # [(gpu_variant or "").startswith("cuda")]
     - echo "=== End CUDA Check ==="                                                                                # [(gpu_variant or "").startswith("cuda")]
+    # Import test for CUDA builds (after diagnostics)
+    - python -c "import catboost"                                                                                  # [(gpu_variant or "").startswith("cuda")]
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
   requires:
