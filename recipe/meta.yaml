@@ -1,7 +1,7 @@
 {% set name = "catboost" %}
 {% set version = "1.2.8" %}
 
-{% set build_num = 6 %}
+{% set build_num = 7 %}
 {% if (gpu_variant or "").startswith("cuda") %}
 {% set build_num = build_num + 100 %}
 {% endif %}

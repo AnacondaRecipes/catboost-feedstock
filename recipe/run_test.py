@@ -97,13 +97,19 @@ if import_result.returncode == 0:
 
     # CatBoostRegressor test (CPU mode)
     log("\n=== CatBoostRegressor test ===")
+    log("Creating training data...")
     train_data = np.random.randint(0, 100, size=(100, 10))
     train_label = np.random.randint(0, 1000, size=(100))
     test_data = np.random.randint(0, 100, size=(50, 10))
+    log("Training data created")
 
+    log("Creating Pool objects...")
     train_pool = Pool(train_data, train_label, cat_features=[0, 2, 5])
+    log("Train pool created")
     test_pool = Pool(test_data, cat_features=[0, 2, 5])
+    log("Test pool created")
 
+    log("Creating CatBoostRegressor model (CPU mode)...")
     model = CatBoostRegressor(
         iterations=2,
         depth=2,
@@ -111,7 +117,13 @@ if import_result.returncode == 0:
         loss_function='RMSE',
         task_type='CPU'  # Force CPU to avoid CUDA issues in test
     )
+    log("Model created")
+
+    log("Fitting model...")
     model.fit(train_pool, verbose=False)
+    log("Model fitted")
+
+    log("Making predictions...")
     preds = model.predict(test_pool)
     log(f"Predictions shape: {preds.shape}")
     log("Test PASSED!")
