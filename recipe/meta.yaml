@@ -1,10 +1,7 @@
 {% set name = "catboost" %}
 {% set version = "1.2.8" %}
 
-{% set build_num = 0 %}
-{% if (gpu_variant or "").startswith("cuda") %}
-{% set build_num = build_num + 100 %}
-{% endif %}
+{% set build_number = 0 %}
 
 package:
   name: {{ name|lower }}
@@ -17,12 +14,12 @@ source:
     - patches/conda.diff                                                                  # [(gpu_variant or "").startswith("cuda")]
 
 build:
-  number: {{ build_num }}
+  # Use a build number difference to ensure that the GPU variant is slightly preferred
+  # by conda's solver, so that it's preferentially installed where the platform supports it.
+  number: {{ build_number + 100 }}  # [(gpu_variant or "").startswith("cuda")]
+  number: {{ build_number }}        # [not (gpu_variant or "").startswith("cuda")]
   string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [(gpu_variant or "").startswith("cuda")]
   string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                  # [not (gpu_variant or "").startswith("cuda")]
-  # De-prioritize CPU variants when CUDA is available
-  track_features:                     # [not (gpu_variant or "").startswith("cuda")]
-    - catboost_cpu                    # [not (gpu_variant or "").startswith("cuda")]
   missing_dso_whitelist:              # [(gpu_variant or "").startswith("cuda")]
     - "**/libcuda.so*"                # [(gpu_variant or "").startswith("cuda")]
 
