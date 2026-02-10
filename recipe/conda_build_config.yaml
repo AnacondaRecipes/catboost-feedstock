@@ -10,7 +10,7 @@ gpu_variant:
 
 cuda_compiler_version:         # [linux]
   - none                       # [linux]
-  - 12.4                       # [linux]
+  - 12.8                       # [linux]
 
 cuda_compiler:                 # [linux]
   - cuda-nvcc                  # [linux]
