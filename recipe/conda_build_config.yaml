@@ -1,0 +1,24 @@
+# CUDA variant configuration for catboost
+# CatBoost does not support CUDA 12.3+: https://github.com/catboost/catboost/issues/2755
+# conda-forge uses CUDA 12.0, but Anaconda CI only has 12.4+.
+# We use 12.4 and rely on --allow-unsupported-compiler to handle compatibility.
+
+gpu_variant:                                          # [linux]
+  - none                                              # [linux]
+  - cuda-12                                           # [linux and os.environ.get("ANACONDA_ROCKET_ENABLE_CUDA", "false") != "false"]
+cuda_compiler_version:                                # [linux]
+  - None                                              # [linux]
+  - "12.4"                                            # [linux and os.environ.get("ANACONDA_ROCKET_ENABLE_CUDA", "false") != "false"]
+c_compiler_version:                                   # [linux]
+  - 14.2.0                                            # [linux]
+  - 11.2.0                                            # [linux and os.environ.get("ANACONDA_ROCKET_ENABLE_CUDA", "false") != "false"]
+cxx_compiler_version:                                 # [linux]
+  - 14.2.0                                            # [linux]
+  - 11.2.0                                            # [linux and os.environ.get("ANACONDA_ROCKET_ENABLE_CUDA", "false") != "false"]
+
+zip_keys:
+  -                                                   # [linux]
+    - gpu_variant                                     # [linux]
+    - cuda_compiler_version                           # [linux]
+    - c_compiler_version                              # [linux]
+    - cxx_compiler_version                            # [linux]
