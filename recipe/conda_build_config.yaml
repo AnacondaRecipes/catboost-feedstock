@@ -4,8 +4,9 @@
 #
 # CUDA 12.4 is used because:
 #   - CUDA 12.3+ dropped libc++ support on Linux (catboost/catboost#2755)
-#   - CUDA 12.8 has host_defines.h check that rejects libc++ on x86 at compile time
-#   - CUDA 12.4 does NOT have this check, and works with catboost's libcxxcuda11 approach
+#   - CUDA 12.4+ has host_defines.h #error rejecting libc++ on x86 at compile time.
+#     build.sh patches this check out because catboost's bundled libcxxcuda11 is
+#     specifically designed for CUDA compatibility (false positive).
 #   - cuda-nvcc-impl 12.4 requires gcc <13, so we pin GCC 11.2.0 for the CUDA variant
 
 # gpu_variant must be defined for all platforms so that

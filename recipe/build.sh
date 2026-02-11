@@ -22,12 +22,20 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CXX_FOR_BUILD=${BUILD}-clang++
 
         # Key: Clang is the NVCC host compiler (NOT GCC)
-        # -Xcompiler=-stdlib=libstdc++ prevents CUDA's host_defines.h from detecting
-        # libc++ via __has_include(<__config>). CatBoost uses its own vendored libc++
-        # (libcxxcuda11) with -nostdinc++, so this flag only affects detection, not
-        # actual header inclusion. Without it, CUDA 12.4 errors:
-        #   host_defines.h:67: error: "libc++ is not supported on x86 system"
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=-stdlib=libstdc++"
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+
+        # Patch CUDA 12.4's host_defines.h to allow catboost's bundled libcxxcuda11.
+        # CatBoost builds with -nostdinc++ and its own libc++ fork (libcxxcuda11)
+        # designed for CUDA compatibility. CUDA 12.3+ added a blanket #error rejecting
+        # libc++ on x86, which is a false positive for this use case. The previous
+        # -Xcompiler=-stdlib=libstdc++ workaround was ineffective because -nostdinc++
+        # suppresses stdlib path selection, and the detection triggers from _LIBCPP_VERSION
+        # defined in the explicitly included libcxxcuda11 headers.
+        if [[ -f "$BUILD_PREFIX/targets/x86_64-linux/include/crt/host_defines.h" ]]; then
+            sed -i 's/#error "libc++ is not supported on x86 system"/\/\* patched: catboost libcxxcuda11 is CUDA-compatible *\//' \
+                "$BUILD_PREFIX/targets/x86_64-linux/include/crt/host_defines.h"
+            echo "Patched host_defines.h to allow libcxxcuda11 on x86"
+        fi
     fi
 
     # Python configuration for CMake
