@@ -88,7 +88,7 @@ if [[ "${gpu_variant}" == cuda* ]]; then
 
     # Skip widget build to avoid jupyterlab dependency
     $PYTHON setup.py bdist_wheel --with-hnsw --no-widget --prebuilt-extensions-build-root-dir=${SRC_DIR}/cmake_build -vv
-    $PYTHON -m pip install dist/catboost*.whl
+    $PYTHON -m pip install --no-deps --no-build-isolation -vvv dist/catboost*.whl
 
 else
     echo "Building CPU variant from PyPI wheels..."
