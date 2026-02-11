@@ -13,6 +13,7 @@ source:
   patches:                                                                                # [(gpu_variant or "").startswith("cuda")]
     - patches/conda.diff                                                                  # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-dcg-pow-ambiguity.patch                                                  # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-jemalloc-aarch64-pagesize.patch                                            # [(gpu_variant or "").startswith("cuda")]
 
 build:
   # Use a build number difference to ensure that the GPU variant is slightly preferred
