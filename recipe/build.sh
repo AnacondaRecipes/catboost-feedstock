@@ -22,7 +22,12 @@ if [[ "${gpu_variant}" == cuda* ]]; then
         export CXX_FOR_BUILD=${BUILD}-clang++
 
         # Key: Clang is the NVCC host compiler (NOT GCC)
-        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+        # -Xcompiler=-stdlib=libstdc++ prevents CUDA's host_defines.h from detecting
+        # libc++ via __has_include(<__config>). CatBoost uses its own vendored libc++
+        # (libcxxcuda11) with -nostdinc++, so this flag only affects detection, not
+        # actual header inclusion. Without it, CUDA 12.4 errors:
+        #   host_defines.h:67: error: "libc++ is not supported on x86 system"
+        export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ -Xcompiler=-stdlib=libstdc++"
     fi
 
     # Python configuration for CMake
