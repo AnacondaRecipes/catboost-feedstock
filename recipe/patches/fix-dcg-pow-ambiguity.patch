@@ -1,0 +1,12 @@
+diff --git a/catboost/cuda/targets/kernel/dcg.cu b/catboost/cuda/targets/kernel/dcg.cu
+--- a/catboost/cuda/targets/kernel/dcg.cu
++++ b/catboost/cuda/targets/kernel/dcg.cu
+@@ -53,7 +53,7 @@
+ {
+     ui64 i = blockIdx.x * blockDim.x + threadIdx.x;
+     while (i < size) {
+-        decays[i] = pow(base, i - __ldg(offsets + i));
++        decays[i] = pow(base, static_cast<T>(i - __ldg(offsets + i)));
+         i += gridDim.x * blockDim.x;
+     }
+ }
