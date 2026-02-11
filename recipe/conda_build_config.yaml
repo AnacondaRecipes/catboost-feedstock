@@ -32,10 +32,7 @@ cxx_compiler_version:          # [linux]
   - 14.3.0                     # [linux]
   - 11.2.0                     # [linux]
 
-zip_keys:
-  -
-    - python
-    - numpy
+zip_keys:                      # [linux]
   -                            # [linux]
     - gpu_variant              # [linux]
     - cuda_compiler_version    # [linux]
