@@ -186,7 +186,7 @@ diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt b/c
 index fd3c4bf84f..fd7ce4608d 100644
 --- a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
 +++ b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64-cuda.txt
-@@ -24,16 +24,6 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
+@@ -24,16 +24,7 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
  )
 
  target_sources(libs-cxxsupp-builtins PRIVATE
@@ -196,7 +196,7 @@ index fd3c4bf84f..fd7ce4608d 100644
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncsfbf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/trunctfbf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/chkstk.S
--  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/fp_mode.c
+   ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/fp_mode.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-abi-assert.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-abi.S
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-libc-mem-routines.S
@@ -215,7 +215,7 @@ diff --git a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64.txt b/contri
 index fd3c4bf84f..fd7ce4608d 100644
 --- a/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64.txt
 +++ b/contrib/libs/cxxsupp/builtins/CMakeLists.linux-aarch64.txt
-@@ -24,16 +24,6 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
+@@ -24,16 +24,7 @@ target_link_libraries(libs-cxxsupp-builtins PUBLIC
  )
 
  target_sources(libs-cxxsupp-builtins PRIVATE
@@ -225,7 +225,7 @@ index fd3c4bf84f..fd7ce4608d 100644
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/truncsfbf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/trunctfbf2.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/chkstk.S
--  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/fp_mode.c
+   ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/fp_mode.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-abi-assert.c
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-abi.S
 -  ${PROJECT_SOURCE_DIR}/contrib/libs/cxxsupp/builtins/aarch64/sme-libc-mem-routines.S
