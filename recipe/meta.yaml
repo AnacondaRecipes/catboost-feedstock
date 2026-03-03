@@ -10,10 +10,10 @@ package:
 source:
   url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
   sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
-  patches:                                                                                # [(gpu_variant or "").startswith("cuda")]
-    - patches/conda.diff                                                                  # [(gpu_variant or "").startswith("cuda")]
+  patches:
+    - patches/conda.diff                                                                  # [unix]
     - patches/fix-dcg-pow-ambiguity.patch                                                  # [(gpu_variant or "").startswith("cuda")]
-    - patches/fix-jemalloc-aarch64-pagesize.patch                                            # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-jemalloc-aarch64-pagesize.patch                                          # [aarch64]
 
 build:
   # Use a build number difference to ensure that the GPU variant is slightly preferred
@@ -27,34 +27,29 @@ build:
 
 requirements:
   build:
-    # CPU builds just need curl to download wheels
-    - {{ compiler('c') }}             # [not (gpu_variant or "").startswith("cuda")]
-    - curl 8.12.1                     # [not (gpu_variant or "").startswith("cuda")]
-    - cmake                           # [not (gpu_variant or "").startswith("cuda")]
-    - make                            # [unix and not (gpu_variant or "").startswith("cuda")]
-    # CUDA builds: build from source following conda-forge approach
-    - ragel >=6.10                    # [(gpu_variant or "").startswith("cuda")]
-    - yasm >=1.3.0                    # [(gpu_variant or "").startswith("cuda") and x86_64]
-    - swig >=4.0.2                    # [(gpu_variant or "").startswith("cuda")]
-    - cmake >=3.24                    # [(gpu_variant or "").startswith("cuda")]
-    - make                            # [(gpu_variant or "").startswith("cuda")]
-    - {{ compiler('c') }}             # [(gpu_variant or "").startswith("cuda")]
-    - {{ compiler('cxx') }}           # [(gpu_variant or "").startswith("cuda")]
-    # Clang is the CUDA host compiler (same as conda-forge)
-    - clangxx >=17,<18                # [(gpu_variant or "").startswith("cuda")]
-    - {{ stdlib('c') }}               # [(gpu_variant or "").startswith("cuda")]
+    # Windows repack (minimal)
+    - {{ compiler('c') }}             # [win]
+    # Unix source build
+    - ragel >=6.10                    # [unix]
+    - yasm >=1.3.0                    # [unix and x86_64]
+    - swig >=4.0.2                    # [unix]
+    - cmake >=3.24                    # [unix]
+    - make                            # [unix]
+    - {{ compiler('c') }}             # [unix]
+    - {{ compiler('cxx') }}           # [unix]
+    - {{ stdlib('c') }}               # [unix]
+    - lld >=7                         # [linux]
+    - clangxx >=18                    # [linux]
+    # CUDA only
     - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
-    - lld >=7                         # [(gpu_variant or "").startswith("cuda")]
-    - yarn                            # [(gpu_variant or "").startswith("cuda")]
   host:
     - python
     - pip
     - setuptools >=64.0
     - wheel
-    # CUDA build host requirements
-    - openssl                         # [(gpu_variant or "").startswith("cuda")]
-    - cython ~=3.0.10                 # [(gpu_variant or "").startswith("cuda")]
-    - numpy                           # [(gpu_variant or "").startswith("cuda")]
+    - openssl                         # [unix]
+    - cython ~=3.0.10                 # [unix]
+    - numpy                           # [unix]
     - cuda-version {{ cuda_compiler_version }}  # [(gpu_variant or "").startswith("cuda")]
     - cuda-driver-dev                           # [(gpu_variant or "").startswith("cuda")]
     - cuda-cudart-dev                           # [(gpu_variant or "").startswith("cuda")]
