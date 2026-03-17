@@ -1,0 +1,40 @@
+# CUDA variant configuration for catboost
+# Pattern follows llama.cpp-feedstock and faiss-split-feedstock.
+# CatBoost CUDA is Linux-only (Windows uses pre-built PyPI wheels).
+#
+# CUDA 12.4 is used because:
+#   - CUDA 12.3+ dropped libc++ support on Linux (catboost/catboost#2755)
+#   - CUDA 12.4+ has host_defines.h #error rejecting libc++ on x86 at compile time.
+#     build.sh patches this check out because catboost's bundled libcxxcuda11 is
+#     specifically designed for CUDA compatibility (false positive).
+#   - cuda-nvcc-impl 12.4 requires gcc <13, so we pin GCC 11.2.0 for the CUDA variant
+
+# gpu_variant must be defined for all platforms so that
+# meta.yaml selectors like (gpu_variant or "").startswith("cuda") work everywhere.
+gpu_variant:
+  - none
+  - cuda-12                    # [linux]
+
+cuda_compiler_version:         # [linux]
+  - none                       # [linux]
+  - 12.4                       # [linux]
+
+cuda_compiler:                 # [linux]
+  - cuda-nvcc                  # [linux]
+
+# GCC 11.2.0 for CUDA variant: cuda-nvcc-impl 12.4 requires gcc_impl <13.
+# GCC 14.3.0 for CPU variant: matches global default pinning.
+c_compiler_version:            # [linux]
+  - 14.3.0                     # [linux]
+  - 11.2.0                     # [linux]
+
+cxx_compiler_version:          # [linux]
+  - 14.3.0                     # [linux]
+  - 11.2.0                     # [linux]
+
+zip_keys:                      # [linux]
+  -                            # [linux]
+    - gpu_variant              # [linux]
+    - cuda_compiler_version    # [linux]
+    - c_compiler_version       # [linux]
+    - cxx_compiler_version     # [linux]

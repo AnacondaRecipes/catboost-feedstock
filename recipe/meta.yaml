@@ -1,26 +1,57 @@
 {% set name = "catboost" %}
 {% set version = "1.2.8" %}
 
+{% set build_number = 0 %}
+
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
+source:
+  url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
+  patches:
+    - patches/conda.diff                                                                  # [unix]
+    - patches/fix-dcg-pow-ambiguity.patch                                                  # [(gpu_variant or "").startswith("cuda")]
+    - patches/fix-jemalloc-aarch64-pagesize.patch                                          # [aarch64]
+
 build:
-  number: 0
+  # Use a build number difference to ensure that the GPU variant is slightly preferred
+  # by conda's solver, so that it's preferentially installed where the platform supports it.
+  number: {{ build_number + 100 }}  # [(gpu_variant or "").startswith("cuda")]
+  number: {{ build_number }}        # [not (gpu_variant or "").startswith("cuda")]
+  string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [(gpu_variant or "").startswith("cuda")]
+  string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                  # [not (gpu_variant or "").startswith("cuda")]
+  missing_dso_whitelist:              # [(gpu_variant or "").startswith("cuda")]
+    - "**/libcuda.so*"                # [(gpu_variant or "").startswith("cuda")]
 
 requirements:
   build:
-    # needs to suppress Cython needs C compiler error.
+    # Windows repack (minimal)
     - {{ compiler('c') }}
-    - cmake
-    - make  # [unix]
-    # curl is needed only for downloading whl files in build.sh
-    - curl 8.12.1
+    # Unix source build
+    - ragel >=6.10                    # [unix]
+    - yasm >=1.3.0                    # [unix and x86_64]
+    - swig >=4.0.2                    # [unix]
+    - cmake >=3.24                    # [unix]
+    - make                            # [unix]
+    - {{ compiler('cxx') }}           # [unix]
+    - {{ stdlib('c') }}               # [unix]
+    - lld >=7                         # [linux]
+    - clangxx >=18                    # [linux]
+    # CUDA only
+    - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
   host:
     - python
     - pip
     - setuptools >=64.0
     - wheel
+    - openssl                         # [unix]
+    - cython ~=3.0.10                 # [unix]
+    - numpy                           # [unix]
+    - cuda-version {{ cuda_compiler_version }}  # [(gpu_variant or "").startswith("cuda")]
+    - cuda-driver-dev                           # [(gpu_variant or "").startswith("cuda")]
+    - cuda-cudart-dev                           # [(gpu_variant or "").startswith("cuda")]
   run:
     - python
     - numpy >=1.16.0,<3.0
@@ -29,9 +60,10 @@ requirements:
     - six
     - plotly
     - matplotlib-base
-    # python-graphviz avoids the pip check error,
-    # and if you want to use 'plot_tree' function.
     - python-graphviz
+    # CUDA runtime requirements
+    - {{ pin_compatible('cuda-version', max_pin='x.x') }}  # [(gpu_variant or "").startswith("cuda")]
+    - __cuda                          # [(gpu_variant or "").startswith("cuda")]
   run_constrained:
     - ipywidgets >=7.0,<9.0
 
