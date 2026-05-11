@@ -28,8 +28,14 @@ fi
 if [[ "${gpu_variant}" == cuda* ]]; then
     echo "Configuring CUDA support..."
 
-    # Clang is the NVCC host compiler (NOT GCC)
-    export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+    # Clang is the NVCC host compiler (NOT GCC). Without -ccbin, nvcc defaults to
+    # `g++` -- which is unprefixed and isn't on PATH in conda's compiler-wrapper
+    # layout, so CMake's CUDA compiler-identification step fails before it even
+    # gets to our build. --allow-unsupported-compiler suppresses the version check
+    # for the newer clang (catboost's clang.toolchain previously set this via
+    # set(ENV{NVCC_PREPEND_FLAGS} ...); conda.diff drops that line so it doesn't
+    # clobber the -ccbin we set here.
+    export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ --allow-unsupported-compiler -std=c++17"
 
     # Patch CUDA's host_defines.h to allow catboost's bundled libcxxcuda11.
     # CatBoost builds with -nostdinc++ and its own libc++ fork (libcxxcuda11)

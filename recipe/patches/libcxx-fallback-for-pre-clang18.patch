@@ -1,0 +1,116 @@
+Switch to catboost's libcxxcuda11 fallback when the host clang is <18.
+
+Upstream catboost unconditionally builds against the modern bundled `libcxx`.
+Older clang (pre-18) chokes on parts of that vendored libcxx, so catboost
+also ships `libcxxcuda11` (its CUDA-compatible libc++ fork) as a fallback.
+This patch picks libcxxcuda11 when CMAKE_CXX_COMPILER_VERSION < 18, and
+keeps the upstream libcxx path for newer clang.
+
+Our recipe pins `clangxx >=18`, so today the `else()` branch is always
+taken -- this is defensive in case the pin is ever relaxed.
+
+Applies the same change to all three linux subdirs (x86_64 / aarch64 /
+ppc64le); only the file path differs.
+
+--- a/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
++++ b/contrib/libs/cxxsupp/CMakeLists.linux-x86_64.txt
+@@ -12,7 +12,12 @@
+ # Please refer to the build instructions in the repository for more information about manual
+ # changes in this file.
+
+-add_subdirectory(libcxx)
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    add_subdirectory(libcxxcuda11)
++else ()
++    add_subdirectory(libcxx)
++endif()
++
+ add_subdirectory(libcxxabi-parts)
+ add_subdirectory(libcxxrt)
+ add_subdirectory(builtins)
+@@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+
+ target_link_libraries(contrib-libs-cxxsupp INTERFACE
+   contrib-libs-linux-headers
+-  libs-cxxsupp-libcxx
+ )
+
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxxcuda11
++    )
++else ()
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxx
++    )
++endif()
++
++
+--- a/contrib/libs/cxxsupp/CMakeLists.linux-aarch64.txt
++++ b/contrib/libs/cxxsupp/CMakeLists.linux-aarch64.txt
+@@ -12,7 +12,12 @@
+ # Please refer to the build instructions in the repository for more information about manual
+ # changes in this file.
+
+-add_subdirectory(libcxx)
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    add_subdirectory(libcxxcuda11)
++else ()
++    add_subdirectory(libcxx)
++endif()
++
+ add_subdirectory(libcxxabi-parts)
+ add_subdirectory(libcxxrt)
+ add_subdirectory(builtins)
+@@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+
+ target_link_libraries(contrib-libs-cxxsupp INTERFACE
+   contrib-libs-linux-headers
+-  libs-cxxsupp-libcxx
+ )
+
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxxcuda11
++    )
++else ()
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxx
++    )
++endif()
++
++
+--- a/contrib/libs/cxxsupp/CMakeLists.linux-ppc64le.txt
++++ b/contrib/libs/cxxsupp/CMakeLists.linux-ppc64le.txt
+@@ -12,7 +12,12 @@
+ # Please refer to the build instructions in the repository for more information about manual
+ # changes in this file.
+
+-add_subdirectory(libcxx)
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    add_subdirectory(libcxxcuda11)
++else ()
++    add_subdirectory(libcxx)
++endif()
++
+ add_subdirectory(libcxxabi-parts)
+ add_subdirectory(libcxxrt)
+ add_subdirectory(builtins)
+@@ -22,6 +27,16 @@ add_library(contrib-libs-cxxsupp INTERFACE)
+
+ target_link_libraries(contrib-libs-cxxsupp INTERFACE
+   contrib-libs-linux-headers
+-  libs-cxxsupp-libcxx
+ )
+
++if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18)
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxxcuda11
++    )
++else ()
++    target_link_libraries(contrib-libs-cxxsupp INTERFACE
++      libs-cxxsupp-libcxx
++    )
++endif()
++
++
