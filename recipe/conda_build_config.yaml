@@ -1,17 +1,24 @@
 # CUDA variant configuration for catboost.
 #
-# linux: source-build from the upstream tarball, producing a real CUDA toolkit
-# linkage. Variants are split by cuda_compiler_version (12.9, 13.0) and zipped
-# with gpu_variant so each variant maps 1:1 to an nvcc.
+# linux: source build, with two CUDA toolkit variants (12.9, 13.0). Each
+# variant has its own gpu_variant tag (cuda-12, cuda-13) so the build string
+# can encode the toolkit version.
 #
-# win: the upstream PyPI win_amd64 wheel statically embeds the CUDA runtime,
-# cublas, etc. -- one binary handles both CPU and GPU hosts at runtime. There is
-# no meaningful per-CUDA-version split on win, and conda-forge has explicitly
-# left source-from-scratch on Windows as a TODO. We tag the existing wheel
-# repack as a single `cuda` gpu_variant so the conda metadata advertises CUDA
-# capability (build string + __cuda run dep), letting the solver prefer it on
-# CUDA-capable Windows hosts while the `none` variant remains installable
-# everywhere else.
+# win: the upstream PyPI win_amd64 wheel statically embeds cudart -- one
+# binary handles both CPU and GPU hosts at runtime, and there is no meaningful
+# per-CUDA-toolkit-version split. We tag the existing wheel repack as a single
+# `cuda` gpu_variant so the conda metadata advertises CUDA capability.
+#
+# Why cuda_compiler / cuda_compiler_version are also set on the win cuda
+# variant even though we don't actually compile any CUDA code there:
+#   compiler('cuda') in meta.yaml is what tells PBP to route this variant's
+#   build/test tasks to a GPU-equipped Windows worker pool
+#   (aws/windows-server-2025-amd64-cuda-12). Without that signal PBP picks the
+#   plain windows-server-2025-amd64 pool, which has no NVIDIA driver, and the
+#   __cuda dependency we use to keep CPU-only solvers from selecting the cuda
+#   variant fails the test phase's conda-create dry-run. The 12.9 here is
+#   arbitrary -- it picks the worker pool, that's all; the wheel embeds its
+#   own cudart at whatever version catboost upstream chose.
 #
 # Why we patch CUDA's host_defines.h in build.sh (linux only):
 #   CUDA 12.3+ added a #error rejecting libc++ on x86, and 13.x extends similar
@@ -30,15 +37,16 @@ gpu_variant:
   - cuda-13                    # [linux]
   - cuda                       # [win and x86_64]
 
-cuda_compiler_version:         # [linux]
-  - none                       # [linux]
+cuda_compiler_version:         # [linux or (win and x86_64)]
+  - none                       # [linux or (win and x86_64)]
   - 12.9                       # [linux]
   - 13.0                       # [linux]
+  - 12.9                       # [win and x86_64]
 
-cuda_compiler:                 # [linux]
-  - cuda-nvcc                  # [linux]
+cuda_compiler:                 # [linux or (win and x86_64)]
+  - cuda-nvcc                  # [linux or (win and x86_64)]
 
-zip_keys:                      # [linux]
-  -                            # [linux]
-    - gpu_variant              # [linux]
-    - cuda_compiler_version    # [linux]
+zip_keys:                      # [linux or (win and x86_64)]
+  -                            # [linux or (win and x86_64)]
+    - gpu_variant              # [linux or (win and x86_64)]
+    - cuda_compiler_version    # [linux or (win and x86_64)]

@@ -50,9 +50,15 @@ requirements:
     - {{ stdlib('c') }}               # [unix]
     - lld >=7                         # [linux]
     - clangxx >=18                    # [linux]
-    # CUDA toolkit -- linux source build only. The win cuda variant is a
-    # wheel repack with metadata-only CUDA labeling, so it needs no nvcc.
-    - {{ compiler('cuda') }}          # [linux and (gpu_variant or "").startswith("cuda")]
+    # CUDA toolkit. Linux uses nvcc for a real source build. Windows doesn't
+    # actually compile CUDA (the wheel embeds cudart statically) -- the
+    # compiler('cuda') entry here is what tells PBP to route this variant's
+    # build/test tasks to a GPU-equipped Windows worker pool
+    # (aws/windows-server-2025-amd64-cuda-12) rather than the CPU-only pool.
+    # Without it, the GPU runner is never picked, __cuda is missing in the
+    # test env, and conda's dry-run solver rejects the package's __cuda run
+    # dep before any test code can execute.
+    - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
   host:
     - python
     - pip
@@ -73,15 +79,16 @@ requirements:
     - matplotlib-base
     - python-graphviz
     # CUDA runtime requirements:
-    #   - linux cuda variants pin cuda-version to what we built against (source
-    #     build dynamically links libcudart from conda) and require __cuda so
-    #     the variant is only installed on hosts with an NVIDIA driver.
-    #   - win cuda variant is a wheel repack with cudart statically embedded -
-    #     the same binary runs fine on CPU-only Windows hosts (no driver needed),
-    #     so we do NOT gate it with __cuda. The cuda_* build string and the +100
-    #     bump are informational metadata; the package is installable anywhere.
+    #   - linux cuda variants pin cuda-version to the toolkit we built against
+    #     (source build dynamically links libcudart from conda).
+    #   - win cuda variant embeds cudart statically in the upstream wheel, so
+    #     no cuda-version pin is needed there.
+    #   - __cuda on both platforms is what prevents the conda solver from
+    #     picking the higher-build-number cuda variant on CPU-only hosts.
+    #     Without it, the +100 build-number bump would steer CPU users into
+    #     the cuda_* package even though they don't have a GPU.
     - {{ pin_compatible('cuda-version', max_pin='x.x') }}  # [linux and (gpu_variant or "").startswith("cuda")]
-    - __cuda                          # [linux and (gpu_variant or "").startswith("cuda")]
+    - __cuda                          # [(gpu_variant or "").startswith("cuda")]
   run_constrained:
     - ipywidgets >=7.0,<9.0
 
