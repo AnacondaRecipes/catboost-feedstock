@@ -66,6 +66,18 @@ if [[ "${gpu_variant}" == cuda* ]]; then
                 ;;
         esac
 
+        # Rewrite static-CUDA-runtime link flags to shared-cudart equivalents.
+        # conda's cuda-cudart-dev ships only the dynamic libcudart.so; the
+        # static libcudart_static.a / libcudadevrt.a / libculibos.a from the
+        # NVIDIA tarball are not packaged. catboost's per-target CMakeLists
+        # (including catboost/python-package/catboost/CMakeLists.linux-*-cuda.txt
+        # which is what we actually build for _catboost) hardcode the static
+        # names, so a global rewrite is necessary -- without this, the final
+        # link step fails with `unable to find library -lculibos`.
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudart_static/-lcudart/g"
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
+        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
+
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 
