@@ -60,10 +60,6 @@ if [[ "${gpu_variant}" == cuda* ]]; then
                 ;;
         esac
 
-        # Link with shared cudart instead of static
-        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudart_static/-lcudart/g"
-        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
-        find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 

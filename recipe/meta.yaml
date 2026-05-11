@@ -50,7 +50,6 @@ requirements:
     - cython ~=3.0.10                 # [unix]
     - numpy                           # [unix]
     - cuda-version {{ cuda_compiler_version }}  # [(gpu_variant or "").startswith("cuda")]
-    - cuda-driver-dev                           # [(gpu_variant or "").startswith("cuda")]
     - cuda-cudart-dev                           # [(gpu_variant or "").startswith("cuda")]
   run:
     - python
