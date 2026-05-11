@@ -18,7 +18,8 @@ source:
     - patches/unbundle-python-build-deps.patch                                            # [unix]
     # CUDA + aarch64 runtime fixes (linux source build only; the win cuda variant
     # is a metadata-only wheel repack and doesn't touch the upstream sources).
-    - patches/fix-dcg-pow-ambiguity.patch                                                 # [linux and (gpu_variant or "").startswith("cuda")]
+    - patches/fix-cuda-pow-host-device.patch                                              # [linux and (gpu_variant or "").startswith("cuda")]
+    - patches/add-cuda-functional-include.patch                                           # [linux and (gpu_variant or "").startswith("cuda")]
     - patches/fix-jemalloc-aarch64-pagesize.patch                                         # [aarch64]
 
 build:
@@ -72,12 +73,15 @@ requirements:
     - matplotlib-base
     - python-graphviz
     # CUDA runtime requirements:
-    #   - linux cuda variants pin to the specific cuda-version we built against
-    #     (the source build dynamically links libcudart from conda).
-    #   - win cuda variant embeds cudart statically in the upstream wheel, so we
-    #     only need __cuda to gate it to GPU hosts; no cuda-version pin.
+    #   - linux cuda variants pin cuda-version to what we built against (source
+    #     build dynamically links libcudart from conda) and require __cuda so
+    #     the variant is only installed on hosts with an NVIDIA driver.
+    #   - win cuda variant is a wheel repack with cudart statically embedded -
+    #     the same binary runs fine on CPU-only Windows hosts (no driver needed),
+    #     so we do NOT gate it with __cuda. The cuda_* build string and the +100
+    #     bump are informational metadata; the package is installable anywhere.
     - {{ pin_compatible('cuda-version', max_pin='x.x') }}  # [linux and (gpu_variant or "").startswith("cuda")]
-    - __cuda                          # [(gpu_variant or "").startswith("cuda")]
+    - __cuda                          # [linux and (gpu_variant or "").startswith("cuda")]
   run_constrained:
     - ipywidgets >=7.0,<9.0
 

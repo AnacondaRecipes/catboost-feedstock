@@ -1,0 +1,27 @@
+Include <cuda/functional> for cuda::maximum / cuda::minimum.
+
+reduce.cu has a libcudacxx-version-gated dispatch:
+
+    #if defined(_LIBCUDACXX_CUDA_API_VERSION) && _LIBCUDACXX_CUDA_API_VERSION >= 2008000
+                                     cuda::maximum<T>(),
+    #else
+                                     thrust::maximum<T>(),
+    #endif
+
+CUDA 12.9 / 13.0 ship libcudacxx 2.8.x / 3.0.x (both >= 2008000), so the
+`cuda::maximum` branch is taken. That symbol lives in <cuda/functional>,
+which reduce.cu doesn't include -- it only pulls in <thrust/functional.h>,
+which used to forward-declare these but no longer does.
+
+Adding the include lets the cuda::maximum/cuda::minimum names resolve.
+
+--- a/catboost/cuda/cuda_util/kernel/reduce.cu
++++ b/catboost/cuda/cuda_util/kernel/reduce.cu
+@@ -6,6 +6,7 @@
+ #include <cub/device/device_reduce.cuh>
+ #include <cub/device/device_segmented_reduce.cuh>
+
++#include <cuda/functional>
+ #include <thrust/functional.h>
+
+ namespace NKernel {
