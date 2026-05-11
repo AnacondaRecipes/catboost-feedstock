@@ -18,7 +18,7 @@ source:
     - patches/unbundle-python-build-deps.patch                                            # [unix]
     # CUDA + aarch64 runtime fixes (linux source build only; the win cuda variant
     # is a metadata-only wheel repack and doesn't touch the upstream sources).
-    - patches/fix-cuda-pow-host-device.patch                                              # [linux and (gpu_variant or "").startswith("cuda")]
+    - patches/fix-cuda-math-host-device.patch                                             # [linux and (gpu_variant or "").startswith("cuda")]
     - patches/add-cuda-functional-include.patch                                           # [linux and (gpu_variant or "").startswith("cuda")]
     - patches/fix-jemalloc-aarch64-pagesize.patch                                         # [aarch64]
 
