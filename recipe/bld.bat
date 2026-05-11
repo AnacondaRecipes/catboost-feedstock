@@ -1,25 +1,9 @@
-IF "%PY_VER%"=="3.8" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp38/c/catboost/catboost-%PKG_VERSION%-cp38-cp38-win_amd64.whl
-)
+REM Repack the upstream PyPI catboost wheel.
+REM Compute the wheel filename from PY_VER (e.g. 3.14 -> cp314) so we
+REM automatically pick up any new Python that catboost upstream ships a wheel
+REM for, instead of maintaining a brittle IF chain that fails silently when a
+REM new Python version drops through.
+set "PY_TAG=cp%PY_VER:.=%"
 
-IF "%PY_VER%"=="3.9" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp39/c/catboost/catboost-%PKG_VERSION%-cp39-cp39-win_amd64.whl
-)
-
-IF "%PY_VER%"=="3.10" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp310/c/catboost/catboost-%PKG_VERSION%-cp310-cp310-win_amd64.whl
-)
-
-IF "%PY_VER%"=="3.11" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp311/c/catboost/catboost-%PKG_VERSION%-cp311-cp311-win_amd64.whl
-)
-
-IF "%PY_VER%"=="3.12" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp312/c/catboost/catboost-%PKG_VERSION%-cp312-cp312-win_amd64.whl
-)
-
-IF "%PY_VER%"=="3.13" (
-	%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/cp313/c/catboost/catboost-%PKG_VERSION%-cp313-cp313-win_amd64.whl
-)
-
+%PYTHON% -m pip install --no-deps --no-build-isolation https://pypi.org/packages/%PY_TAG%/c/catboost/catboost-%PKG_VERSION%-%PY_TAG%-%PY_TAG%-win_amd64.whl
 if errorlevel 1 exit 1

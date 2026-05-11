@@ -8,12 +8,15 @@ the `__host__`-only overload set, producing:
     error: calling a __host__ function("pow(float, float)") from a
            __device__ function
 
-Three call sites need disambiguation:
+Four files need disambiguation:
 
   - dcg.cu / NDCG decay loop: cast the integer subtraction result to T.
   - score_calcers.cuh / leaf-score accumulator: cast MetaExponent to double.
   - random_gen.cuh / NextGamma: switch to `powf` (explicit float overload
     that's __device__-callable on all CUDA versions we support).
+  - transform.cu / PowVectorImpl: switch to `powf`. The kernel template
+    is only instantiated for `float` (Y_MAP_ARGS(..., float)), so powf
+    is type-correct.
 
 --- a/catboost/cuda/targets/kernel/dcg.cu
 +++ b/catboost/cuda/targets/kernel/dcg.cu
@@ -48,3 +51,23 @@ Three call sites need disambiguation:
      }
 
      __forceinline__ __device__
+--- a/catboost/cuda/cuda_util/kernel/transform.cu
++++ b/catboost/cuda/cuda_util/kernel/transform.cu
+@@ -355,7 +355,7 @@
+     __global__ void PowVectorImpl(T* const x, const T base, const ui64 size) {
+         ui64 i = (ui64)blockIdx.x * blockDim.x + threadIdx.x;
+         while (i < size) {
+-            x[i] = pow(base, x[i]);
++            x[i] = powf(base, x[i]);
+             i += (ui64)gridDim.x * blockDim.x;
+         }
+     }
+@@ -384,7 +384,7 @@
+     __global__ void PowVectorImpl(const T* const x, const T base, const ui64 size, T* y) {
+         ui64 i = (ui64)blockIdx.x * blockDim.x + threadIdx.x;
+         while (i < size) {
+-            y[i] = pow(base, x[i]);
++            y[i] = powf(base, x[i]);
+             i += (ui64)gridDim.x * blockDim.x;
+         }
+     }
