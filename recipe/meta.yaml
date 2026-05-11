@@ -16,9 +16,6 @@ source:
     - patches/use-conda-openssl.patch                                                     # [unix]
     - patches/let-conda-drive-clang-toolchain.patch                                       # [unix]
     - patches/unbundle-python-build-deps.patch                                            # [unix]
-    # Linux-only: catboost's vendored cxxsupp / builtins quirks.
-    - patches/libcxx-fallback-for-pre-clang18.patch                                       # [linux]
-    - patches/drop-aarch64-clang-incompatible-builtins.patch                              # [linux and aarch64]
     # CUDA + aarch64 runtime fixes.
     - patches/fix-dcg-pow-ambiguity.patch                                                 # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-jemalloc-aarch64-pagesize.patch                                         # [aarch64]
