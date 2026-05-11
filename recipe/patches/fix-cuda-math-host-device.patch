@@ -9,23 +9,35 @@ overloads are callable from __device__ code. Bare calls like
     log2(float)
     sqrt(float)
     abs(float)
+    fabs(float)
+    std::exp(float)
 
 resolve to the host-only overload set, producing diagnostics of the form:
 
     error: calling a __host__ function("X(float)") from a __device__ function
 
 CUDA's runtime math header provides explicit *f-suffixed overloads
-(powf, ceilf, logf, log2f, sqrtf, fabsf) that ARE __device__-callable. The
-fix is mechanical: replace the bare call with the *f-suffixed overload when
-the argument(s) are float. We leave bare-double / bare-int calls alone --
-only the bare-float forms are broken.
+(powf, ceilf, logf, log2f, sqrtf, fabsf, expf) that ARE __device__-callable.
+The fix is mechanical: replace the bare call with the *f-suffixed overload
+when the argument(s) are float. We leave bare-double / bare-int calls alone
+-- only the bare-float forms are broken.
 
 Audited every catboost/cuda/**/*.{cu,cuh} call to bare pow/ceil/log/log2/
-sqrt/abs and patched the ones where the argument resolves to float.
+sqrt/abs/fabs and std::exp, and patched the ones where the argument
+resolves to float.
 
 diff --git a/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh b/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
 --- a/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
 +++ b/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
+@@ -211,7 +211,7 @@ namespace NKernel {
+     };
+ 
+     __forceinline__ __device__ bool NotZero(float val) {
+-        return fabs(val) > 1e-20f;
++        return fabsf(val) > 1e-20f;
+     }
+ 
+     __forceinline__ __device__ unsigned int GetPairIndex(ui32 i, ui32 j) {
 @@ -220,7 +220,7 @@ namespace NKernel {
  
      __forceinline__ __device__ uint2 GetPair(ui32 idx) {
@@ -47,6 +59,18 @@ diff --git a/catboost/cuda/cuda_util/kernel/random_gen.cuh b/catboost/cuda/cuda_
      }
  
      __forceinline__ __device__
+diff --git a/catboost/cuda/cuda_util/kernel/reduce.cu b/catboost/cuda/cuda_util/kernel/reduce.cu
+--- a/catboost/cuda/cuda_util/kernel/reduce.cu
++++ b/catboost/cuda/cuda_util/kernel/reduce.cu
+@@ -18,7 +18,7 @@ namespace NKernel {
+         /// Boolean sum operator, returns <tt>|a| + |b|</tt>
+         __host__ __device__ __forceinline__ float operator()(const float &a, const float &b) const
+         {
+-            return fabs(a) + fabs(b);
++            return fabsf(a) + fabsf(b);
+         }
+     };
+ 
 diff --git a/catboost/cuda/cuda_util/kernel/transform.cu b/catboost/cuda/cuda_util/kernel/transform.cu
 --- a/catboost/cuda/cuda_util/kernel/transform.cu
 +++ b/catboost/cuda/cuda_util/kernel/transform.cu
@@ -283,3 +307,84 @@ diff --git a/catboost/cuda/targets/kernel/dcg.cu b/catboost/cuda/targets/kernel/
          i += gridDim.x * blockDim.x;
      }
  }
+diff --git a/catboost/cuda/targets/kernel/pfound_f.cu b/catboost/cuda/targets/kernel/pfound_f.cu
+--- a/catboost/cuda/targets/kernel/pfound_f.cu
++++ b/catboost/cuda/targets/kernel/pfound_f.cu
+@@ -191,7 +191,7 @@ namespace NKernel
+ 
+                 const float decay =  powf(decaySpeed, offset - queryBegin[k] - 1);
+ 
+-                float pairWeight = 0.15f * decay * fabs(relev1 - relev2) /  bootstrapIter;
++                float pairWeight = 0.15f * decay * fabsf(relev1 - relev2) /  bootstrapIter;
+ 
+ 
+                 ui64 pairIdx = idx1 < idx2 ? GetPairIndex(idx1 - queryBegin[k], idx2 - queryBegin[k])
+diff --git a/catboost/cuda/targets/kernel/pointwise_targets.cu b/catboost/cuda/targets/kernel/pointwise_targets.cu
+--- a/catboost/cuda/targets/kernel/pointwise_targets.cu
++++ b/catboost/cuda/targets/kernel/pointwise_targets.cu
+@@ -39,20 +39,20 @@ namespace NKernel {
+         }
+ 
+         __device__ __forceinline__ float Score(float target, float prediction) const {
+-            const float val = -target * std::exp((1 - VariancePower) * prediction) / (1 - VariancePower);
+-            const float delta = std::exp((2 - VariancePower) * prediction) / (2 - VariancePower);
++            const float val = -target * expf((1 - VariancePower) * prediction) / (1 - VariancePower);
++            const float delta = expf((2 - VariancePower) * prediction) / (2 - VariancePower);
+             return val + delta;
+         }
+ 
+         __device__ __forceinline__ float Der(float target, float prediction) const {
+-            const float der = target * std::exp((1 - VariancePower) * prediction);
+-            const float delta = std::exp((2 - VariancePower) * prediction);
++            const float der = target * expf((1 - VariancePower) * prediction);
++            const float delta = expf((2 - VariancePower) * prediction);
+             return der - delta;
+         }
+ 
+         __device__ __forceinline__ float Der2(float target, float prediction) const {
+-            const float der2 = target * std::exp((1 - VariancePower) * prediction) * (1 - VariancePower);
+-            const float delta = std::exp((2 - VariancePower) * prediction) * (2 - VariancePower);
++            const float der2 = target * expf((1 - VariancePower) * prediction) * (1 - VariancePower);
++            const float delta = expf((2 - VariancePower) * prediction) * (2 - VariancePower);
+             return - der2 + delta;
+         }
+     };
+@@ -67,7 +67,7 @@ namespace NKernel {
+         }
+ 
+         __device__ __forceinline__ float Score(float target, float prediction) const {
+-            const float targetMismatch = fabs(target - prediction);
++            const float targetMismatch = fabsf(target - prediction);
+             if (targetMismatch < Delta) {
+                 return 0.5 * targetMismatch * targetMismatch;
+             } else {
+@@ -77,7 +77,7 @@ namespace NKernel {
+ 
+         __device__ __forceinline__ float Der(float target, float prediction) const {
+             const float diff = target - prediction;
+-            if (fabs(diff) < Delta) {
++            if (fabsf(diff) < Delta) {
+                 return diff;
+             } else {
+                 return diff > 0.0 ? Delta : -Delta;
+@@ -86,7 +86,7 @@ namespace NKernel {
+ 
+         __device__ __forceinline__ float Der2(float target, float prediction) const {
+             const float diff = target - prediction;
+-            if (fabs(diff) < Delta) {
++            if (fabsf(diff) < Delta) {
+                 return -HUBER_DER2;
+             } else {
+                 return 0.0;
+diff --git a/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu b/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
+--- a/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
++++ b/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
+@@ -144,7 +144,7 @@ namespace NKernel
+ 
+                 const float magicConst = 0.15f; //to make learning rate more comparable with pair classification
+                 const float decay = magicConst * powf(decaySpeed, offset - queryBegin[k] - 1);
+-                const float pairWeight = decay * fabs(relev1 - relev2) /  bootstrapIter;
++                const float pairWeight = decay * fabsf(relev1 - relev2) /  bootstrapIter;
+                 const float ll = pairWeight * (relev1 > relev2 ? approx2 : -approx1) / (approx2 + approx1); //
+ 
+                 if (idx1 != -1 && idx1 < size) {
