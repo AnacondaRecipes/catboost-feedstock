@@ -43,9 +43,6 @@ cuda_compiler_version:         # [linux or (win and x86_64)]
   - 13.0                       # [linux]
   - 12.9                       # [win and x86_64]
 
-cuda_compiler:                 # [linux or (win and x86_64)]
-  - cuda-nvcc                  # [linux or (win and x86_64)]
-
 zip_keys:                      # [linux or (win and x86_64)]
   -                            # [linux or (win and x86_64)]
     - gpu_variant              # [linux or (win and x86_64)]
