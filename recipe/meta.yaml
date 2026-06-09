@@ -50,14 +50,10 @@ requirements:
     - {{ stdlib('c') }} 
     - lld >=7                         # [linux]
     - clangxx >=18                    # [linux]
-    # CUDA toolkit. Linux uses nvcc for a real source build. Windows doesn't
-    # actually compile CUDA (the wheel embeds cudart statically) -- the
-    # compiler('cuda') entry here is what tells PBP to route this variant's
-    # build/test tasks to a GPU-equipped Windows worker pool
-    # (aws/windows-server-2025-amd64-cuda-12) rather than the CPU-only pool.
-    # Without it, the GPU runner is never picked, __cuda is missing in the
-    # test env, and conda's dry-run solver rejects the package's __cuda run
-    # dep before any test code can execute.
+    # Linux: nvcc for the source build. Windows: this recipe does not compile
+    # CUDA (the upstream wheel is already built with cudart linked in), but
+    # compiler('cuda') is kept here so PBP routes the test phase to a
+    # GPU-equipped worker pool where the __cuda run dep resolves.
     - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
   host:
     - python
