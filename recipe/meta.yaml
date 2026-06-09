@@ -47,7 +47,7 @@ requirements:
     - cmake >=3.24                    # [unix]
     - make                            # [unix]
     - {{ compiler('cxx') }}           # [unix]
-    - {{ stdlib('c') }}               # [unix]
+    - {{ stdlib('c') }} 
     - lld >=7                         # [linux]
     - clangxx >=18                    # [linux]
     # CUDA toolkit. Linux uses nvcc for a real source build. Windows doesn't
