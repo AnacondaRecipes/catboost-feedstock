@@ -1,0 +1,35 @@
+Drop cmake/conan from Python build-time deps -- conda provides them.
+
+setup.py and pyproject.toml ship with `cmake` and `conan` in setup_requires
+/ build-system.requires, which pip-installs them from PyPI when bdist_wheel
+runs. We provide cmake (and don't use conan at all) via conda's build env,
+so the PyPI install is wasted work at best and a version conflict at
+worst.
+
+Removed:
+  - cmake (>=3.24, <4.0)    --> conda's cmake
+  - conan (>=2.4.1, <3.0)   --> not used in conda build path
+
+--- a/catboost/python-package/pyproject.toml
++++ b/catboost/python-package/pyproject.toml
+@@ -2,9 +2,7 @@
+ build-backend = "setuptools.build_meta"
+ requires = [
+     "setuptools (>=70.1.0, <83.0)",
+-    "cmake (>=3.24, <4.0)",
+     "jupyterlab (>=3.0.6, <3.6.0)",
+-    "conan (>=2.4.1, <3.0)",
+     "cython ~= 3.0.10",
+     "numpy < 3.0"
+ ]
+--- a/catboost/python-package/setup.py
++++ b/catboost/python-package/setup.py
+@@ -124,7 +124,7 @@ def setup_hnsw_submodule(argv, extensions):
+
+
+ def get_setup_requires(argv):
+-    setup_requires = ['cmake (>=3.24, <4.0)', 'conan (>=2.4.1, <3.0)', 'cython ~= 3.0.10', 'numpy < 3.0']
++    setup_requires = ['cython ~= 3.0.10', 'numpy < 3.0']
+
+     if ('build_widget' in argv) or (not ('--no-widget' in argv)):
+         setup_requires += ['jupyterlab (>=3.0.6, <3.6.0)']

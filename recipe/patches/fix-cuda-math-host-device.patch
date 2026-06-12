@@ -1,0 +1,555 @@
+Fix __host__/__device__ math-function ambiguities in catboost CUDA kernels.
+
+CUDA 12.x's nvcc (with newer libcudacxx) restricts which standard-math
+overloads are callable from __device__ code. Bare calls like
+
+    pow(float, float)
+    ceil(float)
+    log(float)
+    log2(float)
+    sqrt(float)
+    fabs(float) / abs(float-variable)
+    std::exp(float)
+
+resolve to the host-only overload set, producing diagnostics of the form:
+
+    error: calling a __host__ function("X(float)") from a __device__ function
+
+CUDA's runtime math header provides explicit *f-suffixed overloads
+(powf, ceilf, logf, log2f, sqrtf, fabsf, expf) that ARE __device__-callable.
+The fix is mechanical: replace the bare call with the *f-suffixed overload
+when the argument(s) are float. We leave bare-double / bare-int calls alone
+-- only the bare-float forms are broken.
+
+Audited every catboost/cuda/**/*.{cu,cuh} call site exhaustively. All bare-
+float calls (28 files, ~50 sites) are now patched. Coverage includes the
+common idioms `(int)log2((float)gridDim.y)`, `if (abs(val) > 1e-20f)`, and
+all CUDA-kernel pow/ceil/sqrt/fabs sites.
+
+diff --git a/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh b/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
+--- a/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
++++ b/catboost/cuda/cuda_util/kernel/kernel_helpers.cuh
+@@ -211,7 +211,7 @@ namespace NKernel {
+     };
+ 
+     __forceinline__ __device__ bool NotZero(float val) {
+-        return fabs(val) > 1e-20f;
++        return fabsf(val) > 1e-20f;
+     }
+ 
+     __forceinline__ __device__ unsigned int GetPairIndex(ui32 i, ui32 j) {
+@@ -220,7 +220,7 @@ namespace NKernel {
+ 
+     __forceinline__ __device__ uint2 GetPair(ui32 idx) {
+         uint2 pair;
+-        pair.y = ui32((1.0f + sqrt(8.0f * idx + 1.0f)) * 0.5f);
++        pair.y = ui32((1.0f + sqrtf(8.0f * idx + 1.0f)) * 0.5f);
+         pair.x = idx - ((pair.y * (pair.y - 1)) >> 1);
+         return pair;
+     }
+diff --git a/catboost/cuda/cuda_util/kernel/random_gen.cuh b/catboost/cuda/cuda_util/kernel/random_gen.cuh
+--- a/catboost/cuda/cuda_util/kernel/random_gen.cuh
++++ b/catboost/cuda/cuda_util/kernel/random_gen.cuh
+@@ -99,7 +99,7 @@ namespace NKernel {
+                 break;
+             }
+         }
+-        return w > 0 ? (origScale * result * pow(w, 1.0f / (shape - 1.0f))) : result;
++        return w > 0 ? (origScale * result * powf(w, 1.0f / (shape - 1.0f))) : result;
+     }
+ 
+     __forceinline__ __device__
+diff --git a/catboost/cuda/cuda_util/kernel/reduce.cu b/catboost/cuda/cuda_util/kernel/reduce.cu
+--- a/catboost/cuda/cuda_util/kernel/reduce.cu
++++ b/catboost/cuda/cuda_util/kernel/reduce.cu
+@@ -18,7 +18,7 @@ namespace NKernel {
+         /// Boolean sum operator, returns <tt>|a| + |b|</tt>
+         __host__ __device__ __forceinline__ float operator()(const float &a, const float &b) const
+         {
+-            return fabs(a) + fabs(b);
++            return fabsf(a) + fabsf(b);
+         }
+     };
+ 
+diff --git a/catboost/cuda/cuda_util/kernel/transform.cu b/catboost/cuda/cuda_util/kernel/transform.cu
+--- a/catboost/cuda/cuda_util/kernel/transform.cu
++++ b/catboost/cuda/cuda_util/kernel/transform.cu
+@@ -355,7 +355,7 @@ namespace NKernel {
+     __global__ void PowVectorImpl(T* const x, const T base, const ui64 size) {
+         ui64 i = (ui64)blockIdx.x * blockDim.x + threadIdx.x;
+         while (i < size) {
+-            x[i] = pow(base, x[i]);
++            x[i] = powf(base, x[i]);
+             i += (ui64)gridDim.x * blockDim.x;
+         }
+     }
+@@ -384,7 +384,7 @@ namespace NKernel {
+     __global__ void PowVectorImpl(const T* const x, const T base, const ui64 size, T* y) {
+         ui64 i = (ui64)blockIdx.x * blockDim.x + threadIdx.x;
+         while (i < size) {
+-            y[i] = pow(base, x[i]);
++            y[i] = powf(base, x[i]);
+             i += (ui64)gridDim.x * blockDim.x;
+         }
+     }
+diff --git a/catboost/cuda/gpu_data/kernel/query_helper.cu b/catboost/cuda/gpu_data/kernel/query_helper.cu
+--- a/catboost/cuda/gpu_data/kernel/query_helper.cu
++++ b/catboost/cuda/gpu_data/kernel/query_helper.cu
+@@ -25,7 +25,7 @@ namespace NKernel {
+     }
+ 
+     __device__ __forceinline__ ui32 SampledQuerySize(float sampleRate, ui32 qSize)  {
+-        const ui32 sampledSize = ceil(sampleRate * qSize);
++        const ui32 sampledSize = ceilf(sampleRate * qSize);
+         if (sampledSize < 2) {
+             return min(2, qSize);
+         }
+diff --git a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_2_one_byte_base.cuh b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_2_one_byte_base.cuh
+--- a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_2_one_byte_base.cuh
++++ b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_2_one_byte_base.cuh
+@@ -132,7 +132,7 @@ namespace NKernel
+ 
+                     for (int fold = firstFoldIdx; fold < features[fid].Folds; fold += 32) {
+                         const float val = Histogram[isSecondStatFlag * 4 * histSize + fid * histSize + fold];
+-                        if (abs(val) > 1e-20f) {
++                        if (fabsf(val) > 1e-20f) {
+                             if (blockCount > 1) {
+                                 atomicAdd(dst + fold, val);
+                             } else {
+diff --git a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_binary.cu b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_binary.cu
+--- a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_binary.cu
++++ b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_binary.cu
+@@ -55,7 +55,7 @@ namespace NKernel {
+                         }
+                     }
+ 
+-                    if (abs(val) > 1e-20f) {
++                    if (fabsf(val) > 1e-20f) {
+                         if (blockCount > 1) {
+                             atomicAdd(dst + fold, val);
+                         } else {
+diff --git a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_half_byte.cu b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_half_byte.cu
+--- a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_half_byte.cu
++++ b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_half_byte.cu
+@@ -42,7 +42,7 @@ namespace NKernel {
+                 float* dst = binSums + deviceOffset + leafId * entriesPerLeaf + statId * group.GroupSize + group.FoldOffsetInGroup;
+                 const float val = Histogram[fid + 8 * fold];
+ 
+-                if (abs(val) > 1e-20f) {
++                if (fabsf(val) > 1e-20f) {
+                     if (blockCount > 1) {
+                         atomicAdd(dst + fold, val);
+                     } else {
+diff --git a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_one_byte.cu b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_one_byte.cu
+--- a/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_one_byte.cu
++++ b/catboost/cuda/methods/greedy_subsets_searcher/kernel/hist_one_byte.cu
+@@ -250,7 +250,7 @@ namespace NKernel
+ 
+                 if (fold < features[fid].Folds) {
+                     const float val = Histogram[fid * histSize + fold];
+-                    if (abs(val) > 1e-20f) {
++                    if (fabsf(val) > 1e-20f) {
+                         if (blockCount > 1) {
+                             atomicAdd(dst + fold, val);
+                         } else {
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist.cu b/catboost/cuda/methods/kernel/pairwise_hist.cu
+--- a/catboost/cuda/methods/kernel/pairwise_hist.cu
++++ b/catboost/cuda/methods/kernel/pairwise_hist.cu
+@@ -23,7 +23,7 @@ namespace NKernel {
+             partitionStats += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partitionStats += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4;
+@@ -115,7 +115,7 @@ namespace NKernel {
+                                                  float* histogram) {
+         const int histCount = 4;
+ 
+-        const int depth = (int)log2((float)gridDim.y);
++        const int depth = (int)log2f((float)gridDim.y);
+         int partIds[4];
+         {
+             int partSizes[4];
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_binary.cu b/catboost/cuda/methods/kernel/pairwise_hist_binary.cu
+--- a/catboost/cuda/methods/kernel/pairwise_hist_binary.cu
++++ b/catboost/cuda/methods/kernel/pairwise_hist_binary.cu
+@@ -124,7 +124,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * ((ui64)histLineSize * 4ULL);
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * ((ui64)histLineSize) * 4ULL;
+@@ -175,7 +175,7 @@ namespace NKernel {
+                 }
+             }
+ 
+-            if (abs(sum) > 1e-20f) {
++            if (fabsf(sum) > 1e-20f) {
+                 atomicAdd(histogram + feature[fid].FirstFoldIndex * 4 + histId, sum);
+             }
+         }
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_half_byte.cu b/catboost/cuda/methods/kernel/pairwise_hist_half_byte.cu
+--- a/catboost/cuda/methods/kernel/pairwise_hist_half_byte.cu
++++ b/catboost/cuda/methods/kernel/pairwise_hist_half_byte.cu
+@@ -261,7 +261,7 @@ namespace NKernel {
+                 if (fold < feature[fid].Folds) {
+                     const int readOffset = 4 * (16 * fid + fold) + histId;
+                     const float val = smem[readOffset];
+-                    if (abs(val) > 1e-20f) {
++                    if (fabsf(val) > 1e-20f) {
+                         atomicAdd(histogram + 4 * bfStart + 4 * fold + histId, val);
+                     }
+                 }
+@@ -299,7 +299,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4ULL;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4ULL;
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_5bit.cuh b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_5bit.cuh
+--- a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_5bit.cuh
++++ b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_5bit.cuh
+@@ -302,7 +302,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4ULL;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4ULL;
+@@ -350,7 +350,7 @@ namespace NKernel {
+                 if (fold < feature[fid].Folds) {
+                     const int readOffset = 4 * (maxFoldCount * fid + fold) + histId;
+                     const float val = localHist[readOffset];
+-                    if (abs(val) > 1e-20f) {
++                    if (fabsf(val) > 1e-20f) {
+                         if (activeBlockCount > 1) {
+                             atomicAdd(histogram + 4 * bfStart + 4 * fold + histId, val);
+                         } else {
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_6bit.cuh b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_6bit.cuh
+--- a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_6bit.cuh
++++ b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_6bit.cuh
+@@ -290,7 +290,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4ULL;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4ULL;
+@@ -343,7 +343,7 @@ namespace NKernel {
+ 
+                     const float result = localHist[readOffset] + localHist[readOffset + 16];
+ 
+-                    if (abs(result) > 1e-20f) {
++                    if (fabsf(result) > 1e-20f) {
+                         if (activeBlockCount == 1) {
+                             histogram[4 * bfStart + 4 * fold + histId] += result;
+                         } else {
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_7bit.cuh b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_7bit.cuh
+--- a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_7bit.cuh
++++ b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_7bit.cuh
+@@ -282,7 +282,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4ULL;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4ULL;
+@@ -335,7 +335,7 @@ namespace NKernel {
+                                            + leqOrGeqShift;
+ 
+                     const float result = localHist[readOffset] + localHist[readOffset + 16];
+-                    if (abs(result) > 1e-20f) {
++                    if (fabsf(result) > 1e-20f) {
+                         if (activeBlockCount > 1) {
+                             atomicAdd(histogram + 4 * bfStart + 4 * fold + histId, result);
+                         } else {
+diff --git a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_8bit_atomics.cuh b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_8bit_atomics.cuh
+--- a/catboost/cuda/methods/kernel/pairwise_hist_one_byte_8bit_atomics.cuh
++++ b/catboost/cuda/methods/kernel/pairwise_hist_one_byte_8bit_atomics.cuh
+@@ -199,7 +199,7 @@ namespace NKernel {
+             partition += blockIdx.y;
+             histogram += blockIdx.y * histLineSize * 4ULL;
+         } else {
+-            const int depth = (int)log2((float)gridDim.y);
++            const int depth = (int)log2f((float)gridDim.y);
+             int partId = GetPairwisePartIdToCalculate(partition);
+             partition += partId;
+             histogram += (((blockIdx.z + 1) << depth) | blockIdx.y) * histLineSize * 4ULL;
+@@ -241,7 +241,7 @@ namespace NKernel {
+                                            + leqOrGeqShift;
+ 
+                     const float result = localHist[readOffset] + localHist[readOffset + 16];
+-                    if (abs(result) > 1e-20f) {
++                    if (fabsf(result) > 1e-20f) {
+                         if (activeBlockCount == 1) {
+                             histogram[4 * bfStart + 4 * fold + histId] += result;
+                         } else {
+diff --git a/catboost/cuda/methods/kernel/pointwise_hist1.cu b/catboost/cuda/methods/kernel/pointwise_hist1.cu
+--- a/catboost/cuda/methods/kernel/pointwise_hist1.cu
++++ b/catboost/cuda/methods/kernel/pointwise_hist1.cu
+@@ -465,7 +465,7 @@ namespace NKernel
+         for (int fid = 0; fid < fCount; ++fid) {
+             if (fold < feature[fid].Folds) {
+                 const float val = smem[fid * histSize + fold];
+-                if (abs(val) > 1e-20f) {
++                if (fabsf(val) > 1e-20f) {
+                     if (BlocksPerFeature > 1) {
+                         atomicAdd(binSumsForPart + (feature[fid].FirstFoldIndex + fold), val);
+                     } else {
+@@ -607,7 +607,7 @@ template <int BlockSize, bool IsFullPass>
+                     }
+                 }
+ 
+-                if (abs(sum) > 1e-20f) {
++                if (fabsf(sum) > 1e-20f) {
+                     if (M > 1) {
+                         atomicAdd(binSums + feature[fid].FirstFoldIndex, sum);
+                     } else {
+@@ -734,7 +734,7 @@ template <int BlockSize, bool IsFullPass>
+ 
+             if (fid < fCount && fold < feature[fid].Folds) {
+                 const float result = smem[fold * 8 + fid];
+-                if (abs(result) > 1e-20) {
++                if (fabsf(result) > 1e-20) {
+                     if (M > 1) {
+                         atomicAdd(binSums + feature[fid].FirstFoldIndex + fold, result);
+                     } else {
+diff --git a/catboost/cuda/methods/kernel/pointwise_hist2_binary.cu b/catboost/cuda/methods/kernel/pointwise_hist2_binary.cu
+--- a/catboost/cuda/methods/kernel/pointwise_hist2_binary.cu
++++ b/catboost/cuda/methods/kernel/pointwise_hist2_binary.cu
+@@ -83,7 +83,7 @@ namespace NKernel
+                     }
+                 }
+ 
+-                if (abs(sum) > 1e-20f) {
++                if (fabsf(sum) > 1e-20f) {
+                     if (M > 1)
+                     {
+                         atomicAdd(binSums + (feature[fid].FirstFoldIndex) * 2 + w, sum);
+diff --git a/catboost/cuda/methods/kernel/pointwise_hist2_half_byte.cu b/catboost/cuda/methods/kernel/pointwise_hist2_half_byte.cu
+--- a/catboost/cuda/methods/kernel/pointwise_hist2_half_byte.cu
++++ b/catboost/cuda/methods/kernel/pointwise_hist2_half_byte.cu
+@@ -83,7 +83,7 @@ namespace NKernel
+ 
+         if (fid < fCount && fold < feature[fid].Folds) {
+             const float result = smem[fold * 16 + 2 * fid + w];
+-            if (abs(result) > 1e-20) {
++            if (fabsf(result) > 1e-20) {
+                 if (M > 1) {
+                     atomicAdd(binSums + (feature[fid].FirstFoldIndex + fold) * 2 + w, result);
+                 } else {
+diff --git a/catboost/cuda/methods/kernel/pointwise_hist2_one_byte_templ.cuh b/catboost/cuda/methods/kernel/pointwise_hist2_one_byte_templ.cuh
+--- a/catboost/cuda/methods/kernel/pointwise_hist2_one_byte_templ.cuh
++++ b/catboost/cuda/methods/kernel/pointwise_hist2_one_byte_templ.cuh
+@@ -134,7 +134,7 @@ namespace NKernel {
+             if (fid < fCount) {
+                 const float val = smem[featureOffset + 2 * fold];
+ 
+-                if (abs(val) > 1e-20f) {
++                if (fabsf(val) > 1e-20f) {
+                     if (BLOCKS_PER_FEATURE > 1) {
+                         atomicAdd(binSumsForPart + (feature[fid].FirstFoldIndex + fold) * 2 + w, val);
+                     } else {
+diff --git a/catboost/cuda/methods/kernel/pointwise_scores.cu b/catboost/cuda/methods/kernel/pointwise_scores.cu
+--- a/catboost/cuda/methods/kernel/pointwise_scores.cu
++++ b/catboost/cuda/methods/kernel/pointwise_scores.cu
+@@ -112,8 +112,8 @@ namespace NKernel {
+                     }
+                 }
+ 
+-                score += leftTotalWeight > 2 ? leftScore * (1 + 2 * log(leftTotalWeight + 1)) : 0;
+-                score += rightTotalWeight > 2 ? rightScore * (1 + 2 * log(rightTotalWeight + 1)) : 0;
++                score += leftTotalWeight > 2 ? leftScore * (1 + 2 * logf(leftTotalWeight + 1)) : 0;
++                score += rightTotalWeight > 2 ? rightScore * (1 + 2 * logf(rightTotalWeight + 1)) : 0;
+             }
+ 
+             ui32 featureId = bf[i + tid].FeatureId;
+@@ -387,7 +387,7 @@ namespace NKernel {
+                 }
+             }
+ 
+-            score = denumSqr > 1e-15f ? -score / sqrt(denumSqr) : FLT_MAX;
++            score = denumSqr > 1e-15f ? -score / sqrtf(denumSqr) : FLT_MAX;
+ 
+             ui32 featureId = bf[i + tid].FeatureId;
+             score *= __ldg(catFeaturesWeights + featureId);
+diff --git a/catboost/cuda/methods/kernel/score_calcers.cuh b/catboost/cuda/methods/kernel/score_calcers.cuh
+--- a/catboost/cuda/methods/kernel/score_calcers.cuh
++++ b/catboost/cuda/methods/kernel/score_calcers.cuh
+@@ -52,7 +52,7 @@ namespace NKernel {
+ 
+         __forceinline__ __host__ __device__ void AddLeaf(double sum, double weight) {
+             double leafScore = (weight > 1e-20f ? (-sum * sum) / (weight + Lambda) : 0);
+-            Score += (MetaExponent == 1.0f || leafScore == 0.0f) ? leafScore : std::copysign(pow(std::abs(leafScore) / weight, MetaExponent), leafScore) * weight;
++            Score += (MetaExponent == 1.0f || leafScore == 0.0f) ? leafScore : std::copysign(pow(std::abs(leafScore) / weight, static_cast<double>(MetaExponent)), leafScore) * weight;
+         }
+ 
+         __forceinline__ __host__ __device__ double GetScore() {
+@@ -158,7 +158,7 @@ namespace NKernel {
+         }
+ 
+         __forceinline__ __host__ __device__ float GetScore() {
+-            float score = DenumSqr > 1e-15f ? -Score / sqrt(DenumSqr) : FLT_MAX;
++            float score = DenumSqr > 1e-15f ? -Score / sqrtf(DenumSqr) : FLT_MAX;
+             if (ScoreStdDev) {
+                 ui64 seed = GlobalSeed + FeatureId;
+                 AdvanceSeed(&seed, 4);
+diff --git a/catboost/cuda/methods/kernel/split_properties_helpers.cuh b/catboost/cuda/methods/kernel/split_properties_helpers.cuh
+--- a/catboost/cuda/methods/kernel/split_properties_helpers.cuh
++++ b/catboost/cuda/methods/kernel/split_properties_helpers.cuh
+@@ -78,7 +78,7 @@ namespace NKernel {
+         }
+ 
+         __forceinline__ __device__ ui32 GetDataPartitionOffset(ui32 partId, ui32 foldId) {
+-            const int foldStripe = 1 << static_cast<ui32>(ceil(log2(static_cast<float>(FoldCount))));
++            const int foldStripe = 1 << static_cast<ui32>(ceilf(log2f(static_cast<float>(FoldCount))));
+             return partId * foldStripe + foldId;
+         }
+ 
+@@ -197,7 +197,7 @@ namespace NKernel {
+ 
+     __forceinline__ __device__ int GetPairwisePartIdToCalculate(const TDataPartition* partition) {
+ 
+-        const int depth = (int)log2((float)gridDim.y);
++        const int depth = (int)log2f((float)gridDim.y);
+         //
+         int partIds[4];
+         int partSizes[4];
+diff --git a/catboost/cuda/targets/kernel/dcg.cu b/catboost/cuda/targets/kernel/dcg.cu
+--- a/catboost/cuda/targets/kernel/dcg.cu
++++ b/catboost/cuda/targets/kernel/dcg.cu
+@@ -17,7 +17,7 @@ template <typename I, typename T>
+ __global__ void MakeDcgDecaysImpl(const I* const offsets, T* const decays, const ui64 size) {
+     ui64 i = blockIdx.x * blockDim.x + threadIdx.x;
+     while (i < size) {
+-        decays[i] = static_cast<T>(1) / log2(static_cast<T>(i - __ldg(offsets + i) + 2));
++        decays[i] = static_cast<T>(1) / log2f(static_cast<T>(i - __ldg(offsets + i) + 2));
+         i += gridDim.x * blockDim.x;
+     }
+ }
+@@ -53,7 +53,7 @@ __global__ void MakeDcgExponentialDecaysImpl(
+ {
+     ui64 i = blockIdx.x * blockDim.x + threadIdx.x;
+     while (i < size) {
+-        decays[i] = pow(base, i - __ldg(offsets + i));
++        decays[i] = powf(base, static_cast<float>(i - __ldg(offsets + i)));
+         i += gridDim.x * blockDim.x;
+     }
+ }
+diff --git a/catboost/cuda/targets/kernel/pfound_f.cu b/catboost/cuda/targets/kernel/pfound_f.cu
+--- a/catboost/cuda/targets/kernel/pfound_f.cu
++++ b/catboost/cuda/targets/kernel/pfound_f.cu
+@@ -191,7 +191,7 @@ namespace NKernel
+ 
+                 const float decay =  powf(decaySpeed, offset - queryBegin[k] - 1);
+ 
+-                float pairWeight = 0.15f * decay * fabs(relev1 - relev2) /  bootstrapIter;
++                float pairWeight = 0.15f * decay * fabsf(relev1 - relev2) /  bootstrapIter;
+ 
+ 
+                 ui64 pairIdx = idx1 < idx2 ? GetPairIndex(idx1 - queryBegin[k], idx2 - queryBegin[k])
+diff --git a/catboost/cuda/targets/kernel/pointwise_targets.cu b/catboost/cuda/targets/kernel/pointwise_targets.cu
+--- a/catboost/cuda/targets/kernel/pointwise_targets.cu
++++ b/catboost/cuda/targets/kernel/pointwise_targets.cu
+@@ -39,20 +39,20 @@ namespace NKernel {
+         }
+ 
+         __device__ __forceinline__ float Score(float target, float prediction) const {
+-            const float val = -target * std::exp((1 - VariancePower) * prediction) / (1 - VariancePower);
+-            const float delta = std::exp((2 - VariancePower) * prediction) / (2 - VariancePower);
++            const float val = -target * expf((1 - VariancePower) * prediction) / (1 - VariancePower);
++            const float delta = expf((2 - VariancePower) * prediction) / (2 - VariancePower);
+             return val + delta;
+         }
+ 
+         __device__ __forceinline__ float Der(float target, float prediction) const {
+-            const float der = target * std::exp((1 - VariancePower) * prediction);
+-            const float delta = std::exp((2 - VariancePower) * prediction);
++            const float der = target * expf((1 - VariancePower) * prediction);
++            const float delta = expf((2 - VariancePower) * prediction);
+             return der - delta;
+         }
+ 
+         __device__ __forceinline__ float Der2(float target, float prediction) const {
+-            const float der2 = target * std::exp((1 - VariancePower) * prediction) * (1 - VariancePower);
+-            const float delta = std::exp((2 - VariancePower) * prediction) * (2 - VariancePower);
++            const float der2 = target * expf((1 - VariancePower) * prediction) * (1 - VariancePower);
++            const float delta = expf((2 - VariancePower) * prediction) * (2 - VariancePower);
+             return - der2 + delta;
+         }
+     };
+@@ -67,7 +67,7 @@ namespace NKernel {
+         }
+ 
+         __device__ __forceinline__ float Score(float target, float prediction) const {
+-            const float targetMismatch = fabs(target - prediction);
++            const float targetMismatch = fabsf(target - prediction);
+             if (targetMismatch < Delta) {
+                 return 0.5 * targetMismatch * targetMismatch;
+             } else {
+@@ -77,7 +77,7 @@ namespace NKernel {
+ 
+         __device__ __forceinline__ float Der(float target, float prediction) const {
+             const float diff = target - prediction;
+-            if (fabs(diff) < Delta) {
++            if (fabsf(diff) < Delta) {
+                 return diff;
+             } else {
+                 return diff > 0.0 ? Delta : -Delta;
+@@ -86,7 +86,7 @@ namespace NKernel {
+ 
+         __device__ __forceinline__ float Der2(float target, float prediction) const {
+             const float diff = target - prediction;
+-            if (fabs(diff) < Delta) {
++            if (fabsf(diff) < Delta) {
+                 return -HUBER_DER2;
+             } else {
+                 return 0.0;
+diff --git a/catboost/cuda/targets/kernel/query_cross_entropy.cu b/catboost/cuda/targets/kernel/query_cross_entropy.cu
+--- a/catboost/cuda/targets/kernel/query_cross_entropy.cu
++++ b/catboost/cuda/targets/kernel/query_cross_entropy.cu
+@@ -101,7 +101,7 @@ namespace NKernel {
+                     }
+                     __syncthreads();
+                 }
+-                reduceSize = (1 << int(ceil(log2(sharedDer[0])) - 1)); // sharedDer[0] = max query size in this block
++                reduceSize = (1 << int(ceilf(log2f(sharedDer[0])) - 1)); // sharedDer[0] = max query size in this block
+                 __syncthreads();
+             }
+ 
+@@ -527,7 +527,7 @@ namespace NKernel {
+         for (int i = workingTile.thread_rank(); i < querySize; i += ThreadsPerQuery) {
+             const ui32 loadIdx = loadIndices[queryOffset + i];
+             float docTarget = Ldg(targets + loadIdx);
+-            if (abs(firstTarget - docTarget) > 1e-5f) {
++            if (fabsf(firstTarget - docTarget) > 1e-5f) {
+                 isSingleClass = 0;
+             }
+             trueCount += docTarget > 0.5;
+diff --git a/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu b/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
+--- a/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
++++ b/catboost/cuda/targets/kernel/yeti_rank_pointwise.cu
+@@ -144,7 +144,7 @@ namespace NKernel
+ 
+                 const float magicConst = 0.15f; //to make learning rate more comparable with pair classification
+                 const float decay = magicConst * powf(decaySpeed, offset - queryBegin[k] - 1);
+-                const float pairWeight = decay * fabs(relev1 - relev2) /  bootstrapIter;
++                const float pairWeight = decay * fabsf(relev1 - relev2) /  bootstrapIter;
+                 const float ll = pairWeight * (relev1 > relev2 ? approx2 : -approx1) / (approx2 + approx1); //
+ 
+                 if (idx1 != -1 && idx1 < size) {

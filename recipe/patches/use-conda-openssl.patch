@@ -1,0 +1,31 @@
+Use system/conda OpenSSL instead of conan's bundled FindOpenSSL.
+
+Upstream catboost's CMake build resolves OpenSSL via the conan-supplied
+FindOpenSSL.cmake, which exposes the `openssl::openssl` target. CMake's
+own FindOpenSSL.cmake instead exposes `OpenSSL::SSL` / `OpenSSL::Crypto`.
+We don't use conan in the conda build, so we shim CMake's FindOpenSSL
+output as `openssl::openssl` and inject it before any catboost subdir
+tries to link against the conan target.
+
+Reference: https://github.com/conan-io/conan-center-index/issues/952
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,6 +19,17 @@ endif()
+
+ project(CATBOOST LANGUAGES C CXX ASM)
+
++# Use OpenSSL from system instead of the version provided by conan.
++#  1. conan supplied FindOpenSSL.cmake provides openssl::openssl
++#  2. cmake supplied FindOpenSSL.cmake provides OpenSSL::SSL and OpenSSL::Crypto.
++# See https://github.com/conan-io/conan-center-index/issues/952
++# This patch is needed to reconcile the difference.
++find_package(OpenSSL REQUIRED)
++include_directories(${OPENSSL_INCLUDE_DIR})
++add_library(LinkOpenSSL INTERFACE)
++target_link_libraries(LinkOpenSSL INTERFACE OpenSSL::SSL OpenSSL::Crypto)
++add_library(openssl::openssl ALIAS LinkOpenSSL)
++
+ set(BUILD_SHARED_LIBS Off)
+ set(CMAKE_CXX_STANDARD 20)
+ set(CMAKE_CXX_EXTENSIONS Off)

@@ -28,31 +28,56 @@ fi
 if [[ "${gpu_variant}" == cuda* ]]; then
     echo "Configuring CUDA support..."
 
-    # Clang is the NVCC host compiler (NOT GCC)
-    export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++"
+    # Clang is the NVCC host compiler (NOT GCC). Without -ccbin, nvcc defaults to
+    # `g++` -- which is unprefixed and isn't on PATH in conda's compiler-wrapper
+    # layout, so CMake's CUDA compiler-identification step fails before it even
+    # gets to our build. --allow-unsupported-compiler suppresses the version check
+    # for the newer clang (catboost's clang.toolchain previously set this via
+    # set(ENV{NVCC_PREPEND_FLAGS} ...); conda.diff drops that line so it doesn't
+    # clobber the -ccbin we set here.
+    export NVCC_PREPEND_FLAGS="-ccbin=$BUILD_PREFIX/bin/${HOST}-clang++ --allow-unsupported-compiler -std=c++17"
 
-    # Patch CUDA 12.4's host_defines.h to allow catboost's bundled libcxxcuda11.
+    # Patch CUDA's host_defines.h to allow catboost's bundled libcxxcuda11.
     # CatBoost builds with -nostdinc++ and its own libc++ fork (libcxxcuda11)
-    # designed for CUDA compatibility. CUDA 12.3+ added a blanket #error rejecting
-    # libc++ on x86, which is a false positive for this use case.
-    if [[ -f "$BUILD_PREFIX/targets/x86_64-linux/include/crt/host_defines.h" ]]; then
-        sed -i 's/#error "libc++ is not supported on x86 system"/\/\* patched: catboost libcxxcuda11 is CUDA-compatible *\//' \
-            "$BUILD_PREFIX/targets/x86_64-linux/include/crt/host_defines.h"
-        echo "Patched host_defines.h to allow libcxxcuda11 on x86"
-    fi
+    # designed for CUDA compatibility. CUDA 12.3+ rejects libc++ on x86 with a
+    # blanket #error; the wording is the same on aarch64 (SBSA) and on 13.x.
+    # Match any "libc++ is not supported" error so future CUDA bumps keep working.
+    for arch_dir in x86_64-linux sbsa-linux; do
+        host_defines="$BUILD_PREFIX/targets/$arch_dir/include/crt/host_defines.h"
+        if [[ -f "$host_defines" ]]; then
+            sed -i 's|#error "libc++ is not supported[^"]*"|/* patched: catboost libcxxcuda11 is CUDA-compatible */|' \
+                "$host_defines"
+            echo "Patched host_defines.h ($arch_dir) to allow libcxxcuda11"
+        fi
+    done
 
     # CUDA build flags
     if [[ "$cuda_compiler_version" != "None" ]]; then
-        # Remove older CUDA architectures for CUDA 12+
-        if [[ "$cuda_compiler_version" != "11.8" ]]; then
-            find . -name "CMakeLists*cuda.txt" -type f -print0 | xargs -0 sed -i -z -r \
-                "s/-gencode\s*=?arch=compute_35,code=sm_35//g"
-        fi
+        # CMAKE_CUDA_ARCHITECTURES list: drop arches the active nvcc no longer accepts.
+        # catboost upstream default is 35;50;60;61;70;75;80;86;89;90.
+        #   CUDA 12.x:  nvcc 12.0+ dropped sm_35 (Kepler).
+        #   CUDA 13.x:  nvcc 13.0 additionally dropped sm_50/60/61/70 (Maxwell/Pascal/Volta); minimum is sm_75.
+        case "$cuda_compiler_version" in
+            12.*)
+                CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_ARCHITECTURES=50-virtual;60-virtual;61-real;70-virtual;75-real;80-real;86-real;89-real;90"
+                ;;
+            13.*)
+                CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_CUDA_ARCHITECTURES=75-real;80-real;86-real;89-real;90"
+                ;;
+        esac
 
-        # Link with shared cudart instead of static
+        # Rewrite static-CUDA-runtime link flags to shared-cudart equivalents.
+        # conda's cuda-cudart-dev ships only the dynamic libcudart.so; the
+        # static libcudart_static.a / libcudadevrt.a / libculibos.a from the
+        # NVIDIA tarball are not packaged. catboost's per-target CMakeLists
+        # (including catboost/python-package/catboost/CMakeLists.linux-*-cuda.txt
+        # which is what we actually build for _catboost) hardcode the static
+        # names, so a global rewrite is necessary -- without this, the final
+        # link step fails with `unable to find library -lculibos`.
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudart_static/-lcudart/g"
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lcudadevrt/-lcudart/g"
         find . -name "CMakeLists*.txt" -type f -print0 | xargs -0 sed -i "s/-lculibos/-lcudart/g"
+
         CMAKE_ARGS="${CMAKE_ARGS} -DHAVE_CUDA=ON"
     fi
 

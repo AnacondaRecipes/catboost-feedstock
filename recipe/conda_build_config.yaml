@@ -1,40 +1,49 @@
-# CUDA variant configuration for catboost
-# Pattern follows llama.cpp-feedstock and faiss-split-feedstock.
-# CatBoost CUDA is Linux-only (Windows uses pre-built PyPI wheels).
+# CUDA variant configuration for catboost.
 #
-# CUDA 12.4 is used because:
-#   - CUDA 12.3+ dropped libc++ support on Linux (catboost/catboost#2755)
-#   - CUDA 12.4+ has host_defines.h #error rejecting libc++ on x86 at compile time.
-#     build.sh patches this check out because catboost's bundled libcxxcuda11 is
-#     specifically designed for CUDA compatibility (false positive).
-#   - cuda-nvcc-impl 12.4 requires gcc <13, so we pin GCC 11.2.0 for the CUDA variant
+# linux: source build, with two CUDA toolkit variants (12.9, 13.0). Each
+# variant has its own gpu_variant tag (cuda-12, cuda-13) so the build string
+# can encode the toolkit version.
+#
+# win: the upstream PyPI win_amd64 wheel statically embeds cudart -- one
+# binary handles both CPU and GPU hosts at runtime, and there is no meaningful
+# per-CUDA-toolkit-version split. We tag the existing wheel repack as a single
+# `cuda` gpu_variant so the conda metadata advertises CUDA capability.
+#
+# Why cuda_compiler / cuda_compiler_version are also set on the win cuda
+# variant even though we don't actually compile any CUDA code there:
+#   compiler('cuda') in meta.yaml is what tells PBP to route this variant's
+#   build/test tasks to a GPU-equipped Windows worker pool
+#   (aws/windows-server-2025-amd64-cuda-12). Without that signal PBP picks the
+#   plain windows-server-2025-amd64 pool, which has no NVIDIA driver, and the
+#   __cuda dependency we use to keep CPU-only solvers from selecting the cuda
+#   variant fails the test phase's conda-create dry-run. The 12.9 here is
+#   arbitrary -- it picks the worker pool, that's all; the wheel embeds its
+#   own cudart at whatever version catboost upstream chose.
+#
+# Why we patch CUDA's host_defines.h in build.sh (linux only):
+#   CUDA 12.3+ added a #error rejecting libc++ on x86, and 13.x extends similar
+#   checks. catboost ships its own libc++ fork (libcxxcuda11) designed for CUDA;
+#   the rejection is a false positive for this codebase.
+#
+# Compiler pinning: cuda-nvcc-impl 12.9 supports gcc_impl <15, and 13.0 supports
+# gcc_impl <16, so the aggregate default gcc 14.3.0 works for both CUDA variants
+# and the CPU variant. No local c_compiler_version override needed.
 
-# gpu_variant must be defined for all platforms so that
-# meta.yaml selectors like (gpu_variant or "").startswith("cuda") work everywhere.
+# gpu_variant must be defined on every platform so that meta.yaml selectors like
+# `(gpu_variant or "").startswith("cuda")` evaluate without errors elsewhere.
 gpu_variant:
   - none
   - cuda-12                    # [linux]
+  - cuda-13                    # [linux]
+  - cuda                       # [win and x86_64]
 
-cuda_compiler_version:         # [linux]
-  - none                       # [linux]
-  - 12.4                       # [linux]
+cuda_compiler_version:         # [linux or (win and x86_64)]
+  - none                       # [linux or (win and x86_64)]
+  - 12.9                       # [linux]
+  - 13.0                       # [linux]
+  - 12.9                       # [win and x86_64]
 
-cuda_compiler:                 # [linux]
-  - cuda-nvcc                  # [linux]
-
-# GCC 11.2.0 for CUDA variant: cuda-nvcc-impl 12.4 requires gcc_impl <13.
-# GCC 14.3.0 for CPU variant: matches global default pinning.
-c_compiler_version:            # [linux]
-  - 14.3.0                     # [linux]
-  - 11.2.0                     # [linux]
-
-cxx_compiler_version:          # [linux]
-  - 14.3.0                     # [linux]
-  - 11.2.0                     # [linux]
-
-zip_keys:                      # [linux]
-  -                            # [linux]
-    - gpu_variant              # [linux]
-    - cuda_compiler_version    # [linux]
-    - c_compiler_version       # [linux]
-    - cxx_compiler_version     # [linux]
+zip_keys:                      # [linux or (win and x86_64)]
+  -                            # [linux or (win and x86_64)]
+    - gpu_variant              # [linux or (win and x86_64)]
+    - cuda_compiler_version    # [linux or (win and x86_64)]

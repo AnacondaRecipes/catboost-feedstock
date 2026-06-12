@@ -1,5 +1,5 @@
 {% set name = "catboost" %}
-{% set version = "1.2.8" %}
+{% set version = "1.2.10" %}
 
 {% set build_number = 0 %}
 
@@ -9,21 +9,32 @@ package:
 
 source:
   url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
+  sha256: ccbff5e411a2622c83dbb32281aefb9ac81ad88bdb12d1df83828c182f81af2a
   patches:
-    - patches/conda.diff                                                                  # [unix]
-    - patches/fix-dcg-pow-ambiguity.patch                                                  # [(gpu_variant or "").startswith("cuda")]
-    - patches/fix-jemalloc-aarch64-pagesize.patch                                          # [aarch64]
+    # Unbundle the build toolchain -- use conda's OpenSSL, conda's compiler env,
+    # and conda's cmake instead of the conan/PyPI versions catboost ships with.
+    - patches/use-conda-openssl.patch                                                     # [unix]
+    - patches/let-conda-drive-clang-toolchain.patch                                       # [unix]
+    - patches/unbundle-python-build-deps.patch                                            # [unix]
+    # CUDA + aarch64 runtime fixes (linux source build only; the win cuda variant
+    # is a metadata-only wheel repack and doesn't touch the upstream sources).
+    - patches/fix-cuda-math-host-device.patch                                             # [linux and (gpu_variant or "").startswith("cuda")]
+    - patches/add-cuda-functional-include.patch                                           # [linux and (gpu_variant or "").startswith("cuda")]
+    - patches/fix-jemalloc-aarch64-pagesize.patch                                         # [aarch64]
 
 build:
-  # Use a build number difference to ensure that the GPU variant is slightly preferred
-  # by conda's solver, so that it's preferentially installed where the platform supports it.
+  # GPU variants get a +100 build-number bump so conda's solver prefers them on
+  # CUDA-capable hosts (where __cuda is provided).
   number: {{ build_number + 100 }}  # [(gpu_variant or "").startswith("cuda")]
   number: {{ build_number }}        # [not (gpu_variant or "").startswith("cuda")]
-  string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [(gpu_variant or "").startswith("cuda")]
+  # linux cuda variants encode the toolkit version in the build string
+  # (cuda129_*, cuda130_*); win cuda is a single un-versioned variant
+  # (cuda_*) because the upstream wheel embeds cudart statically.
+  string: cuda{{ cuda_compiler_version | replace('.', '') }}_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}  # [linux and (gpu_variant or "").startswith("cuda")]
+  string: cuda_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                  # [win and (gpu_variant or "").startswith("cuda")]
   string: cpu_py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ PKG_BUILDNUM }}                                                  # [not (gpu_variant or "").startswith("cuda")]
-  missing_dso_whitelist:              # [(gpu_variant or "").startswith("cuda")]
-    - "**/libcuda.so*"                # [(gpu_variant or "").startswith("cuda")]
+  missing_dso_whitelist:              # [linux and (gpu_variant or "").startswith("cuda")]
+    - "**/libcuda.so*"                # [linux and (gpu_variant or "").startswith("cuda")]
 
 requirements:
   build:
@@ -36,10 +47,13 @@ requirements:
     - cmake >=3.24                    # [unix]
     - make                            # [unix]
     - {{ compiler('cxx') }}           # [unix]
-    - {{ stdlib('c') }}               # [unix]
+    - {{ stdlib('c') }} 
     - lld >=7                         # [linux]
     - clangxx >=18                    # [linux]
-    # CUDA only
+    # Linux: nvcc for the source build. Windows: this recipe does not compile
+    # CUDA (the upstream wheel is already built with cudart linked in), but
+    # compiler('cuda') is kept here so PBP routes the test phase to a
+    # GPU-equipped worker pool where the __cuda run dep resolves.
     - {{ compiler('cuda') }}          # [(gpu_variant or "").startswith("cuda")]
   host:
     - python
@@ -49,9 +63,8 @@ requirements:
     - openssl                         # [unix]
     - cython ~=3.0.10                 # [unix]
     - numpy                           # [unix]
-    - cuda-version {{ cuda_compiler_version }}  # [(gpu_variant or "").startswith("cuda")]
-    - cuda-driver-dev                           # [(gpu_variant or "").startswith("cuda")]
-    - cuda-cudart-dev                           # [(gpu_variant or "").startswith("cuda")]
+    - cuda-version {{ cuda_compiler_version }}  # [linux and (gpu_variant or "").startswith("cuda")]
+    - cuda-cudart-dev                           # [linux and (gpu_variant or "").startswith("cuda")]
   run:
     - python
     - numpy >=1.16.0,<3.0
@@ -61,8 +74,16 @@ requirements:
     - plotly
     - matplotlib-base
     - python-graphviz
-    # CUDA runtime requirements
-    - {{ pin_compatible('cuda-version', max_pin='x.x') }}  # [(gpu_variant or "").startswith("cuda")]
+    # CUDA runtime requirements:
+    #   - linux cuda variants pin cuda-version to the toolkit we built against
+    #     (source build dynamically links libcudart from conda).
+    #   - win cuda variant embeds cudart statically in the upstream wheel, so
+    #     no cuda-version pin is needed there.
+    #   - __cuda on both platforms is what prevents the conda solver from
+    #     picking the higher-build-number cuda variant on CPU-only hosts.
+    #     Without it, the +100 build-number bump would steer CPU users into
+    #     the cuda_* package even though they don't have a GPU.
+    - {{ pin_compatible('cuda-version', max_pin='x.x') }}  # [linux and (gpu_variant or "").startswith("cuda")]
     - __cuda                          # [(gpu_variant or "").startswith("cuda")]
   run_constrained:
     - ipywidgets >=7.0,<9.0
