@@ -1,7 +1,8 @@
 diff --git a/contrib/libs/jemalloc/include/jemalloc/internal/jemalloc_internal_defs.h b/contrib/libs/jemalloc/include/jemalloc/internal/jemalloc_internal_defs.h
+index b2191ed8..338aaafa 100644
 --- a/contrib/libs/jemalloc/include/jemalloc/internal/jemalloc_internal_defs.h
 +++ b/contrib/libs/jemalloc/include/jemalloc/internal/jemalloc_internal_defs.h
-@@ -7,6 +7,13 @@
+@@ -8,6 +8,13 @@
  #   include "jemalloc_internal_defs-win.h"
  #elif defined(__linux__) && defined(__arm__)
  #   include "jemalloc_internal_defs-linux-arm.h"
