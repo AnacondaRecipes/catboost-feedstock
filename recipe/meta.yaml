@@ -1,17 +1,17 @@
 {% set name = "catboost" %}
-{% set version = "1.2.8" %}
+{% set version = "1.2.9" %}
 
 {% set build_number = 0 %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://github.com/catboost/catboost/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 5b0c446cc48a1d1c38073cc20de0f191afd099222a97596d8bf148b04efbf7bd
+  url: https://github.com/{{ name }}/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: 08e875dfd62914b0848a4013e2fca7f4bb0416be6f59aa7312c56f180e0fa6eb
   patches:
-    - patches/conda.diff                                                                  # [unix]
+    - patches/conda.patch                                                                  # [unix]
     - patches/fix-dcg-pow-ambiguity.patch                                                  # [(gpu_variant or "").startswith("cuda")]
     - patches/fix-jemalloc-aarch64-pagesize.patch                                          # [aarch64]
 
@@ -86,7 +86,7 @@ about:
   description: |
     General purpose gradient boosting on decision trees library with categorical features support out of the box.
     It is easy to install, contains fast inference implementation and supports CPU and GPU (even multi-GPU) computation.
-  doc_url: https://catboost.ai/en/docs/
+  doc_url: https://catboost.ai
   dev_url: https://github.com/catboost/catboost
 
 extra:
