@@ -111,6 +111,7 @@ CMAKE_ARGS="${CMAKE_ARGS} -DPython3_NumPy_INCLUDE_DIR=${Python3_NumPy_INCLUDE_DI
         -DCMAKE_TOOLCHAIN_FILE=${SRC_DIR}/build/toolchains/clang.toolchain \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_VERBOSE_MAKEFILE=ON \
+        -DCMAKE_CUDA_HOST_COMPILER="${CXX}" \
         -DCATBOOST_COMPONENTS="PYTHON-PACKAGE" \
         ..
 
